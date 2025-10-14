@@ -1,0 +1,93 @@
+﻿@model IdentityCoreCustomization.Models.Identity.ApplicationRole
+
+@{
+    ViewData["Title"] = "حذف گروه کاربری";
+}
+
+<h1>حذف گروه کاربری</h1>
+
+<div class="alert alert-danger">
+    <h4 class="alert-heading">
+        <i class="fa-solid fa-exclamation-triangle"></i> هشدار!
+    </h4>
+    <p>آیا مطمئن هستید که می‌خواهید گروه کاربری <strong>@Model.Name</strong> را حذف کنید؟</p>
+    <hr>
+    <p class="mb-0">این عمل غیرقابل بازگشت است و گروه کاربری به طور کامل از سیستم حذف خواهد شد.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">اطلاعات گروه کاربری</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-4">شناسه:</dt>
+                    <dd class="col-8">@Model.Id</dd>
+                    
+                    <dt class="col-4">نام گروه:</dt>
+                    <dd class="col-8">@Model.Name</dd>
+                    
+                    <dt class="col-4">نام نرمال‌شده:</dt>
+                    <dd class="col-8"><code>@Model.NormalizedName</code></dd>
+                    
+                    <dt class="col-4">تعداد کاربران:</dt>
+                    <dd class="col-8">
+                        @if (Model.UserRoles?.Any() == true)
+                        {
+                            <span class="badge bg-danger fs-6">
+                                @Model.UserRoles.Count کاربر
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success fs-6">هیچ کاربری</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        @if (Model.UserRoles?.Any() == true)
+        {
+            <div class="alert alert-warning mt-3">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                <strong>توجه:</strong> این گروه کاربری دارای @Model.UserRoles.Count کاربر عضو است و نمی‌توان آن را حذف کرد.
+            </div>
+        }
+        else
+        {
+            <div class="mt-3">
+                <form asp-action="Delete" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('آیا مطمئن هستید؟')">
+                        <i class="fa-solid fa-trash"></i> تأیید حذف
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fa-solid fa-times"></i> انصراف
+                    </a>
+                </form>
+            </div>
+        }
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fa-solid fa-info-circle"></i> نکات مهم
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>گروه کاربری به طور کامل از سیستم حذف خواهد شد</li>
+                    <li>این عمل غیرقابل بازگشت است</li>
+                    <li>نمی‌توان گروه کاربری با کاربران عضو را حذف کرد</li>
+                    <li>ابتدا باید تمام کاربران را از این گروه خارج کنید</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
