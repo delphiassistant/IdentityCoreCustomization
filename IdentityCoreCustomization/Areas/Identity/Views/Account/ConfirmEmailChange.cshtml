@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["Title"] = "تایید تغییر ایمیل شما";
+}
+
+<h1>@ViewData["Title"]</h1>
+@{ var statusMessageClass = ViewBag.StatusMessage.StartsWith("خطا") ? "danger" : "success"; }
+
+<div class="alert alert-@statusMessageClass alert-dismissible fade show" role="alert">
+    @ViewBag.StatusMessage
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>

@@ -1,0 +1,494 @@
+﻿@model IEnumerable<IdentityCoreCustomization.Models.Identity.ApplicationUser>
+
+@{
+    ViewData["Title"] = "مدیریت کاربران";
+}
+
+@section Styles {
+    <link href="~/css/admin-users.css" rel="stylesheet" />
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        <i class="fa-solid fa-circle-exclamation"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row mb-3 align-items-center">
+    <div class="col-md-4 mb-2 mb-md-0">
+        <a asp-action="Create" class="btn btn-success btn-sm">
+            <i class="fa-solid fa-plus"></i> ایجاد کاربر جدید
+        </a>
+    </div>
+    <div class="col-md-5 mb-2 mb-md-0">
+        <form method="get" asp-action="Index" class="d-flex" role="search">
+            <input type="text" name="q" value="@(ViewBag.Search as string)" class="form-control form-control-sm me-2" placeholder="جستجو: نام کاربری، ایمیل یا تلفن" />
+            <button type="submit" class="btn btn-outline-primary btn-sm me-2"><i class="fa-solid fa-magnifying-glass"></i> جستجو</button>
+            @if (!string.IsNullOrWhiteSpace(ViewBag.Search as string))
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-xmark"></i> پاک‌سازی</a>
+            }
+        </form>
+    </div>
+    <div class="col-md-3 text-end">
+        <span class="badge bg-info">تعداد نتایج: @Model.Count()</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>شناسه</th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.UserName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Email)
+                        </th>
+                        <th>
+                            تلفن
+                        </th>
+                        <th>نقش‌ها</th>
+                        <th>وضعیت</th>
+                        <th>دستورات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <code>@item.Id</code>
+                            </td>
+                            <td>
+                                <strong>@Html.DisplayFor(modelItem => item.UserName)</strong>
+                                @if (item.UserName == User.Identity.Name)
+                                {
+                                    <span class="badge bg-warning text-dark ms-1">شما</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Email))
+                                {
+                                    <span>@Html.DisplayFor(modelItem => item.Email)</span>
+                                    @if (item.EmailConfirmed)
+                                    {
+                                        <i class="fa-solid fa-circle-check text-success ms-1" title="ایمیل تأیید شده"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa-solid fa-circle-xmark text-warning ms-1" title="ایمیل تأیید نشده"></i>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">ثبت نشده</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.PhoneNumber))
+                                {
+                                    <span>@Html.DisplayFor(modelItem => item.PhoneNumber)</span>
+                                    @if (item.PhoneNumberConfirmed)
+                                    {
+                                        <i class="fa-solid fa-circle-check text-success ms-1" title="تلفن تأیید شده"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa-solid fa-circle-xmark text-warning ms-1" title="تلفن تأیید نشده"></i>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">ثبت نشده</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.UserRoles?.Any() == true)
+                                {
+                                    @foreach (var userRole in item.UserRoles.Take(2))
+                                    {
+                                        <span class="badge bg-primary me-1">@userRole.Role?.Name</span>
+                                    }
+                                    @if (item.UserRoles.Count > 2)
+                                    {
+                                        <span class="badge bg-secondary">+@(item.UserRoles.Count - 2)</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">بدون نقش</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.LockoutEnd.HasValue && item.LockoutEnd > DateTimeOffset.UtcNow)
+                                {
+                                    <span class="badge bg-danger">
+                                        <i class="fa-solid fa-lock"></i> قفل شده
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fa-solid fa-circle-check"></i> فعال
+                                    </span>
+                                }
+                                
+                                @if (item.TwoFactorEnabled)
+                                {
+                                    <span class="badge bg-info ms-1">
+                                        <i class="fa-solid fa-shield-halved"></i> 2FA
+                                    </span>
+                                }
+                                
+                                @if (item.AccessFailedCount > 0)
+                                {
+                                    <span class="badge bg-warning text-dark ms-1" title="تلاش‌های ناموفق">
+                                        <i class="fa-solid fa-exclamation-triangle"></i> @item.AccessFailedCount
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-action="Details" asp-route-id="@item.Id" 
+                                       class="btn btn-info btn-sm" title="مشاهده جزئیات">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    
+                                    <a asp-action="Edit" asp-route-id="@item.Id" 
+                                       class="btn btn-primary btn-sm" title="ویرایش">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    
+                                    <a asp-action="ChangePassword" asp-route-id="@item.Id" 
+                                       class="btn btn-dark btn-sm" title="تغییر کلمه عبور">
+                                        <i class="fa-solid fa-key"></i>
+                                    </a>
+                                    
+                                    @* Lockout Toggle Link *@
+                                    @if (item.LockoutEnd.HasValue && item.LockoutEnd > DateTimeOffset.UtcNow)
+                                    {
+                                        <a href="javascript:void(0)" 
+                                           class="btn btn-success btn-sm lockout-toggle" 
+                                           title="خروج از قفل"
+                                           data-action="unlock"
+                                           data-user-id="@item.Id"
+                                           data-username="@item.UserName">
+                                            <i class="fa-solid fa-unlock"></i>
+                                        </a>
+                                    }
+                                    else if (item.UserName != User.Identity.Name)
+                                    {
+                                        <a href="javascript:void(0)" 
+                                           class="btn btn-warning btn-sm lockout-toggle" 
+                                           title="قفل کردن"
+                                           data-action="lock"
+                                           data-user-id="@item.Id"
+                                           data-username="@item.UserName">
+                                            <i class="fa-solid fa-lock"></i>
+                                        </a>
+                                    }
+                                    
+                                    @* Delete Link *@
+                                    @if (item.UserName != User.Identity.Name)
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@item.Id" 
+                                           class="btn btn-danger btn-sm" title="حذف">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center">
+        <i class="fa-solid fa-info-circle"></i>
+        هیچ کاربری در سیستم ثبت نشده است.
+    </div>
+}
+
+@* Lock User Confirmation Modal *@
+<div class="modal fade" id="lockModal" tabindex="-1" aria-labelledby="lockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="lockModalLabel">
+                    <i class="fa-solid fa-lock"></i> قفل کردن کاربر
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    آیا مطمئن هستید که می‌خواهید کاربر <strong id="lockUsername"></strong> را قفل کنید؟
+                </div>
+                <p>کاربر قفل شده نمی‌تواند وارد سیستم شود تا زمانی که مجدداً از قفل خارج شود.</p>
+                <ul class="small text-muted">
+                    <li>کاربر به صورت خودکار از سیستم خارج خواهد شد</li>
+                    <li>دسترسی به تمام بخش‌های سیستم قطع می‌شود</li>
+                    <li>این تنظیم قابل بازگشت است</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-times"></i> انصراف
+                </button>
+                <form id="lockForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fa-solid fa-lock"></i> قفل کردن
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Unlock User Confirmation Modal *@
+<div class="modal fade" id="unlockModal" tabindex="-1" aria-labelledby="unlockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="unlockModalLabel">
+                    <i class="fa-solid fa-unlock"></i> خروج از قفل
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fa-solid fa-info-circle"></i>
+                    آیا مطمئن هستید که می‌خواهید کاربر <strong id="unlockUsername"></strong> را از حالت قفل خارج کنید؟
+                </div>
+                <p>کاربر پس از خروج از قفل مجدداً قادر به ورود به سیستم خواهد بود.</p>
+                <ul class="small text-muted">
+                    <li>کاربر می‌تواند مجدداً وارد سیستم شود</li>
+                    <li>دسترسی‌ها بر اساس نقش‌های تعریف شده بازگردانده می‌شود</li>
+                    <li>شمارنده تلاش‌های ناموفق بازنشانی می‌شود</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-times"></i> انصراف
+                </button>
+                <form id="unlockForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa-solid fa-unlock"></i> خروج از قفل
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        console.log('Users Index JavaScript loaded');
+        console.log('Bootstrap version:', typeof bootstrap !== 'undefined' ? bootstrap.Tooltip?.VERSION || 'Available but version unknown' : 'Not available');
+        
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing lockout handlers');
+            
+            // Initialize Bootstrap components
+            initializeBootstrapComponents();
+            
+            // Get all lockout toggle buttons
+            const lockoutButtons = document.querySelectorAll('.lockout-toggle');
+            console.log('Found lockout buttons:', lockoutButtons.length);
+            
+            // Add click handlers to lockout buttons
+            lockoutButtons.forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Lockout button clicked');
+                    
+                    const action = this.getAttribute('data-action');
+                    const userId = this.getAttribute('data-user-id');
+                    const username = this.getAttribute('data-username');
+                    
+                    console.log('Action:', action, 'UserId:', userId, 'Username:', username);
+                    
+                    if (action === 'lock') {
+                        showLockModal(userId, username);
+                    } else if (action === 'unlock') {
+                        showUnlockModal(userId, username);
+                    }
+                });
+            });
+            
+            // Function to initialize Bootstrap components
+            function initializeBootstrapComponents() {
+                // Initialize tooltips
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+                if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                    tooltipTriggerList.map(function (tooltipTriggerEl) {
+                        return new bootstrap.Tooltip(tooltipTriggerEl);
+                    });
+                    console.log('Tooltips initialized:', tooltipTriggerList.length);
+                }
+                
+                // Auto-hide alerts after 5 seconds
+                setTimeout(function() {
+                    const alerts = document.querySelectorAll('.alert-dismissible');
+                    alerts.forEach(function(alert) {
+                        if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+                            const bsAlert = new bootstrap.Alert(alert);
+                            try {
+                                bsAlert.close();
+                            } catch (e) {
+                                console.log('Alert already closed or removed');
+                            }
+                        }
+                    });
+                }, 5000);
+            }
+            
+            // Function to show lock modal
+            function showLockModal(userId, username) {
+                console.log('Showing lock modal for user:', username);
+                
+                // Set username in modal
+                const usernameElement = document.getElementById('lockUsername');
+                if (usernameElement) {
+                    usernameElement.textContent = username;
+                }
+                
+                // Set form action
+                const form = document.getElementById('lockForm');
+                if (form) {
+                    form.action = '/Admin/Users/ToggleLockout/' + userId;
+                    console.log('Lock form action set to:', form.action);
+                }
+                
+                // Show modal using Bootstrap 5 API
+                const modalElement = document.getElementById('lockModal');
+                if (modalElement && typeof bootstrap !== 'undefined') {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                    console.log('Lock modal shown');
+                } else {
+                    console.error('Modal element or Bootstrap not found');
+                    alert('خطا در نمایش پنجره تأیید');
+                }
+            }
+            
+            // Function to show unlock modal
+            function showUnlockModal(userId, username) {
+                console.log('Showing unlock modal for user:', username);
+                
+                // Set username in modal
+                const usernameElement = document.getElementById('unlockUsername');
+                if (usernameElement) {
+                    usernameElement.textContent = username;
+                }
+                
+                // Set form action
+                const form = document.getElementById('unlockForm');
+                if (form) {
+                    form.action = '/Admin/Users/ToggleLockout/' + userId;
+                    console.log('Unlock form action set to:', form.action);
+                }
+                
+                // Show modal using Bootstrap 5 API
+                const modalElement = document.getElementById('unlockModal');
+                if (modalElement && typeof bootstrap !== 'undefined') {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                    console.log('Unlock modal shown');
+                } else {
+                    console.error('Modal element or Bootstrap not found');
+                    alert('خطا در نمایش پنجره تأیید');
+                }
+            }
+            
+            // Handle form submissions with loading states
+            const lockForm = document.getElementById('lockForm');
+            const unlockForm = document.getElementById('unlockForm');
+            
+            if (lockForm) {
+                lockForm.addEventListener('submit', function(e) {
+                    console.log('Lock form submitted to:', this.action);
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.classList.add('loading');
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> در حال پردازش...';
+                    }
+                });
+            }
+            
+            if (unlockForm) {
+                unlockForm.addEventListener('submit', function(e) {
+                    console.log('Unlock form submitted to:', this.action);
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.classList.add('loading');
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> در حال پردازش...';
+                    }
+                });
+            }
+            
+            console.log('All event handlers initialized successfully');
+        });
+        
+        // Global function for debugging
+        window.testLockoutModal = function(userId, username, action) {
+            console.log('Testing modal with:', { userId, username, action });
+            
+            if (typeof bootstrap === 'undefined') {
+                console.error('Bootstrap is not available!');
+                alert('Bootstrap is not loaded!');
+                return;
+            }
+            
+            if (action === 'lock') {
+                const modalElement = document.getElementById('lockModal');
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    document.getElementById('lockUsername').textContent = username;
+                    document.getElementById('lockForm').action = '/Admin/Users/ToggleLockout/' + userId;
+                    modal.show();
+                    console.log('Test lock modal shown');
+                } else {
+                    console.error('Lock modal element not found');
+                }
+            } else {
+                const modalElement = document.getElementById('unlockModal');
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    document.getElementById('unlockUsername').textContent = username;
+                    document.getElementById('unlockForm').action = '/Admin/Users/ToggleLockout/' + userId;
+                    modal.show();
+                    console.log('Test unlock modal shown');
+                } else {
+                    console.error('Unlock modal element not found');
+                }
+            }
+        };
+    </script>
+}

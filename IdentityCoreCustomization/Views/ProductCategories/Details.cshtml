@@ -1,0 +1,23 @@
+﻿@model IdentityCoreCustomization.Models.ProductCategory
+
+@{
+    ViewData["Title"] = "نمایش جزئیات گروه کالا";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ProductCategoryTitle)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ProductCategoryTitle)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ProductCategoryID" class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i> ویرایش</a>
+    <a asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-arrow-turn-down-left"></i> بازگشت به فهرست</a>
+</div>

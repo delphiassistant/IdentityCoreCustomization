@@ -1,0 +1,28 @@
+﻿@model LoginWithSmsResponseModel
+@{
+    ViewData["Title"] = "تایید ورود با کد پیامکی";
+}
+
+
+<div class="row">
+    <div class="col-md-6 mx-auto col-sm-12" >
+        <h1>@ViewData["Title"]</h1>
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input type="hidden" asp-for="AuthenticationKey"/>
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+            <div class="mb-3">
+                <label asp-for="AuthenticationCode"></label>
+                <input asp-for="AuthenticationCode" class="form-control"/>
+                <span asp-validation-for="AuthenticationCode" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary mt-1">ورود</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

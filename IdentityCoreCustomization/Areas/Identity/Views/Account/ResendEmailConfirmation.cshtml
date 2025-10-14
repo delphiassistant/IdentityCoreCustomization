@@ -1,0 +1,26 @@
+﻿@model ResendEmailConfirmationModel
+@{
+    ViewData["Title"] = "ارسال مجدد ایمیل تایید";
+}
+
+
+<div class="row">
+    <div class="col-md-6 offset-md-3 col-sm-12 offset-sm-1">
+        <h1>@ViewData["Title"]</h1>
+        
+        <hr />
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">ارسال مجدد</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

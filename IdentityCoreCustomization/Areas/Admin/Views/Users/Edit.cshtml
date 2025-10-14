@@ -1,0 +1,33 @@
+﻿@model IdentityCoreCustomization.Areas.Admin.Models.EditUserModel
+
+@{
+    ViewData["Title"] = "ویرایش کاربر";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="UserID"/>
+            <div class="mb-3">
+                <label asp-for="Username" class="form-label"></label>
+                <input asp-for="Username" class="form-control" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">گروه های عضو</label>
+                <check-box-list name="selectedRoles" items="ViewBag.RolesList" template="Bootstrap3Basic" class="form-control"></check-box-list>
+            </div>
+            <div class="mb-3">
+                <button type="submit" value="Create" class="btn btn-primary"><i class="fa-solid fa-down-to-bracket"></i> ثبت</button>
+                <a asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-arrow-turn-down-left"></i> بازگشت به فهرست</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

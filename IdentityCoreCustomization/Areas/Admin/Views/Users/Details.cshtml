@@ -1,0 +1,191 @@
+﻿@model IdentityCoreCustomization.Models.Identity.ApplicationUser
+
+@{
+    ViewData["Title"] = "جزئیات کاربر";
+}
+
+<h1>جزئیات کاربر</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">
+                    <i class="fa-solid fa-user"></i> @Model.UserName
+                </h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">شناسه کاربر:</dt>
+                    <dd class="col-sm-9">@Model.Id</dd>
+                    
+                    <dt class="col-sm-3">نام کاربری:</dt>
+                    <dd class="col-sm-9">@Model.UserName</dd>
+                    
+                    <dt class="col-sm-3">ایمیل:</dt>
+                    <dd class="col-sm-9">
+                        @if (!string.IsNullOrEmpty(Model.Email))
+                        {
+                            <span>@Model.Email</span>
+                            @if (Model.EmailConfirmed)
+                            {
+                                <span class="badge bg-success ms-2">تأیید شده</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning ms-2">تأیید نشده</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">ایمیل ثبت نشده</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-3">شماره تلفن:</dt>
+                    <dd class="col-sm-9">
+                        @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                        {
+                            <span>@Model.PhoneNumber</span>
+                            @if (Model.PhoneNumberConfirmed)
+                            {
+                                <span class="badge bg-success ms-2">تأیید شده</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning ms-2">تأیید نشده</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">شماره ثبت نشده</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-3">وضعیت قفل:</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.LockoutEnd.HasValue && Model.LockoutEnd > DateTimeOffset.UtcNow)
+                        {
+                            <span class="badge bg-danger">قفل شده تا @Model.LockoutEnd.Value.ToString("yyyy/MM/dd HH:mm")</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">فعال</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-3">تلاش‌های ناموفق:</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge bg-info">@Model.AccessFailedCount</span>
+                    </dd>
+                    
+                    <dt class="col-sm-3">دو مرحله‌ای:</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.TwoFactorEnabled)
+                        {
+                            <span class="badge bg-success">فعال</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">غیرفعال</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-3">گروه‌های کاربری:</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.UserRoles?.Any() == true)
+                        {
+                            @foreach (var userRole in Model.UserRoles)
+                            {
+                                <span class="badge bg-primary me-1">@userRole.Role?.Name</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">هیچ گروهی اختصاص داده نشده</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fa-solid fa-tools"></i> عملیات
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="fa-solid fa-edit"></i> ویرایش کاربر
+                    </a>
+                    
+                    <a asp-action="ChangePassword" asp-route-id="@Model.Id" class="btn btn-info">
+                        <i class="fa-solid fa-key"></i> تغییر کلمه عبور
+                    </a>
+                    
+                    @if (Model.LockoutEnd.HasValue && Model.LockoutEnd > DateTimeOffset.UtcNow)
+                    {
+                        <form asp-action="ToggleLockout" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success w-100" onclick="return confirm('آیا مطمئن هستید که می‌خواهید این کاربر را از حالت قفل خارج کنید؟')">
+                                <i class="fa-solid fa-unlock"></i> خروج از قفل
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        @if (Model.UserName != User.Identity.Name)
+                        {
+                            <form asp-action="ToggleLockout" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-warning w-100" onclick="return confirm('آیا مطمئن هستید که می‌خواهید این کاربر را قفل کنید؟')">
+                                    <i class="fa-solid fa-lock"></i> قفل کردن
+                                </button>
+                            </form>
+                        }
+                    }
+                    
+                    @if (Model.UserName != User.Identity.Name)
+                    {
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                            <i class="fa-solid fa-trash"></i> حذف کاربر
+                        </a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-danger" disabled title="نمی‌توان کاربر فعلی را حذف کرد">
+                            <i class="fa-solid fa-trash"></i> حذف کاربر
+                        </button>
+                    }
+                    
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left"></i> بازگشت به فهرست
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fa-solid fa-info-circle"></i> اطلاعات سیستمی
+                </h5>
+            </div>
+            <div class="card-body">
+                <small>
+                    <dl class="row mb-0">
+                        <dt class="col-6">شناسه همگام‌سازی:</dt>
+                        <dd class="col-6"><code class="small">@Model.ConcurrencyStamp</code></dd>
+                        
+                        <dt class="col-6">نشانه امنیتی:</dt>
+                        <dd class="col-6"><code class="small">@(Model.SecurityStamp?.Substring(0, 8) + "...")</code></dd>
+                    </dl>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>

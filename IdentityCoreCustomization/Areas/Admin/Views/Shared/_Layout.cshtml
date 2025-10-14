@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - پنل مدیریت</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+    <link href="~/lib/persian_fonts/vazirmatnfd/vazirmatn-fd-font-face.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/font_awesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/navigation-dropdown.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <!-- Admin top bar (no LoginPartial) -->
+    <nav class="navbar navbar-expand-lg navbar-dark admin-navbar fixed-top">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminTopbar" aria-controls="adminTopbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminTopbar">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminUserMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-user-circle"></i> @User.Identity?.Name
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminUserMenu">
+                            <li>
+                                <a class="dropdown-item" asp-area="Identity" asp-controller="Manage" asp-action="Index" target="_blank">
+                                    <i class="fa-solid fa-user-gear"></i> پرونده کاربری
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <a class="dropdown-item text-danger" asp-area="Identity" asp-controller="Account" asp-action="Logout">
+                                    <i class="fa-solid fa-right-from-bracket"></i> خروج
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Fixed right sidebar covering full height -->
+    <aside id="adminSidebar" class="admin-sidebar text-white position-fixed">
+        <div class="sidebar-inner h-100 d-flex flex-column">
+            <!-- Brand at top of sidebar -->
+            <a class="d-flex align-items-center px-3 py-3 text-decoration-none text-white border-bottom border-secondary" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                <i class="fa-solid fa-shield-halved ms-2"></i> <span class="fs-5 ms-1">پنل مدیریت</span>
+            </a>
+            <!-- Back to site at very top, opens in new tab -->
+            <a class="nav-link text-start text-white-50 px-3 pt-2" asp-area="" asp-controller="Home" asp-action="Index" target="_blank" rel="noopener">
+                <i class="fa-solid fa-house"></i> بازگشت به سایت
+            </a>
+            <nav class="nav nav-pills flex-column px-2 py-2 gap-1">
+                <a class="nav-link text-start @(ViewContext.RouteData.Values["controller"]?.ToString()=="Dashboard"?"active":"")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                    <i class="fa-solid fa-gauge"></i> داشبورد
+                </a>
+                <div class="px-2 mt-2 mb-1 text-white-50 small">کاربران</div>
+                <a class="nav-link text-start @(ViewContext.RouteData.Values["controller"]?.ToString()=="Users"?"active":"")" asp-area="Admin" asp-controller="Users" asp-action="Index">
+                    <i class="fa-solid fa-users"></i> کاربران
+                </a>
+                <a class="nav-link text-start @(ViewContext.RouteData.Values["controller"]?.ToString()=="Roles"?"active":"")" asp-area="Admin" asp-controller="Roles" asp-action="Index">
+                    <i class="fa-solid fa-user-tag"></i> نقش‌ها
+                </a>
+                <a class="nav-link text-start @(ViewContext.RouteData.Values["controller"]?.ToString()=="UserSessions"?"active":"")" asp-area="Admin" asp-controller="UserSessions" asp-action="Index">
+                    <i class="fa-solid fa-users-gear"></i> نشست‌ها
+                </a>
+            </nav>
+            @* <div class="mt-auto p-3 text-white-50 small d-none d-lg-block">&copy; @DateTime.Now.Year</div> *@
+        </div>
+    </aside>
+
+    <!-- Admin content area; margins handled by CSS -->
+    <div class="admin-content">
+        <main class="p-3">
+            @RenderBody()
+        </main>
+        <footer class="border-top footer text-muted px-3">
+            <div class="container-fluid">
+                &copy; @DateTime.Now.ToString("yyyy") - سفارشی سازی آیدنتیتی
+            </div>
+        </footer>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/navigation-dropdown.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

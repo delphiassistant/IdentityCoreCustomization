@@ -1,0 +1,77 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using IdentityCoreCustomization.Models.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <!-- User is signed in - Show dropdown menu -->
+    <div class="dropdown">
+        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userAccountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid fa-user-circle"></i> حساب کاربری
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userAccountDropdown">
+            <!-- User Information Header -->
+            <li>
+                <h6 class="dropdown-header">
+                    <i class="fa-solid fa-user"></i> @User.Identity.Name
+                </h6>
+            </li>
+            
+            <!-- User Management -->
+            <li>
+                <a class="dropdown-item" asp-area="Identity" asp-controller="Manage" asp-action="Index" title="مدیریت حساب کاربری">
+                    <i class="fa-solid fa-user-gear"></i> مدیریت حساب کاربری
+                </a>
+            </li>
+           
+            
+            <!-- Admin Section - Only visible to Admin role -->
+            <li visible-to-roles="Admin">
+                <hr class="dropdown-divider">
+            </li>
+            <li visible-to-roles="Admin">
+                <h6 class="dropdown-header">
+                    <i class="fa-solid fa-user-shield"></i> مدیریت سیستم
+                </h6>
+            </li>
+            <li visible-to-roles="Admin">
+                <a class="dropdown-item" asp-area="Admin" asp-controller="Dashboard" asp-action="Index" title="داشبورد" target="_blank">
+                    <i class="fa-solid fa-gear"></i> داشبورد
+                </a>
+            </li>
+            
+            <!-- Logout Section -->
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li>
+                <a asp-area="Identity" asp-controller="Account" asp-action="Logout" title="خروج از حساب کاربری"
+                   class="dropdown-item text-danger">
+                        <i class="fa-solid fa-person-walking-arrow-right"></i> خروج از حساب کاربری
+                </a>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <!-- User is not signed in - Show dropdown menu -->
+    <div class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="guestAccountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid fa-user"></i> حساب کاربری
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="guestAccountDropdown">
+            <li>
+                <a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Register">
+                    <i class="fa-solid fa-user-plus"></i> ایجاد حساب کاربری
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Login">
+                    <i class="fa-solid fa-person-walking-arrow-right fa-flip-horizontal"></i> ورود به حساب کاربری
+                </a>
+            </li>
+        </ul>
+    </div>
+}

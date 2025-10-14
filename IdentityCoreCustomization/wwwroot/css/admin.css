@@ -1,0 +1,79 @@
+﻿/* Admin theme customizations */
+
+:root {
+  --admin-sidebar-width: 260px;
+  --admin-navbar-height: 56px; /* default BS5 navbar height */
+}
+
+html, body { height: 100%; }
+
+.admin-wrapper {
+  min-height: 100vh;
+}
+
+/* Make topbar a bit lighter than sidebar */
+.admin-navbar {
+  height: var(--admin-navbar-height);
+  margin-right: var(--admin-sidebar-width); /* keep navbar clear of sidebar */
+  z-index: 1040; /* above sidebar */
+  background-color: #2b3035 !important; /* lighter than sidebar */
+}
+
+.admin-sidebar {
+  position: fixed;
+  top: 0; /* cover from very top */
+  right: 0; /* RTL: sidebar on the right */
+  bottom: 0; /* cover to bottom */
+  width: var(--admin-sidebar-width);
+  overflow-y: auto;
+  /* content starts at top */
+  z-index: 1030;
+  background-color: #1a1d20; /* darker than topbar */
+}
+
+/* Admin content should fill viewport below navbar and beside sidebar */
+.admin-content {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--admin-navbar-height);
+  margin-right: var(--admin-sidebar-width);
+  min-height: calc(100vh - var(--admin-navbar-height));
+}
+
+/* Grow main to take available space so footer sits at bottom without scrolling */
+.admin-content > main { flex: 1 1 auto; }
+
+/* Keep footer at the bottom of the admin content */
+.admin-content > footer { margin-top: auto; }
+
+@media (max-width: 991.98px) { /* below lg */
+  .admin-sidebar {
+    display: none; /* hide fixed sidebar on small screens to avoid overlap */
+  }
+  .admin-content {
+    margin-right: 0 !important;
+  }
+  .admin-navbar {
+    margin-right: 0; /* navbar can span full width when sidebar hidden */
+  }
+}
+
+.admin-sidebar .nav-link {
+  color: #adb5bd;
+}
+
+.admin-sidebar .nav-link:hover,
+.admin-sidebar .nav-link.active {
+  color: #fff;
+  background-color: rgba(255,255,255,0.1);
+  border-radius: .375rem;
+}
+
+.admin-sidebar .nav-link i {
+  width: 1.25rem;
+  text-align: center;
+  margin-left: .5rem; /* RTL spacing */
+}
+
+/* Adjust collapsed sidebar spacing on small screens */
+#adminSidebar .sidebar-inner { padding: 1rem; }

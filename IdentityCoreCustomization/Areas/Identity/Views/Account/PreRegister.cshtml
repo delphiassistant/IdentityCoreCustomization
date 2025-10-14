@@ -1,0 +1,31 @@
+﻿@model IdentityCoreCustomization.Models.Identity.UserPhoneToken
+
+@{
+    ViewData["Title"] = "تایید شماره موبایل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-6 mx-auto col-sm-12" >
+        <h1>@ViewData["Title"]</h1>
+        <hr/>
+        <form asp-action="PreRegister">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="PhoneNumber"></label>
+                <input asp-for="PhoneNumber" class="form-control"/>
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <button type="submit" value="Create" class="btn btn-primary">
+                    <i class="fa-solid fa-comment-sms"></i> مرحله بعد
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

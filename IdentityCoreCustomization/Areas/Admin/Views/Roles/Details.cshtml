@@ -1,0 +1,150 @@
+﻿@model IdentityCoreCustomization.Models.Identity.ApplicationRole
+
+@{
+    ViewData["Title"] = "جزئیات گروه کاربری";
+}
+
+<h1>جزئیات گروه کاربری</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">
+                    <i class="fa-solid fa-users"></i> @Model.Name
+                </h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">شناسه گروه:</dt>
+                    <dd class="col-sm-9">@Model.Id</dd>
+                    
+                    <dt class="col-sm-3">نام گروه:</dt>
+                    <dd class="col-sm-9">@Model.Name</dd>
+                    
+                    <dt class="col-sm-3">نام نرمال‌شده:</dt>
+                    <dd class="col-sm-9"><code>@Model.NormalizedName</code></dd>
+                    
+                    <dt class="col-sm-3">تعداد کاربران:</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge bg-primary fs-6">
+                            @(Model.UserRoles?.Count ?? 0) کاربر
+                        </span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        
+        @if (Model.UserRoles?.Any() == true)
+        {
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fa-solid fa-user-group"></i> کاربران عضو این گروه
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>شناسه کاربر</th>
+                                    <th>نام کاربری</th>
+                                    <th>ایمیل</th>
+                                    <th>شماره تلفن</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var userRole in Model.UserRoles)
+                                {
+                                    <tr>
+                                        <td>@userRole.User?.Id</td>
+                                        <td>
+                                            <strong>@userRole.User?.UserName</strong>
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(userRole.User?.Email))
+                                            {
+                                                <a href="mailto:@userRole.User.Email">@userRole.User.Email</a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">ایمیل ثبت نشده</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(userRole.User?.PhoneNumber))
+                                            {
+                                                <span>@userRole.User.PhoneNumber</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">شماره ثبت نشده</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mt-4">
+                <i class="fa-solid fa-info-circle"></i>
+                هیچ کاربری به این گروه اختصاص داده نشده است.
+            </div>
+        }
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fa-solid fa-tools"></i> عملیات
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="fa-solid fa-edit"></i> ویرایش گروه
+                    </a>
+                    
+                    @if ((Model.UserRoles?.Count ?? 0) == 0)
+                    {
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                            <i class="fa-solid fa-trash"></i> حذف گروه
+                        </a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-danger" disabled title="نمی‌توان گروهی با کاربر عضو را حذف کرد">
+                            <i class="fa-solid fa-trash"></i> حذف گروه
+                        </button>
+                    }
+                    
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left"></i> بازگشت به فهرست
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fa-solid fa-info-circle"></i> توضیحات
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li><strong>نام نرمال‌شده:</strong> برای جستجوی case-insensitive استفاده می‌شود</li>
+                    <li><strong>شناسه همگام‌سازی:</strong> برای کنترل تغییرات همزمان استفاده می‌شود</li>
+                    <li>گروه‌هایی که کاربر عضو دارند قابل حذف نیستند</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

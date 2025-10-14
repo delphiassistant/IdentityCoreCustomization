@@ -1,0 +1,98 @@
+﻿@model IdentityCoreCustomization.Areas.Admin.Models.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "داشبورد مدیریت";
+}
+
+<div class="container-fluid">
+    <div class="row g-3">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="text-muted">کاربران</div>
+                            <div class="fs-4 fw-bold">@Model.TotalUsers</div>
+                        </div>
+                        <div class="ms-3 text-primary"><i class="fa-solid fa-users fa-2x"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="text-muted">نقش‌ها</div>
+                            <div class="fs-4 fw-bold">@Model.TotalRoles</div>
+                        </div>
+                        <div class="ms-3 text-success"><i class="fa-solid fa-user-tag fa-2x"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="text-muted">کاربران قفل شده</div>
+                            <div class="fs-4 fw-bold">@Model.LockedOutUsers</div>
+                        </div>
+                        <div class="ms-3 text-danger"><i class="fa-solid fa-lock fa-2x"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="text-muted">نشست‌های آنلاین</div>
+                            <div class="fs-4 fw-bold">@Model.OnlineSessions</div>
+                        </div>
+                        <div class="ms-3 text-info"><i class="fa-solid fa-signal fa-2x"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <i class="fa-solid fa-envelope"></i> ایمیل‌ها
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            ایمیل تایید نشده
+                            <span class="badge bg-warning text-dark">@Model.UnconfirmedEmails</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <i class="fa-solid fa-phone"></i> تلفن‌ها
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            تلفن تایید نشده
+                            <span class="badge bg-warning text-dark">@Model.UnconfirmedPhones</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            فعال‌سازی 2FA
+                            <span class="badge bg-info">@Model.TwoFactorEnabledUsers</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

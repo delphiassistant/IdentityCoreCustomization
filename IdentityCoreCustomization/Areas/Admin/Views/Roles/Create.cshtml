@@ -1,0 +1,59 @@
+﻿@model IdentityCoreCustomization.Models.Identity.ApplicationRole
+
+@{
+    ViewData["Title"] = "افزودن گروه کاربر";
+}
+
+<h1>ایجاد گروه کاربری</h1>
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation"></i> @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" placeholder="نام گروه کاربری را وارد کنید" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+                <div class="form-text">نام گروه کاربری باید منحصر به فرد باشد</div>
+            </div>
+            
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> ایجاد گروه کاربری
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> بازگشت به فهرست
+                </a>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fa-solid fa-info-circle"></i> راهنما
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>نام گروه کاربری باید منحصر به فرد باشد</li>
+                    <li>حداکثر طول نام: 256 کاراکتر</li>
+                    <li>از نام‌های توصیفی و قابل فهم استفاده کنید</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

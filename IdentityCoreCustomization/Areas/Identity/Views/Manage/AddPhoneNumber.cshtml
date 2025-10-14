@@ -1,0 +1,22 @@
+﻿@model AddPhoneNumberModel
+@{
+    ViewData["Title"] = "افزودن شماره موبایل";
+}
+<div class="row">
+    <div class="col-md-6" >
+        <h1>@ViewData["Title"]</h1>
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="PhoneNumber"></label>
+                <input asp-for="PhoneNumber" class="form-control"/>
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">ارسال کد امنیتی</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

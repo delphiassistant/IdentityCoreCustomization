@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Confirm email";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (!string.IsNullOrEmpty(ViewBag.StatusMessage))
+{
+    var statusClass = ViewBag.StatusMessage.StartsWith("Error") ? "danger" : "success";
+    <div class="alert alert-@statusClass" role="alert">
+        @ViewBag.StatusMessage
+    </div>
+}

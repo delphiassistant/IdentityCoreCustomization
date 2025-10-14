@@ -1,0 +1,35 @@
+﻿@model IEnumerable<IdentityCoreCustomization.Models.ProductCategory>
+
+@{
+    ViewData["Title"] = "گروه های کالا";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success"><i class="fa-solid fa-plus"></i> افزودن گروه جدید</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductCategoryTitle)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductCategoryTitle)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ProductCategoryID" class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i> ویرایش</a>
+                <a asp-action="Details" asp-route-id="@item.ProductCategoryID" class="btn btn-info"><i class="fa-solid fa-memo-circle-info"></i> جزئیات</a>
+                <a asp-action="Delete" asp-route-id="@item.ProductCategoryID" class="btn btn-danger"><i class="fa-solid fa-trash"></i> حذف</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

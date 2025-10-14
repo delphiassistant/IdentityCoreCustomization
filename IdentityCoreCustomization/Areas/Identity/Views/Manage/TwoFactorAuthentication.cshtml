@@ -1,0 +1,42 @@
+﻿@model TwoFactorAuthenticationModel
+@{
+    ViewData["Title"] = "احراز هویت دو مرحله ای";
+    //ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<h4>@ViewData["Title"]</h4>
+@if (!Model.Is2faEnabled)
+{
+    if (Model.CanEnable2fa)
+    {
+        <div class="alert alert-warning">
+            <strong>احراز هویت دو مرحله ای برای ورود به حساب کاربری شما در این سایت فعال نیست.</strong>
+            
+            <p>برای فعال کردن آن <a asp-action="SetTwoFactorAuthentication" asp-route-enabled="true">اینجا</a> را کلیک کنید.</p>
+        </div>
+    }
+    else 
+    {
+        <div class="alert alert-danger">
+            <strong>احراز هویت دو مرحله ای برای ورود به حساب کاربری شما در این سایت فعال نیست.</strong>
+            <p>قبل از اینکه بتوانید این امکان را فعال کنید میبایست شماره موبایل خود را در پرونده کاربری اضافه کنید.
+                برای اضافه کردن شماره موبایل به حساب کاربری
+                 <a asp-action="AddPhoneNumber">اینجا</a> را کلیک کنید.
+            </p>
+        </div>
+    }
+}
+else
+{
+    <div class="alert alert-success">
+        <strong>احراز هویت دو مرحله ای برای ورود به حساب کاربری شما در این سایت فعال است.</strong>
+            
+        <p>برای غیرفعال کردن آن <a asp-action="SetTwoFactorAuthentication" asp-route-enabled="false">اینجا</a> را کلیک کنید.</p>
+    </div>
+}
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

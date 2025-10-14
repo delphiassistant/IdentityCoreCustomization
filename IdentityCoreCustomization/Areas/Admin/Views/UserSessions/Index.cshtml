@@ -1,0 +1,405 @@
+﻿@model List<IdentityCoreCustomization.Classes.Identity.OnlineUserSession>
+@{
+    ViewData["Title"] = "کاربران آنلاین";
+}
+
+@section Styles {
+    <style>
+        .online-status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+        .status-online { background-color: #28a745; }
+        .status-inactive { background-color: #ffc107; }
+        .status-offline { background-color: #dc3545; }
+        
+        .session-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #007bff;
+        }
+        .session-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .refresh-indicator {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .refresh-indicator.show {
+            opacity: 1;
+        }
+        
+        .auto-refresh-controls {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fa-solid fa-users"></i> @ViewData["Title"]</h1>
+        <div class="d-flex align-items-center">
+            <span class="badge bg-success fs-6 me-2">
+                <i class="fa-solid fa-circle"></i> آنلاین: @ViewBag.OnlineUserCount
+            </span>
+            <span class="badge bg-info fs-6 me-2">
+                <i class="fa-solid fa-clock"></i> نشست فعال: @ViewBag.ActiveSessionCount
+            </span>
+            <button class="btn btn-outline-primary btn-sm" onclick="refreshOnlineUsers()">
+                <i class="fa-solid fa-refresh" id="refreshIcon"></i> بروزرسانی
+            </button>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fa-solid fa-circle-exclamation"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show">
+            <i class="fa-solid fa-exclamation-triangle"></i> @TempData["WarningMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Auto-refresh Controls -->
+    <div class="auto-refresh-controls">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="autoRefreshToggle" checked>
+                    <label class="form-check-label" for="autoRefreshToggle">
+                        <i class="fa-solid fa-arrows-rotate"></i> بروزرسانی خودکار (هر 30 ثانیه)
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-6 text-end">
+                <small class="text-muted">
+                    آخرین بروزرسانی: <span id="lastRefresh">@ViewBag.RefreshTime</span>
+                    <span class="refresh-indicator ms-2" id="refreshIndicator">
+                        <i class="fa-solid fa-spinner fa-spin text-primary"></i>
+                    </span>
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Actions -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+                <button class="btn btn-outline-secondary" onclick="refreshOnlineUsers()">
+                    <i class="fa-solid fa-arrows-rotate"></i> بروزرسانی فهرست
+                </button>
+                <form id="cleanupForm" method="post" asp-action="CleanupExpiredSessions" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="button" id="cleanupBtn" class="btn btn-outline-warning">
+                        <i class="fa-solid fa-broom"></i> پاک‌سازی نشست‌های منقضی
+                    </button>
+                </form>
+                <form id="clearAllForm" method="post" asp-action="ClearAllSessions" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="button" id="clearAllBtn" class="btn btn-danger">
+                        <i class="fa-solid fa-power-off"></i> خروج همه کاربران
+                    </button>
+                </form>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            <i class="fa-solid fa-info-circle fa-2x mb-3"></i>
+            <h4>هیچ کاربری آنلاین نیست</h4>
+            <p class="mb-0">در حال حاضر هیچ کاربر فعالی در سیستم موجود نیست.</p>
+        </div>
+    }
+    else
+    {
+        <!-- Online Users List -->
+        <div class="row" id="onlineUsersList">
+            @foreach (var user in Model)
+            {
+                <div class="col-lg-6 col-xl-4 mb-4">
+                    <div class="card session-card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <span class="online-status @(user.IsActive ? "status-online" : user.IsExpired ? "status-offline" : "status-inactive")"></span>
+                                <strong>@user.UserName</strong>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <form method="post" asp-controller="UserSessions" asp-action="ForceLogoutUser">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="userId" value="@user.UserId" />
+                                            <input type="hidden" name="userName" value="@user.UserName" />
+                                            <button type="button" class="dropdown-item text-danger force-logout-btn" 
+                                                    data-username="@user.UserName">
+                                                <i class="fa-solid fa-sign-out-alt"></i> خروج اجباری
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="javascript:void(0)" onclick="showUserDetails('@user.UserId', '@user.UserName')">
+                                            <i class="fa-solid fa-info-circle"></i> جزئیات نشست
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <small class="text-muted d-block">
+                                        <i class="fa-solid fa-envelope"></i> ایمیل:
+                                    </small>
+                                    <span class="fw-normal">@(user.Email ?? "ثبت نشده")</span>
+                                </div>
+                                <div class="col-12">
+                                    <small class="text-muted d-block">
+                                        <i class="fa-solid fa-phone"></i> تلفن:
+                                    </small>
+                                    <span class="fw-normal">@(user.PhoneNumber ?? "ثبت نشده")</span>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">
+                                        <i class="fa-solid fa-clock"></i> مدت نشست:
+                                    </small>
+                                    <span class="fw-normal">@user.SessionDuration.ToString(@"hh\:mm\:ss")</span>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">
+                                        <i class="fa-solid fa-history"></i> آخرین فعالیت:
+                                    </small>
+                                    <span class="fw-normal">@user.TimeSinceLastActivity.ToString(@"hh\:mm\:ss") پیش</span>
+                                </div>
+                                <div class="col-12">
+                                    <small class="text-muted d-block">
+                                        <i class="fa-solid fa-calendar-alt"></i> زمان ورود:
+                                    </small>
+                                    <span class="fw-normal">@user.LoginTime.ToString("yyyy/MM/dd HH:mm:ss")</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge @(user.IsActive ? "bg-success" : user.IsExpired ? "bg-danger" : "bg-warning")">
+                                    @(user.IsActive ? "فعال" : user.IsExpired ? "منقضی" : "غیرفعال")
+                                </span>
+                                <small class="text-muted">شناسه نشست: @user.TicketId</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- User Details Modal -->
+<div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userDetailsModalLabel">
+                    <i class="fa-solid fa-info-circle"></i> جزئیات نشست کاربر
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="userDetailsContent">
+                <div class="text-center">
+                    <i class="fa-solid fa-spinner fa-spin fa-2x text-primary"></i>
+                    <p class="mt-2">در حال بارگذاری...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Force Logout Confirmation Modal (Bootstrap) -->
+<div class="modal fade" id="forceLogoutConfirmModal" tabindex="-1" aria-labelledby="forceLogoutConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="forceLogoutConfirmModalLabel">
+                    <i class="fa-solid fa-sign-out-alt"></i> تأیید خروج اجباری
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">آیا می‌خواهید کاربر <strong id="forceLogoutUserName"></strong> را از سیستم خارج کنید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                <button type="button" class="btn btn-warning" id="confirmForceLogoutBtn">
+                    <i class="fa-solid fa-check"></i> تأیید خروج
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cleanup Confirmation Modal -->
+<div class="modal fade" id="cleanupConfirmModal" tabindex="-1" aria-labelledby="cleanupConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="cleanupConfirmModalLabel">
+                    <i class="fa-solid fa-broom"></i> تأیید پاک‌سازی نشست‌های منقضی
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">آیا می‌خواهید نشست‌های منقضی شده را پاک کنید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                <button type="button" class="btn btn-warning" id="confirmCleanupBtn">
+                    <i class="fa-solid fa-check"></i> تأیید
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Clear All Sessions Confirmation Modal -->
+<div class="modal fade" id="clearAllConfirmModal" tabindex="-1" aria-labelledby="clearAllConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white" id="clearAllConfirmModalLabel">
+                    <i class="fa-solid fa-power-off"></i> هشدار: خروج همه کاربران
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">این عمل همه کاربران را از سیستم خارج می‌کند.</p>
+                <p class="mb-0">آیا مطمئن هستید که می‌خواهید ادامه دهید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                <button type="button" class="btn btn-danger" id="confirmClearAllBtn">
+                    <i class="fa-solid fa-check"></i> تأیید خروج همه
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let autoRefreshInterval;
+        let isRefreshing = false;
+        let _forceLogoutCtx = null;
+
+        $(document).ready(function() {
+            toggleAutoRefresh();
+            $('#autoRefreshToggle').change(function() { toggleAutoRefresh(); });
+            setTimeout(function() { $('.alert-dismissible').alert('close'); }, 5000);
+
+            $.ajaxSetup({ headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+
+            // Force logout confirm flow
+            $(document).on('click', '.force-logout-btn', function (e) {
+                e.preventDefault();
+                const $btn = $(this);
+                const $form = $btn.closest('form');
+                const userName = $btn.data('username') || $form.find('input[name="userName"]').val() || '';
+                _forceLogoutCtx = { $btn, $form, originalHtml: $btn.html() };
+                $('#forceLogoutUserName').text(userName);
+                $('#forceLogoutConfirmModal').modal('show');
+            });
+
+            $(document).on('click', '#confirmForceLogoutBtn', function () {
+                if (!_forceLogoutCtx) return;
+                const { $btn, $form, originalHtml } = _forceLogoutCtx;
+                $btn.html('<i class="fa-solid fa-spinner fa-spin"></i> در حال خروج...').prop('disabled', true);
+                $.ajax({ url: $form.attr('action') || '@Url.Action("ForceLogoutUser","UserSessions")', method: 'POST', data: $form.serialize() })
+                    .done(function () { window.location.reload(); })
+                    .fail(function () { alert('خطا در خروج اجباری کاربر'); })
+                    .always(function () { $btn.prop('disabled', false).html(originalHtml); _forceLogoutCtx = null; $('#forceLogoutConfirmModal').modal('hide'); });
+            });
+
+            // Cleanup confirm flow: submit original form after confirm
+            $('#cleanupBtn').on('click', function () { $('#cleanupConfirmModal').modal('show'); });
+            $('#confirmCleanupBtn').on('click', function () { $('#cleanupForm')[0].submit(); });
+
+            // Clear all confirm flow: submit original form after confirm
+            $('#clearAllBtn').on('click', function () { $('#clearAllConfirmModal').modal('show'); });
+            $('#confirmClearAllBtn').on('click', function () { $('#clearAllForm')[0].submit(); });
+        });
+
+        function toggleAutoRefresh() {
+            const isEnabled = $('#autoRefreshToggle').is(':checked');
+            if (isEnabled) { autoRefreshInterval = setInterval(refreshOnlineUsers, 30000); }
+            else if (autoRefreshInterval) { clearInterval(autoRefreshInterval); }
+        }
+
+        function refreshOnlineUsers() {
+            if (isRefreshing) return;
+            isRefreshing = true;
+            $('#refreshIcon').addClass('fa-spin');
+            $('#refreshIndicator').addClass('show');
+
+            $.get('@Url.Action("GetOnlineUsers")')
+                .done(function(data) { if (data.success) { updateUsersList(data); $('#lastRefresh').text(new Date().toLocaleString('fa-IR')); } })
+                .always(function() { isRefreshing = false; $('#refreshIcon').removeClass('fa-spin'); setTimeout(function() { $('#refreshIndicator').removeClass('show'); }, 500); });
+        }
+
+        function updateUsersList(data) {
+            $('.badge:contains("آنلاین")').html('<i class="fa-solid fa-circle"></i> آنلاین: ' + data.onlineCount);
+            $('.badge:contains("نشست فعال")').html('<i class="fa-solid fa-clock"></i> نشست فعال: ' + data.activeSessionCount);
+        }
+
+        function showUserDetails(userId, userName) {
+            $('#userDetailsModal').modal('show');
+            $('#userDetailsContent').html('<div class="text-center"><i class="fa-solid fa-spinner fa-spin fa-2x text-primary"></i><p class="mt-2">در حال بارگذاری...</p></div>');
+            $.get('@Url.Action("GetUserSessions")', { userId: userId })
+                .done(function(data) {
+                    if (data.success) {
+                        let content = '<h6>جزئیات نشست‌های کاربر: ' + userName + '</h6>';
+                        content += '<div class="table-responsive"><table class="table table-striped"><thead><tr><th>شناسه نشست</th><th>زمان ورود</th><th>آخرین فعالیت</th><th>مدت نشست</th><th>وضعیت</th></tr></thead><tbody>';
+                        data.sessions.forEach(function(session) {
+                            const statusBadge = session.isActive ? '<span class="badge bg-success">فعال</span>' : session.isExpired ? '<span class="badge bg-danger">منقضی</span>' : '<span class="badge bg-warning">غیرفعال</span>';
+                            content += `<tr><td>${session.ticketId}</td><td>${session.loginTime}</td><td>${session.lastActivity}</td><td>${session.sessionDuration}</td><td>${statusBadge}</td></tr>`;
+                        });
+                        content += '</tbody></table></div>';
+                        if (data.sessions.length === 0) { content += '<div class="alert alert-info">هیچ نشست فعالی یافت نشد.</div>'; }
+                        $('#userDetailsContent').html(content);
+                    } else {
+                        $('#userDetailsContent').html('<div class="alert alert-danger">' + data.error + '</div>');
+                    }
+                })
+                .fail(function() { $('#userDetailsContent').html('<div class="alert alert-danger">خطا در بارگذاری اطلاعات</div>'); });
+        }
+
+        $(window).on('beforeunload', function() { if (autoRefreshInterval) { clearInterval(autoRefreshInterval); } });
+    </script>
+}
+

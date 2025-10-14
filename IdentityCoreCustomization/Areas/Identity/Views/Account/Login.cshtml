@@ -1,0 +1,57 @@
+﻿@model LoginModel
+
+@{
+    ViewData["Title"] = "ورود به حساب کاربری";
+}
+
+<div class="row">
+    <div class="col-md-6 mx-auto col-sm-12">
+        <h1><i class="fa-solid fa-person-walking-arrow-right fa-flip-horizontal"></i> @ViewData["Title"]</h1>
+        <section>
+            <form id="account" method="post">
+                <hr />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div class="mb-3">
+                    <label asp-for="Username"></label>
+                    <input asp-for="Username" class="form-control" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Password"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="mb-2 form-check">
+                    <label asp-for="RememberMe" class="form-check-label">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        @Html.DisplayNameFor(m => m.RememberMe)
+                    </label>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right-to-arc fa-flip-horizontal"></i> ورود</button>
+                </div>
+                <div class="mb-3">
+                    <p>
+                        <a id="login-with-sms" asp-action="LoginWithSms" asp-route-returnUrl="@Model.ReturnUrl"><i class="fa-solid fa-message-sms"></i> ورود از طریق پیامک</a>
+                    </p>
+                    <p>
+                        <a id="forgot-password" asp-action="ForgotPassword"><i class="fa-solid fa-person-circle-question"></i> کلمه عبورتان را فراموش کرده اید؟</a>
+                    </p>
+                    <p>
+                        <a asp-action="Register"><i class="fa-solid fa-circle-user"></i> ایجاد حساب کاربری جدید</a>
+                    </p>
+                    <p>
+                        <a id="resend-confirmation" asp-action="ResendEmailConfirmation"><i class="fa-solid fa-circle-envelope"></i> ارسال مجدد ایمیل فعال سازی</a>
+                    </p>
+                </div>
+            </form>
+        </section>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,27 @@
+﻿@model IdentityCoreCustomization.Models.ProductCategory
+
+@{
+    ViewData["Title"] = "حذف گروه کالا";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h4>آیا از حذف این مورد اطمینان دارید؟</h4>
+<div>
+    
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ProductCategoryTitle)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ProductCategoryTitle)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ProductCategoryID" />
+        <button type="submit" value="Delete" class="btn btn-danger"><i class="fa-solid fa-trash"></i> حذف</button>
+        <a asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-arrow-turn-down-left"></i> بازگشت به فهرست</a>
+    </form>
+</div>
