@@ -6,6 +6,50 @@ This document tracks all changes, improvements, and fixes made to the IdentityCo
 
 ---
 
+## 2024-12-02 15:30 - Version 1.6
+
+### Fixed
+
+#### NuGet Package Dependency Warnings (NU1608)
+- **Location**: `IdentityCoreCustomization.csproj`
+- **Issue**: Multiple NU1608 warnings about Microsoft.CodeAnalysis package version conflicts
+  - `Microsoft.VisualStudio.Web.CodeGeneration.Design 9.0.0` depends on `Microsoft.CodeAnalysis.*` version 4.8.0
+  - .NET 10 requires `Microsoft.CodeAnalysis.*` version 4.14.0
+  - NuGet resolver upgraded to 4.14.0, violating scaffolding tool's exact version constraint
+- **Fix**: Added explicit package references to override transitive dependencies:
+  ```xml
+  <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.14.0" />
+  <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+  <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
+  <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.14.0" />
+  ```
+- **Impact**: 
+  - Build now completes with zero warnings
+  - Scaffolding tools remain functional
+  - Project compatible with .NET 10 CodeAnalysis requirements
+  - No breaking changes to existing functionality
+
+### Technical Details
+
+#### Packages Affected
+- `Microsoft.CodeAnalysis.Common` - Explicitly set to 4.14.0
+- `Microsoft.CodeAnalysis.CSharp` - Explicitly set to 4.14.0  
+- `Microsoft.CodeAnalysis.CSharp.Workspaces` - Explicitly set to 4.14.0
+- `Microsoft.CodeAnalysis.Workspaces.Common` - Explicitly set to 4.14.0
+
+#### Why This Works
+- Explicit package references take precedence over transitive dependencies
+- NuGet resolver uses the highest compatible version specified
+- Scaffolding tools (9.0.0) work with CodeAnalysis 4.14.0 despite requesting 4.8.0
+- No version 10.0.0 stable of scaffolding tools exists yet (only RC versions)
+
+#### Alternative Approaches Considered
+1. ❌ **Upgrade to scaffolding 10.0.0** - Not available (only RC versions)
+2. ❌ **Downgrade .NET 10 to .NET 8** - Loses .NET 10 features
+3. ✅ **Explicit version overrides** - Clean solution, no trade-offs
+
+---
+
 ## 2024-12-02 12:53 - Version 1.5
 
 ### Added
@@ -112,14 +156,14 @@ This document tracks all changes, improvements, and fixes made to the IdentityCo
 ## Project Information
 
 **Project**: IdentityCoreCustomization  
-**Version**: 1.5  
-**Target Framework**: .NET 8  
+**Version**: 1.6  
+**Target Framework**: .NET 10  
 **Project Type**: ASP.NET Core MVC with Identity  
-**Language**: C# 12.0  
+**Language**: C# 13.0  
 
 ### Key Technologies
 - ASP.NET Core Identity
-- Entity Framework Core
+- Entity Framework Core 10.0
 - Razor Views
 - Bootstrap 5
 - Font Awesome icons
@@ -128,20 +172,24 @@ This document tracks all changes, improvements, and fixes made to the IdentityCo
 - ParsGreen (SMS)
 - QRCoder (2FA QR codes)
 - CheckBoxList.Core (UI component)
-- **PwnedPasswords.Validator** (password breach detection) ✨ **NEW**
+- **PwnedPasswords.Validator** (password breach detection)
 
 ### NuGet Packages
 ```xml
 <PackageReference Include="CheckBoxList.Core" Version="1.1.0" />
-<PackageReference Include="Hangfire.AspNetCore" Version="1.8.21" />
-<PackageReference Include="Hangfire.SqlServer" Version="1.8.21" />
+<PackageReference Include="Hangfire.AspNetCore" Version="1.8.22" />
+<PackageReference Include="Hangfire.SqlServer" Version="1.8.22" />
 <PackageReference Include="MailKit" Version="4.14.1" />
-<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.20" />
-<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.20" />
-<PackageReference Include="PARSGREEN.CORE" Version="3.7.0" />
+<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0" />
+<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.14.0" />
+<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
+<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.14.0" />
+<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
+<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
 <PackageReference Include="PwnedPasswords.Validator" Version="1.2.0" />
-<PackageReference Include="QRCoder" Version="1.6.0" />
-<PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
+<PackageReference Include="QRCoder" Version="1.7.0" />
+<PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
 ```
 
 ### Database
@@ -182,24 +230,25 @@ This version history follows [Semantic Versioning](https://semver.org/) principl
 ### Immediate (This Sprint)
 1. ✅ **COMPLETED**: Fix Admin Create/Edit user forms
 2. ✅ **COMPLETED**: Implement password breach detection (Have I Been Pwned)
-3. Implement rate limiting on sensitive endpoints
-4. Add CAPTCHA to public forms
-5. Review and enhance error logging (include HIBP events)
+3. ✅ **COMPLETED**: Resolve NuGet dependency warnings (NU1608)
+4. Implement rate limiting on sensitive endpoints
+5. Add CAPTCHA to public forms
+6. Review and enhance error logging (include HIBP events)
 
 ### Short Term (Next 2-4 Weeks)
-6. Create unit test project and basic test coverage (including HIBP tests)
-7. Implement audit logging for admin actions and security events
-8. Add user-facing session management page
-9. Configure and test email confirmation workflow
-10. Add logging for pwned password detections
+7. Create unit test project and basic test coverage (including HIBP tests)
+8. Implement audit logging for admin actions and security events
+9. Add user-facing session management page
+10. Configure and test email confirmation workflow
+11. Add logging for pwned password detections
 
 ### Long Term (Next Quarter)
-11. Comprehensive integration testing
-12. Performance testing and optimization
-13. Complete documentation (deployment, troubleshooting)
-14. Consider API implementation if needed
-15. Implement device/browser tracking
-16. Add geographic login tracking (IP-based)
+12. Comprehensive integration testing
+13. Performance testing and optimization
+14. Complete documentation (deployment, troubleshooting)
+15. Consider API implementation if needed
+16. Implement device/browser tracking
+17. Add geographic login tracking (IP-based)
 
 ### Maintenance
 - Regular dependency updates (including PwnedPasswords.Validator)
@@ -208,3 +257,4 @@ This version history follows [Semantic Versioning](https://semver.org/) principl
 - Log retention policy
 - Session cleanup monitoring
 - Monitor HIBP API availability and rate limits
+- **Monitor for scaffolding tools 10.0.0 stable release**

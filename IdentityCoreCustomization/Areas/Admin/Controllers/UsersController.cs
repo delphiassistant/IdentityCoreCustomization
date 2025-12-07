@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CheckBoxList.Core.Models;
+using CheckBoxList.Core.BS5.Models;
 using IdentityCoreCustomization.Areas.Admin.Models;
 using IdentityCoreCustomization.Classes.Extensions;
 using IdentityCoreCustomization.Data;

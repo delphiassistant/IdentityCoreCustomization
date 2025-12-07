@@ -235,7 +235,7 @@ namespace IdentityCoreCustomization
                 await _db.SaveChangesAsync(cancellationToken);
                 return IdentityResult.Success;
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 return IdentityResult.Failed(new IdentityError 
                 { 
