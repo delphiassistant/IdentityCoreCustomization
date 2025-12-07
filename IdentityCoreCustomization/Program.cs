@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PwnedPasswords.Validator;
 
 using System;
 using System.Globalization;
@@ -41,6 +42,9 @@ services.AddDbContext<ApplicationDbContext>(options =>
 
 services.AddDatabaseDeveloperPageExceptionFilter();
 
+// Register Pwned Passwords HTTP Client (uses k-anonymity for privacy)
+services.AddPwnedPasswordHttpClient(minimumFrequencyToConsiderPwned: 1);
+
 services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
@@ -48,8 +52,11 @@ services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
-    .AddErrorDescriber<PersianIdentityErrorDescriber>();
-
+    .AddErrorDescriber<PersianIdentityErrorDescriber>()
+    .AddPwnedPasswordValidator<ApplicationUser>(options =>
+    {
+        options.ErrorMessage = "هشدار: این رمز عبور در لیست رمزهای نشت‌شده دیده شده است. لطفاً یک رمز عبور قوی‌تر و منحصربه‌فرد انتخاب کنید.";
+    });
 //var memoryCacheTicketStore = new MemoryCacheTicketStore();
 //services.AddSingleton(memoryCacheTicketStore);
 

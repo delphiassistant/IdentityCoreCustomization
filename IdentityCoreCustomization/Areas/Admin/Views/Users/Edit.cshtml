@@ -17,6 +17,41 @@
                 <span asp-validation-for="Username" class="text-danger"></span>
             </div>
             <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control ltr" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <div class="form-check">
+                    <input asp-for="EmailConfirmed" class="form-check-input" type="checkbox" />
+                    <label asp-for="EmailConfirmed" class="form-check-label"></label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="PhoneNumber" class="form-label"></label>
+                <input asp-for="PhoneNumber" class="form-control ltr" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+           
+            <div class="mb-3">
+                <div class="form-check">
+                    <input asp-for="PhoneNumberConfirmed" class="form-check-input" type="checkbox" />
+                    <label asp-for="PhoneNumberConfirmed" class="form-check-label"></label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="form-check">
+                    <input asp-for="LockoutEnabled" class="form-check-input" type="checkbox" />
+                    <label asp-for="LockoutEnabled" class="form-check-label"></label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="form-check">
+                    <input asp-for="TwoFactorEnabled" class="form-check-input" type="checkbox" />
+                    <label asp-for="TwoFactorEnabled" class="form-check-label"></label>
+                </div>
+            </div>
+            <div class="mb-3">
                 <label class="form-label">گروه های عضو</label>
                 <check-box-list name="selectedRoles" items="ViewBag.RolesList" template="Bootstrap3Basic" class="form-control"></check-box-list>
             </div>

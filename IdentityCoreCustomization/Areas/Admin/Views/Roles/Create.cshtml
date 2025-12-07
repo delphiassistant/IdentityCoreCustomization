@@ -4,7 +4,7 @@
     ViewData["Title"] = "افزودن گروه کاربر";
 }
 
-<h1>ایجاد گروه کاربری</h1>
+<h1>ایجاد گروه کاربری (نقش)</h1>
 
 <h4>@ViewData["Title"]</h4>
 <hr />
@@ -21,16 +21,37 @@
         <form asp-action="Create" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             
+            <div class="alert alert-info">
+                <h6 class="alert-heading"><i class="fa-solid fa-info-circle"></i> مهم: قوانین نام‌گذاری نقش</h6>
+                <ul class="mb-0">
+                    <li><strong>فقط حروف انگلیسی</strong> (a-z, A-Z)</li>
+                    <li><strong>اعداد مجاز</strong> (0-9)</li>
+                    <li><strong>Underscore (_)</strong> مجاز است</li>
+                    <li><strong>بدون فاصله</strong> و کاراکترهای خاص</li>
+                    <li><strong>باید با حرف شروع شود</strong></li>
+                </ul>
+            </div>
+
+            <div class="alert alert-warning">
+                <small>
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    <strong>توجه:</strong> نام نقش در سیستم استفاده می‌شود و بعد از ایجاد نباید تغییر کند.
+                    از نام‌های استاندارد مانند <code>Admin</code>, <code>User</code>, <code>Editor</code> استفاده کنید.
+                </small>
+            </div>
+            
             <div class="mb-3">
                 <label asp-for="Name" class="form-label"></label>
-                <input asp-for="Name" class="form-control" placeholder="نام گروه کاربری را وارد کنید" />
+                <input asp-for="Name" class="form-control" placeholder="Admin" dir="ltr" style="text-align: left;" />
                 <span asp-validation-for="Name" class="text-danger"></span>
-                <div class="form-text">نام گروه کاربری باید منحصر به فرد باشد</div>
+                <div class="form-text">
+                    مثال‌های صحیح: <code>Admin</code>, <code>SuperAdmin</code>, <code>ContentEditor</code>, <code>User_Manager</code>
+                </div>
             </div>
             
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-plus"></i> ایجاد گروه کاربری
+                    <i class="fa-solid fa-plus"></i> ایجاد نقش
                 </button>
                 <a asp-action="Index" class="btn btn-secondary">
                     <i class="fa-solid fa-arrow-left"></i> بازگشت به فهرست
@@ -39,15 +60,41 @@
         </form>
     </div>
     <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <i class="fa-solid fa-info-circle"></i> راهنما
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <i class="fa-solid fa-lightbulb"></i> راهنمای نام‌گذاری
             </div>
             <div class="card-body">
+                <h6>نام‌های پیشنهادی استاندارد:</h6>
+                <ul class="mb-3">
+                    <li><code>Admin</code> - مدیر کل سیستم</li>
+                    <li><code>User</code> - کاربر عادی</li>
+                    <li><code>Editor</code> - ویرایشگر محتوا</li>
+                    <li><code>Moderator</code> - مدیر بخش</li>
+                    <li><code>Guest</code> - مهمان</li>
+                </ul>
+                
+                <h6>قالب‌های مجاز:</h6>
                 <ul class="mb-0">
-                    <li>نام گروه کاربری باید منحصر به فرد باشد</li>
-                    <li>حداکثر طول نام: 256 کاراکتر</li>
-                    <li>از نام‌های توصیفی و قابل فهم استفاده کنید</li>
+                    <li><strong>PascalCase:</strong> <code>ContentManager</code></li>
+                    <li><strong>camelCase:</strong> <code>contentManager</code></li>
+                    <li><strong>snake_case:</strong> <code>content_manager</code></li>
+                    <li><strong>با عدد:</strong> <code>Level1Admin</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <i class="fa-solid fa-ban"></i> ممنوع
+            </div>
+            <div class="card-body">
+                <ul class="text-danger mb-0">
+                    <li><del>مدیر</del> - حروف فارسی ❌</li>
+                    <li><del>Admin User</del> - فاصله ❌</li>
+                    <li><del>Admin@123</del> - کاراکتر خاص ❌</li>
+                    <li><del>123Admin</del> - شروع با عدد ❌</li>
+                    <li><del>_Admin</del> - شروع با underscore ❌</li>
                 </ul>
             </div>
         </div>
@@ -56,4 +103,21 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Real-time validation feedback
+        document.getElementById('Name').addEventListener('input', function(e) {
+            const value = e.target.value;
+            const pattern = /^[a-zA-Z][a-zA-Z0-9_]*$/;
+            
+            if (value && !pattern.test(value)) {
+                e.target.classList.add('is-invalid');
+            } else if (value) {
+                e.target.classList.remove('is-invalid');
+                e.target.classList.add('is-valid');
+            } else {
+                e.target.classList.remove('is-invalid', 'is-valid');
+            }
+        });
+    </script>
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using IdentityCoreCustomization.Data;
 using IdentityCoreCustomization.Models.Identity;
@@ -13,7 +14,7 @@ using Microsoft.Extensions.Logging;
 namespace IdentityCoreCustomization.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")] // Secure the entire controller
+    [Authorize(Roles = "Admin")]
     public class RolesController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
@@ -59,6 +60,17 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ApplicationRole model)
         {
+            // Additional server-side validation for English-only role names
+            if (!string.IsNullOrWhiteSpace(model.Name))
+            {
+                var validationError = ValidateRoleName(model.Name);
+                if (validationError != null)
+                {
+                    ModelState.AddModelError("Name", validationError);
+                    return View(model);
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -67,15 +79,14 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     var existingRole = await _roleManager.FindByNameAsync(model.Name);
                     if (existingRole != null)
                     {
-                        ModelState.AddModelError("Name", "این گروه کاربری قبلاً ثبت شده است.");
+                        ModelState.AddModelError("Name", "این نقش قبلاً ثبت شده است.");
                         return View(model);
                     }
 
                     // Create new role - RoleManager will handle NormalizedName automatically
                     var newRole = new ApplicationRole
                     {
-                        Name = model.Name
-                        // NormalizedName will be set automatically by RoleManager
+                        Name = model.Name.Trim()
                     };
 
                     var result = await _roleManager.CreateAsync(newRole);
@@ -84,7 +95,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     {
                         _logger.LogInformation("Role '{RoleName}' created successfully by user {UserId}", 
                             newRole.Name, User.Identity.Name);
-                        TempData["SuccessMessage"] = $"گروه کاربری '{newRole.Name}' با موفقیت ایجاد شد.";
+                        TempData["SuccessMessage"] = $"نقش '{newRole.Name}' با موفقیت ایجاد شد.";
                         return RedirectToAction(nameof(Index));
                     }
                     
@@ -97,7 +108,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error creating role '{RoleName}'", model.Name);
-                    ModelState.AddModelError(string.Empty, "خطا در ایجاد گروه کاربری. لطفاً مجدداً تلاش کنید.");
+                    ModelState.AddModelError(string.Empty, "خطا در ایجاد نقش. لطفاً مجدداً تلاش کنید.");
                 }
             }
             
@@ -109,7 +120,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             if (id == null)
             {
                 _logger.LogWarning("Edit role called with null id");
-                return NotFound("شناسه گروه کاربری مشخص نشده است.");
+                return NotFound("شناسه نقش مشخص نشده است.");
             }
 
             try
@@ -121,7 +132,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                 if (role == null)
                 {
                     _logger.LogWarning("Role with ID {RoleId} not found", id);
-                    return NotFound("گروه کاربری مورد نظر یافت نشد.");
+                    return NotFound("نقش مورد نظر یافت نشد.");
                 }
 
                 return View(role);
@@ -129,7 +140,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving role {RoleId} for edit", id);
-                TempData["ErrorMessage"] = "خطا در بارگذاری اطلاعات گروه کاربری.";
+                TempData["ErrorMessage"] = "خطا در بارگذاری اطلاعات نقش.";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -141,7 +152,22 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             if (id != role.Id)
             {
                 _logger.LogWarning("Role ID mismatch: URL ID {UrlId}, Model ID {ModelId}", id, role.Id);
-                return NotFound("عدم تطابق شناسه گروه کاربری.");
+                return NotFound("عدم تطابق شناسه نقش.");
+            }
+
+            // Additional server-side validation for English-only role names
+            if (!string.IsNullOrWhiteSpace(role.Name))
+            {
+                var validationError = ValidateRoleName(role.Name);
+                if (validationError != null)
+                {
+                    ModelState.AddModelError("Name", validationError);
+                    // Reload the role with UserRoles for the view
+                    role = await _roleManager.Roles
+                        .Include(r => r.UserRoles)
+                        .FirstOrDefaultAsync(r => r.Id == id);
+                    return View(role);
+                }
             }
 
             if (ModelState.IsValid)
@@ -152,7 +178,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     if (existingRole == null)
                     {
                         _logger.LogWarning("Role with ID {RoleId} not found for edit", id);
-                        return NotFound("گروه کاربری مورد نظر یافت نشد.");
+                        return NotFound("نقش مورد نظر یافت نشد.");
                     }
 
                     // Check if new name conflicts with existing roles (excluding current role)
@@ -162,16 +188,23 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     
                     if (conflictingRole != null)
                     {
-                        ModelState.AddModelError("Name", "این نام گروه کاربری قبلاً استفاده شده است.");
-                        // Reload the role with UserRoles for the view
+                        ModelState.AddModelError("Name", "این نام نقش قبلاً استفاده شده است.");
                         role = await _roleManager.Roles
                             .Include(r => r.UserRoles)
                             .FirstOrDefaultAsync(r => r.Id == id);
                         return View(role);
                     }
 
-                    // Update the role name - RoleManager will handle NormalizedName automatically
-                    existingRole.Name = role.Name;
+                    // Log warning about role name change
+                    if (existingRole.Name != role.Name.Trim())
+                    {
+                        _logger.LogWarning(
+                            "Role name being changed from '{OldName}' to '{NewName}' by user {UserId}. This may affect access control.",
+                            existingRole.Name, role.Name.Trim(), User.Identity.Name);
+                    }
+
+                    // Update the role name
+                    existingRole.Name = role.Name.Trim();
 
                     var result = await _roleManager.UpdateAsync(existingRole);
                     
@@ -179,7 +212,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     {
                         _logger.LogInformation("Role '{RoleName}' (ID: {RoleId}) updated successfully by user {UserId}", 
                             role.Name, id, User.Identity.Name);
-                        TempData["SuccessMessage"] = $"گروه کاربری '{role.Name}' با موفقیت به‌روزرسانی شد.";
+                        TempData["SuccessMessage"] = $"نقش '{role.Name}' با موفقیت به‌روزرسانی شد.";
                         return RedirectToAction(nameof(Index));
                     }
 
@@ -192,12 +225,12 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                 catch (DbUpdateConcurrencyException ex)
                 {
                     _logger.LogError(ex, "Concurrency conflict when updating role {RoleId}", id);
-                    ModelState.AddModelError(string.Empty, "این گروه کاربری توسط کاربر دیگری تغییر یافته است. لطفاً صفحه را بازخوانی کنید.");
+                    ModelState.AddModelError(string.Empty, "این نقش توسط کاربر دیگری تغییر یافته است. لطفاً صفحه را بازخوانی کنید.");
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error updating role {RoleId}", id);
-                    ModelState.AddModelError(string.Empty, "خطا در به‌روزرسانی گروه کاربری. لطفاً مجدداً تلاش کنید.");
+                    ModelState.AddModelError(string.Empty, "خطا در به‌روزرسانی نقش. لطفاً مجدداً تلاش کنید.");
                 }
             }
             
@@ -208,7 +241,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
         {
             if (id == null)
             {
-                return NotFound("شناسه گروه کاربری مشخص نشده است.");
+                return NotFound("شناسه نقش مشخص نشده است.");
             }
 
             try
@@ -220,7 +253,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
 
                 if (role == null)
                 {
-                    return NotFound("گروه کاربری مورد نظر یافت نشد.");
+                    return NotFound("نقش مورد نظر یافت نشد.");
                 }
 
                 return View(role);
@@ -228,7 +261,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving role details for {RoleId}", id);
-                TempData["ErrorMessage"] = "خطا در بارگذاری جزئیات گروه کاربری.";
+                TempData["ErrorMessage"] = "خطا در بارگذاری جزئیات نقش.";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -237,7 +270,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
         {
             if (id == null)
             {
-                return NotFound("شناسه گروه کاربری مشخص نشده است.");
+                return NotFound("شناسه نقش مشخص نشده است.");
             }
 
             try
@@ -248,7 +281,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
 
                 if (role == null)
                 {
-                    return NotFound("گروه کاربری مورد نظر یافت نشد.");
+                    return NotFound("نقش مورد نظر یافت نشد.");
                 }
 
                 return View(role);
@@ -256,7 +289,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving role {RoleId} for deletion", id);
-                TempData["ErrorMessage"] = "خطا در بارگذاری اطلاعات گروه کاربری.";
+                TempData["ErrorMessage"] = "خطا در بارگذاری اطلاعات نقش.";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -271,7 +304,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                 if (role == null)
                 {
                     _logger.LogWarning("Attempted to delete non-existent role {RoleId}", id);
-                    return NotFound("گروه کاربری مورد نظر یافت نشد.");
+                    return NotFound("نقش مورد نظر یافت نشد.");
                 }
 
                 // Check if role has users assigned
@@ -282,7 +315,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
 
                 if (usersInRole > 0)
                 {
-                    TempData["ErrorMessage"] = $"نمی‌توان گروه کاربری '{role.Name}' را حذف کرد زیرا {usersInRole} کاربر به آن اختصاص داده شده است.";
+                    TempData["ErrorMessage"] = $"نمی‌توان نقش '{role.Name}' را حذف کرد زیرا {usersInRole} کاربر به آن اختصاص داده شده است.";
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -291,22 +324,67 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                 {
                     _logger.LogInformation("Role '{RoleName}' (ID: {RoleId}) deleted successfully by user {UserId}", 
                         role.Name, id, User.Identity.Name);
-                    TempData["SuccessMessage"] = $"گروه کاربری '{role.Name}' با موفقیت حذف شد.";
+                    TempData["SuccessMessage"] = $"نقش '{role.Name}' با موفقیت حذف شد.";
                 }
                 else
                 {
                     var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                     _logger.LogError("Failed to delete role {RoleId}: {Errors}", id, errors);
-                    TempData["ErrorMessage"] = "خطا در حذف گروه کاربری: " + errors;
+                    TempData["ErrorMessage"] = "خطا در حذف نقش: " + errors;
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting role {RoleId}", id);
-                TempData["ErrorMessage"] = "خطا در حذف گروه کاربری. لطفاً مجدداً تلاش کنید.";
+                TempData["ErrorMessage"] = "خطا در حذف نقش. لطفاً مجدداً تلاش کنید.";
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>
+        /// Validates role name for English-only alphanumeric characters
+        /// </summary>
+        private string ValidateRoleName(string roleName)
+        {
+            if (string.IsNullOrWhiteSpace(roleName))
+            {
+                return null;
+            }
+
+            roleName = roleName.Trim();
+
+            // Check for Persian/Arabic characters
+            if (Regex.IsMatch(roleName, @"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]"))
+            {
+                return "نام نقش نمی‌تواند شامل حروف فارسی یا عربی باشد. فقط از حروف انگلیسی استفاده کنید.";
+            }
+
+            // Check for spaces
+            if (roleName.Contains(" "))
+            {
+                return "نام نقش نمی‌تواند شامل فاصله باشد. از underscore (_) یا camelCase استفاده کنید.";
+            }
+
+            // Check for special characters (except underscore)
+            if (Regex.IsMatch(roleName, @"[^a-zA-Z0-9_]"))
+            {
+                return "نام نقش فقط می‌تواند شامل حروف انگلیسی، اعداد و underscore (_) باشد.";
+            }
+
+            // Check if starts with a letter
+            if (!Regex.IsMatch(roleName, @"^[a-zA-Z]"))
+            {
+                return "نام نقش باید با یک حرف انگلیسی شروع شود.";
+            }
+
+            // Check minimum length
+            if (roleName.Length < 2)
+            {
+                return "نام نقش باید حداقل 2 کاراکتر باشد.";
+            }
+
+            return null; // Valid
         }
 
         // Helper method to check if role exists

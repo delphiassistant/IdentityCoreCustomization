@@ -1,0 +1,1 @@
+- Maintain a version-history.md at solution root folder and update it with each major change.

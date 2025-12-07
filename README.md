@@ -12,6 +12,7 @@ Features
 - Custom `UserStore` implementation enabling login by username, email, or phone number.
 - Passwordless SMS login flow using `UserLoginWithSms` and `SmsService`.
 - SMS-based pre-registration (`UserPreRegistration`) gated by `Identity:PreRegistrationEnabled` configuration.
+- **Complete Two-Factor Authentication (2FA) with Authenticator Apps (TOTP) and SMS support** ✨ **NEW**
 - Server-side cookie session storage via `ITicketStore` implementation `DatabaseTicketStore` and `AuthenticationTicket` model.
 - Online user session management dashboard (`/UserSessions`) with Bootstrap confirmations and admin actions (force logout, cleanup expired, clear all).
 - In-memory `MemoryCacheTicketStore` utility for session ticket management (optional).
@@ -27,6 +28,92 @@ Features
 - Set `DefaultConnection` in `appsettings.json` to your SQL Server.
 - Apply migrations (e.g., `dotnet ef database update`).
 - Run the app (`dotnet run`) and browse to `/Identity/Account/Login` or `/Admin`.
+
+
+## 🔐 Two-Factor Authentication (2FA) - NEW ✨
+
+This project now includes a **complete Two-Factor Authentication (2FA)** implementation supporting both **Authenticator Apps (TOTP)** and **SMS-based verification**.
+
+### Key 2FA Features
+
+✅ **Authenticator App (TOTP) Support**
+- QR code generation for easy setup with Google Authenticator, Microsoft Authenticator, etc.
+- Manual key entry with copy-to-clipboard functionality
+- TOTP code verification (6-digit time-based codes)
+- Smart routing between authenticator and SMS-based login
+
+✅ **Recovery Codes**
+- 10 single-use backup codes generated automatically
+- Downloadable as timestamped text file
+- Each code works only once
+- Can be regenerated at any time
+
+✅ **SMS-Based 2FA**
+- Automatic SMS code generation and delivery
+- 5-minute code expiration
+- Fallback option when authenticator unavailable
+
+✅ **Device Remembering**
+- "Remember this device" option for trusted devices
+- 30-day cookie expiration (configurable)
+- One-click browser/device forget functionality
+
+✅ **Comprehensive Management Dashboard**
+- Enable/disable 2FA
+- Add or reset authenticator app
+- View recovery codes count
+- Generate new recovery codes
+- Complete Persian (Farsi) localization with RTL support
+
+### 2FA Routes & Pages
+
+| Route | Purpose |
+|-------|---------|
+| `/Identity/Manage/TwoFactorAuthentication` | 2FA management dashboard |
+| `/Identity/Manage/EnableAuthenticator` | Setup authenticator app with QR code |
+| `/Identity/Manage/ShowRecoveryCodes` | View and download recovery codes |
+| `/Identity/Account/LoginWith2fa` | Login with authenticator TOTP code |
+| `/Identity/Account/LoginWithRecoveryCode` | Login with recovery code |
+| `/Identity/Account/LoginWith2faSms` | Login with SMS verification code |
+
+### Technical Implementation
+
+**New NuGet Package:**
+- `QRCoder 1.6.0` - For server-side QR code generation
+
+**New Models:**
+- `EnableAuthenticatorModel` - QR code setup
+- `ShowRecoveryCodesModel` - Recovery codes display
+- `LoginWith2faModel` - TOTP login
+- `LoginWithRecoveryCodeModel` - Recovery code login
+- Updated `TwoFactorAuthenticationModel` - Enhanced 2FA dashboard
+
+**Key Features:**
+- Server-side QR code generation (200x200px)
+- JavaScript copy-to-clipboard with RTL support
+- Download recovery codes as formatted text file
+- Smart login routing (auto-detect TOTP vs SMS)
+- TempData for secure code transfer between actions
+
+### 📚 Detailed Documentation
+
+For complete documentation including setup workflows, security considerations, testing checklists, and troubleshooting, see:
+
+**[2FA Implementation Guide](2FA-Implementation-Guide.md)** 📖
+
+The detailed guide includes:
+- Complete feature overview and status
+- Step-by-step setup instructions
+- User workflows and scenarios
+- Technical implementation details
+- Security best practices
+- Configuration examples
+- Testing checklist
+- Troubleshooting guide
+- Future enhancement ideas
+
+
+---
 
 ## Identity Customizations Overview
 

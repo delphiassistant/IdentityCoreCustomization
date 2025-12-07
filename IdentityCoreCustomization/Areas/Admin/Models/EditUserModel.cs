@@ -22,15 +22,15 @@ public class EditUserModel
     [RegularExpression(@"^(\+98|0)?9\d{9}$", ErrorMessage = "شماره تلفن باید با فرمت 09xxxxxxxxx یا +989xxxxxxxxx باشد")]
     public string PhoneNumber { get; set; }
 
-    [Display(Name = "ایمیل تأیید شده")]
+    [Display(Name = "ایمیل تأیید شده است")]
     public bool EmailConfirmed { get; set; }
 
-    [Display(Name = "شماره تلفن تأیید شده")]
+    [Display(Name = "شماره تلفن تأیید شده است")]
     public bool PhoneNumberConfirmed { get; set; }
 
-    [Display(Name = "قابلیت قفل شدن")]
+    [Display(Name = "قابلیت قفل شدن حساب کاربری فعال باشد")]
     public bool LockoutEnabled { get; set; }
 
-    [Display(Name = "فعال سازی دو مرحله‌ای")]
+    [Display(Name = "فعال سازی احراز هویت دو مرحله‌ای")]
     public bool TwoFactorEnabled { get; set; }
 }

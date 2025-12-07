@@ -190,26 +190,43 @@ namespace IdentityCoreCustomization.Areas.Identity.Controllers
                 if (result.RequiresTwoFactor)
                 {
                     var user = await _userManager.FindByNameAsync(model.Username);
-                    if (user == null || string.IsNullOrEmpty(user.PhoneNumber))
+                    if (user == null)
                     {
-                        ModelState.AddModelError(string.Empty, "کاربر یا شماره موبایل برای احراز هویت دو مرحله ای یافت نشد.");
+                        ModelState.AddModelError(string.Empty, "کاربر برای احراز هویت دو مرحله ای یافت نشد.");
                         return View(model);
                     }
 
-                    var token = new UserPhoneToken
+                    // Check if user has authenticator configured
+                    var hasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null;
+                    
+                    if (hasAuthenticator)
                     {
-                        PhoneNumber = user.PhoneNumber,
-                        ExpireTime = DateTime.Now.AddMinutes(5)
-                    };
-                    token.Initialize();
-                    await db.UserPhoneTokens.AddAsync(token);
-                    await db.SaveChangesAsync();
+                        // Route to authenticator TOTP login
+                        return RedirectToAction("LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    }
+                    else if (!string.IsNullOrEmpty(user.PhoneNumber))
+                    {
+                        // Route to SMS-based 2FA
+                        var token = new UserPhoneToken
+                        {
+                            PhoneNumber = user.PhoneNumber,
+                            ExpireTime = DateTime.Now.AddMinutes(5)
+                        };
+                        token.Initialize();
+                        await db.UserPhoneTokens.AddAsync(token);
+                        await db.SaveChangesAsync();
 
-                    await smsService.SendSms(
-                        $"کد امنیتی شما: {token.AuthenticationCode}",
-                        new List<string> { user.PhoneNumber });
+                        await smsService.SendSms(
+                            $"کد امنیتی شما: {token.AuthenticationCode}",
+                            new List<string> { user.PhoneNumber });
 
-                    return RedirectToAction("LoginWith2faSms", new { Key = token.AuthenticationKey, ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                        return RedirectToAction("LoginWith2faSms", new { Key = token.AuthenticationKey, ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "روش احراز هویت دو مرحله ای برای این کاربر پیکربندی نشده است.");
+                        return View(model);
+                    }
                 }
 
                 if (result.IsLockedOut)
@@ -626,6 +643,114 @@ namespace IdentityCoreCustomization.Areas.Identity.Controllers
                 return LocalRedirect(returnUrl ?? "~/");
             }
             return View(model);
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginWithRecoveryCode(string returnUrl = null)
+        {
+            // Ensure the user has gone through the username & password screen first
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                return BadRequest("خطا: نمی توان کاربر احراز هویت دو مرحله ای را بارگذاری کرد.");
+            }
+
+            returnUrl = returnUrl ?? Url.Content("~/");
+            var model = new LoginWithRecoveryCodeModel { ReturnUrl = returnUrl };
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginWithRecoveryCode(LoginWithRecoveryCodeModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                return BadRequest("خطا: نمی توان کاربر احراز هویت دو مرحله ای را بارگذاری کرد.");
+            }
+
+            var recoveryCode = model.RecoveryCode.Replace(" ", string.Empty);
+
+            var result = await _signInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
+
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("کاربر با شناسه '{UserId}' با استفاده از کد بازیابی وارد شد.", user.Id);
+                return LocalRedirect(model.ReturnUrl ?? "~/");
+            }
+            if (result.IsLockedOut)
+            {
+                _logger.LogWarning("حساب کاربر با شناسه '{UserId}' قفل شد.", user.Id);
+                return RedirectToAction("Lockout");
+            }
+            else
+            {
+                _logger.LogWarning("کد بازیابی نامعتبر برای کاربر با شناسه '{UserId}' وارد شد.", user.Id);
+                ModelState.AddModelError(string.Empty, "کد بازیابی نامعتبر است.");
+                return View(model);
+            }
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginWith2fa(bool rememberMe, string returnUrl = null)
+        {
+            // Ensure the user has gone through the username & password screen first
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                return BadRequest("خطا: نمی توان کاربر احراز هویت دو مرحله ای را بارگذاری کرد.");
+            }
+
+            var model = new LoginWith2faModel
+            {
+                ReturnUrl = returnUrl,
+                RememberMe = rememberMe
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginWith2fa(LoginWith2faModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                return BadRequest("خطا: نمی توان کاربر احراز هویت دو مرحله ای را بارگذاری کرد.");
+            }
+
+            var authenticatorCode = model.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
+
+            var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, model.RememberMe, model.RememberMachine);
+
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("کاربر با شناسه '{UserId}' با استفاده از برنامه احراز هویت وارد شد.", user.Id);
+                return LocalRedirect(model.ReturnUrl ?? "~/");
+            }
+            else if (result.IsLockedOut)
+            {
+                _logger.LogWarning("حساب کاربر با شناسه '{UserId}' قفل شد.", user.Id);
+                return RedirectToAction("Lockout");
+            }
+            else
+            {
+                _logger.LogWarning("کد احراز هویت نامعتبر برای کاربر با شناسه '{UserId}' وارد شد.", user.Id);
+                ModelState.AddModelError(string.Empty, "کد احراز هویت نامعتبر است.");
+                return View(model);
+            }
         }
     }
 }

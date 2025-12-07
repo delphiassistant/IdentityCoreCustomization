@@ -2,78 +2,225 @@
 
 :root {
   --admin-sidebar-width: 260px;
-  --admin-navbar-height: 56px; /* default BS5 navbar height */
+  --admin-navbar-height: 56px;
 }
 
-html, body { height: 100%; }
-
-.admin-wrapper {
-  min-height: 100vh;
+/* Reset html/body for admin area to override site.css */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-/* Make topbar a bit lighter than sidebar */
+/* Override site.css body margin for admin pages */
+body {
+  margin-bottom: 0 !important;
+}
+
+/* Admin navbar */
 .admin-navbar {
   height: var(--admin-navbar-height);
-  margin-right: var(--admin-sidebar-width); /* keep navbar clear of sidebar */
-  z-index: 1040; /* above sidebar */
-  background-color: #2b3035 !important; /* lighter than sidebar */
+  margin-right: var(--admin-sidebar-width);
+  z-index: 1040;
+  background-color: #2b3035 !important;
 }
 
+/* Fixed sidebar */
 .admin-sidebar {
   position: fixed;
-  top: 0; /* cover from very top */
-  right: 0; /* RTL: sidebar on the right */
-  bottom: 0; /* cover to bottom */
+  top: 0;
+  right: 0;
+  bottom: 0;
   width: var(--admin-sidebar-width);
   overflow-y: auto;
-  /* content starts at top */
-  z-index: 1030;
-  background-color: #1a1d20; /* darker than topbar */
+  z-index: 1050;
+  background-color: #1a1d20;
+  transition: transform 0.3s ease-in-out;
 }
 
-/* Admin content should fill viewport below navbar and beside sidebar */
+/* Admin content wrapper - CRITICAL FIX */
 .admin-content {
   display: flex;
   flex-direction: column;
   margin-top: var(--admin-navbar-height);
   margin-right: var(--admin-sidebar-width);
+  /* Use viewport height minus navbar */
   min-height: calc(100vh - var(--admin-navbar-height));
+  /* Ensure it's positioned relative */
+  position: relative;
 }
 
-/* Grow main to take available space so footer sits at bottom without scrolling */
-.admin-content > main { flex: 1 1 auto; }
+/* Main content - takes all available space */
+.admin-content > main {
+  flex: 1 1 auto;
+  /* Add minimum height to ensure footer doesn't overlap */
+  min-height: 200px;
+  padding: 1rem;
+  /* Remove bottom padding that causes extra space */
+  padding-bottom: 0.5rem;
+}
 
-/* Keep footer at the bottom of the admin content */
-.admin-content > footer { margin-top: auto; }
+/* Footer - OVERRIDE site.css absolute positioning */
+.admin-content > footer {
+  /* Reset site.css absolute positioning */
+  position: relative !important;
+  bottom: auto !important;
+  width: auto !important;
+  /* Flex properties */
+  flex-shrink: 0;
+  margin-top: auto;
+  /* Compact padding - FIXED */
+  padding: 0.75rem 0 0.5rem 0;
+  /* Reset site.css line-height - FIXED */
+  line-height: 1.5 !important;
+  /* Ensure it doesn't overlap */
+  z-index: 1;
+  /* Remove any extra bottom space */
+  margin-bottom: 0;
+}
 
-@media (max-width: 991.98px) { /* below lg */
+/* Footer container - remove extra padding */
+.admin-content > footer .container-fluid,
+.admin-content > footer .container {
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+/* Sidebar backdrop for mobile */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.sidebar-backdrop.show {
+  display: block;
+  opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+  /* Hide sidebar by default on mobile */
   .admin-sidebar {
-    display: none; /* hide fixed sidebar on small screens to avoid overlap */
+    transform: translateX(100%);
   }
+  
+  /* Show sidebar when toggled */
+  .admin-sidebar.show {
+    transform: translateX(0);
+  }
+  
+  /* Remove sidebar margin from content and navbar */
   .admin-content {
     margin-right: 0 !important;
   }
+  
   .admin-navbar {
-    margin-right: 0; /* navbar can span full width when sidebar hidden */
+    margin-right: 0;
+  }
+  
+  /* Prevent body scroll when sidebar is open */
+  body.sidebar-open {
+    overflow: hidden;
   }
 }
 
+/* Sidebar navigation styling */
 .admin-sidebar .nav-link {
   color: #adb5bd;
+  border-radius: .375rem;
+  padding: 0.5rem 0.75rem;
 }
 
 .admin-sidebar .nav-link:hover,
 .admin-sidebar .nav-link.active {
   color: #fff;
   background-color: rgba(255,255,255,0.1);
-  border-radius: .375rem;
+}
+
+.admin-sidebar .nav-link.text-danger:hover {
+  background-color: rgba(220, 53, 69, 0.1);
 }
 
 .admin-sidebar .nav-link i {
   width: 1.25rem;
   text-align: center;
-  margin-left: .5rem; /* RTL spacing */
+  margin-left: .5rem;
 }
 
-/* Adjust collapsed sidebar spacing on small screens */
-#adminSidebar .sidebar-inner { padding: 1rem; }
+/* Section headers in sidebar */
+.admin-sidebar .small {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Sidebar inner padding */
+#adminSidebar .sidebar-inner {
+  padding: 0;
+}
+
+/* Brand link styling */
+.admin-sidebar a.border-bottom {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Navbar brand visibility */
+.navbar-brand {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-brand {
+    display: block;
+  }
+}
+
+/* Ensure cards have proper spacing */
+.card {
+  margin-bottom: 1.5rem;
+}
+
+/* Content spacing fixes - reduced bottom padding */
+.admin-content .container-fluid,
+.admin-content .container {
+  padding-bottom: 0.5rem;
+}
+
+/* Fix for any absolutely positioned elements */
+.admin-content * {
+  position: relative;
+}
+
+.admin-content .position-absolute {
+  position: absolute !important;
+}
+
+.admin-content .position-fixed {
+  position: fixed !important;
+}
+
+.admin-content .position-sticky {
+  position: sticky !important;
+}
+
+/* Clearfix */
+.admin-content::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Mehdi Custom Styles */
+.ltr {
+    direction: ltr;
+    text-align: left;
+}

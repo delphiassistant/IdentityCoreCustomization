@@ -1,41 +1,148 @@
 ﻿@model TwoFactorAuthenticationModel
 @{
     ViewData["Title"] = "احراز هویت دو مرحله ای";
-    //ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
 <h4>@ViewData["Title"]</h4>
-@if (!Model.Is2faEnabled)
+
+@if (Model.Is2faEnabled)
 {
-    if (Model.CanEnable2fa)
+    if (Model.IsMachineRemembered)
     {
-        <div class="alert alert-warning">
-            <strong>احراز هویت دو مرحله ای برای ورود به حساب کاربری شما در این سایت فعال نیست.</strong>
-            
-            <p>برای فعال کردن آن <a asp-action="SetTwoFactorAuthentication" asp-route-enabled="true">اینجا</a> را کلیک کنید.</p>
+        <div class="alert alert-info">
+            <p>این دستگاه برای شما به خاطر سپرده شده است و هنگام ورود نیازی به احراز هویت دو مرحله ای ندارید.</p>
+            <form method="post" asp-action="ForgetBrowser">
+                <button type="submit" class="btn btn-sm btn-outline-secondary">فراموشی این دستگاه</button>
+            </form>
         </div>
     }
-    else 
+
+    <div class="alert alert-success">
+        <strong>احراز هویت دو مرحله ای برای حساب کاربری شما فعال است.</strong>
+    </div>
+
+    @if (Model.HasAuthenticator)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fa-solid fa-mobile-screen-button"></i> برنامه احراز هویت
+            </div>
+            <div class="card-body">
+                <p>برنامه احراز هویت شما پیکربندی شده است.</p>
+                <a asp-action="EnableAuthenticator" class="btn btn-sm btn-primary">تنظیم مجدد برنامه احراز هویت</a>
+                <a asp-action="ResetAuthenticatorWarning" class="btn btn-sm btn-danger">بازنشانی کلید احراز هویت</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fa-solid fa-mobile-screen-button"></i> برنامه احراز هویت
+            </div>
+            <div class="card-body">
+                <p>برنامه احراز هویت پیکربندی نشده است.</p>
+                <a asp-action="EnableAuthenticator" class="btn btn-sm btn-primary">افزودن برنامه احراز هویت</a>
+            </div>
+        </div>
+    }
+
+    @if (Model.RecoveryCodesLeft == 0)
     {
         <div class="alert alert-danger">
-            <strong>احراز هویت دو مرحله ای برای ورود به حساب کاربری شما در این سایت فعال نیست.</strong>
-            <p>قبل از اینکه بتوانید این امکان را فعال کنید میبایست شماره موبایل خود را در پرونده کاربری اضافه کنید.
-                برای اضافه کردن شماره موبایل به حساب کاربری
-                 <a asp-action="AddPhoneNumber">اینجا</a> را کلیک کنید.
-            </p>
+            <strong>شما هیچ کد بازیابی باقی مانده ندارید.</strong>
+            <p>شما باید <a asp-action="GenerateRecoveryCodes">مجموعه جدیدی از کدهای بازیابی ایجاد کنید</a> قبل از اینکه بتوانید از کد بازیابی برای ورود استفاده کنید.</p>
         </div>
     }
+    else if (Model.RecoveryCodesLeft == 1)
+    {
+        <div class="alert alert-warning">
+            <strong>شما ۱ کد بازیابی باقی مانده دارید.</strong>
+            <p>شما می‌توانید <a asp-action="GenerateRecoveryCodes">مجموعه جدیدی از کدهای بازیابی ایجاد کنید</a>.</p>
+        </div>
+    }
+    else if (Model.RecoveryCodesLeft <= 3)
+    {
+        <div class="alert alert-warning">
+            <strong>شما @Model.RecoveryCodesLeft کد بازیابی باقی مانده دارید.</strong>
+            <p>شما باید <a asp-action="GenerateRecoveryCodes">مجموعه جدیدی از کدهای بازیابی ایجاد کنید</a>.</p>
+        </div>
+    }
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fa-solid fa-key"></i> کدهای بازیابی
+        </div>
+        <div class="card-body">
+            @if (Model.RecoveryCodesLeft > 0)
+            {
+                <p>شما <strong>@Model.RecoveryCodesLeft</strong> کد بازیابی باقی مانده دارید.</p>
+            }
+            else
+            {
+                <p>شما هیچ کد بازیابی باقی مانده ندارید.</p>
+            }
+            <form method="post" asp-action="GenerateRecoveryCodes">
+                <button type="submit" class="btn btn-sm btn-primary">ایجاد کدهای بازیابی جدید</button>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.CanEnable2fa)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fa-solid fa-comment-sms"></i> احراز هویت با پیامک
+            </div>
+            <div class="card-body">
+                <p>احراز هویت دو مرحله ای با پیامک فعال است.</p>
+                <p>شماره موبایل: <strong>@Model.PhoneNumber</strong></p>
+            </div>
+        </div>
+    }
+
+    <form method="post" asp-action="Disable2fa" class="mb-4">
+        <button type="submit" class="btn btn-danger">غیرفعال کردن احراز هویت دو مرحله ای</button>
+    </form>
 }
 else
 {
-    <div class="alert alert-success">
-        <strong>احراز هویت دو مرحله ای برای ورود به حساب کاربری شما در این سایت فعال است.</strong>
-            
-        <p>برای غیرفعال کردن آن <a asp-action="SetTwoFactorAuthentication" asp-route-enabled="false">اینجا</a> را کلیک کنید.</p>
+    <div class="alert alert-warning">
+        <strong>احراز هویت دو مرحله ای برای حساب کاربری شما فعال نیست.</strong>
     </div>
-}
+    
+    @if (Model.CanEnable2fa)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fa-solid fa-mobile-screen-button"></i> برنامه احراز هویت
+            </div>
+            <div class="card-body">
+                <p>برای افزودن امنیت بیشتر به حساب کاربری خود، می‌توانید از برنامه احراز هویت استفاده کنید.</p>
+                <a asp-action="EnableAuthenticator" class="btn btn-primary">افزودن برنامه احراز هویت</a>
+            </div>
+        </div>
 
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fa-solid fa-comment-sms"></i> احراز هویت با پیامک
+            </div>
+            <div class="card-body">
+                <p>شماره موبایل شما تایید شده است: <strong>@Model.PhoneNumber</strong></p>
+                <p>برای فعال کردن احراز هویت دو مرحله ای با پیامک، بر روی لینک زیر کلیک کنید.</p>
+                <a asp-action="SetTwoFactorAuthentication" asp-route-enabled="true" class="btn btn-primary">فعال کردن احراز هویت با پیامک</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <p>قبل از فعال کردن احراز هویت دو مرحله ای، ابتدا باید شماره موبایل خود را در پرونده کاربری اضافه و تایید کنید.</p>
+            <p>برای اضافه کردن شماره موبایل <a asp-action="AddPhoneNumber">اینجا</a> را کلیک کنید.</p>
+        </div>
+    }
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

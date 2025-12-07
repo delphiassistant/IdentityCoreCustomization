@@ -1,0 +1,40 @@
+@model LoginWith2faModel
+@{
+    ViewData["Title"] = "احراز هویت دو مرحله ای";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-6 mx-auto col-sm-12">
+        <h1>@ViewData["Title"]</h1>
+        <hr />
+        <p>برنامه احراز هویت شما یک کد امنیتی برای ورود به حساب کاربری شما ایجاد کرده است.</p>
+        <form method="post">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <input type="hidden" asp-for="RememberMe" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="TwoFactorCode" class="form-label"></label>
+                <input asp-for="TwoFactorCode" class="form-control" autocomplete="off" placeholder="123456" />
+                <span asp-validation-for="TwoFactorCode" class="text-danger"></span>
+            </div>
+            <div class="form-check mb-3">
+                <input asp-for="RememberMachine" class="form-check-input" />
+                <label asp-for="RememberMachine" class="form-check-label"></label>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-right-to-bracket"></i> ورود
+                </button>
+            </div>
+        </form>
+        <p>
+            دسترسی به دستگاه احراز هویت خود را ندارید؟ می‌توانید با استفاده از 
+            <a asp-action="LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl">کد بازیابی</a> وارد شوید.
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

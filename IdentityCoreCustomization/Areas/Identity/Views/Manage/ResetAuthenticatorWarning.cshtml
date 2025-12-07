@@ -1,0 +1,27 @@
+@model ResetAuthenticatorWarningModel
+@{
+    ViewData["Title"] = "بازنشانی کلید احراز هویت";
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<h4>@ViewData["Title"]</h4>
+<div class="alert alert-danger" role="alert">
+    <p>
+        <span class="fa-solid fa-triangle-exclamation"></span>
+        <strong>هشدار: این عملیات برگشت پذیر نیست.</strong>
+    </p>
+    <p>
+        اگر کلید احراز هویت خود را بازنشانی کنید:
+    </p>
+    <ul>
+        <li>برنامه احراز هویت شما دیگر کار نخواهد کرد تا زمانی که آن را دوباره پیکربندی کنید.</li>
+        <li>باید برنامه احراز هویت خود را با استفاده از کد QR جدید یا کلید مشترک جدید دوباره پیکربندی کنید.</li>
+        <li>کدهای بازیابی قبلی شما همچنان کار خواهند کرد.</li>
+    </ul>
+</div>
+<div>
+    <form method="post" asp-action="ResetAuthenticatorKey">
+        <button type="submit" class="btn btn-danger">بازنشانی کلید احراز هویت</button>
+        <a asp-action="TwoFactorAuthentication" class="btn btn-secondary">انصراف</a>
+    </form>
+</div>

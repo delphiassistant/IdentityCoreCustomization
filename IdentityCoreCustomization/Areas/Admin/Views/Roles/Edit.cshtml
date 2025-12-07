@@ -4,7 +4,7 @@
     ViewData["Title"] = "ویرایش گروه کاربر";
 }
 
-<h1>ویرایش گروه کاربری</h1>
+<h1>ویرایش گروه کاربری (نقش)</h1>
 
 <h4>@ViewData["Title"]: @Model.Name</h4>
 <hr />
@@ -25,6 +25,34 @@
 
 <div class="row">
     <div class="col-md-6">
+        <div class="alert alert-danger">
+            <h6 class="alert-heading">
+                <i class="fa-solid fa-exclamation-triangle"></i> 
+                <strong>هشدار مهم: تغییر نام نقش</strong>
+            </h6>
+            <p class="mb-2">
+                تغییر نام نقش بر روی <strong>تمام کاربران</strong> و <strong>بررسی‌های دسترسی</strong> در سیستم تأثیر می‌گذارد.
+            </p>
+            <p class="mb-0">
+                <small>
+                    ⚠️ اگر نام نقش در کد برنامه یا بررسی‌های دسترسی استفاده شده، تغییر آن می‌تواند باعث خطا شود.
+                    <br />
+                    💡 توصیه: به جای تغییر نام، نقش جدید ایجاد کنید.
+                </small>
+            </p>
+        </div>
+
+        <div class="alert alert-info">
+            <h6 class="alert-heading"><i class="fa-solid fa-info-circle"></i> قوانین نام‌گذاری</h6>
+            <ul class="mb-0 small">
+                <li><strong>فقط حروف انگلیسی</strong> (a-z, A-Z)</li>
+                <li><strong>اعداد مجاز</strong> (0-9)</li>
+                <li><strong>Underscore (_)</strong> مجاز است</li>
+                <li><strong>بدون فاصله</strong> و کاراکترهای خاص</li>
+                <li><strong>باید با حرف شروع شود</strong></li>
+            </ul>
+        </div>
+
         <form asp-action="Edit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             
@@ -33,14 +61,16 @@
             
             <div class="mb-3">
                 <label asp-for="Name" class="form-label"></label>
-                <input asp-for="Name" class="form-control" placeholder="نام گروه کاربری را وارد کنید" />
+                <input asp-for="Name" class="form-control" placeholder="Admin" dir="ltr" style="text-align: left;" />
                 <span asp-validation-for="Name" class="text-danger"></span>
-                <div class="form-text">نام گروه کاربری باید منحصر به فرد باشد</div>
+                <div class="form-text">
+                    مثال: <code>Admin</code>, <code>SuperAdmin</code>, <code>ContentEditor</code>
+                </div>
             </div>
             
             <div class="mb-3">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-save"></i> ذخیره تغییرات
+                <button type="submit" class="btn btn-warning">
+                    <i class="fa-solid fa-save"></i> ذخیره تغییرات (با احتیاط)
                 </button>
                 <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
                     <i class="fa-solid fa-eye"></i> مشاهده جزئیات
@@ -52,38 +82,87 @@
         </form>
     </div>
     <div class="col-md-6">
-        <div class="card">
+        <div class="card mb-3">
             <div class="card-header">
-                <i class="fa-solid fa-info-circle"></i> اطلاعات گروه کاربری
+                <i class="fa-solid fa-info-circle"></i> اطلاعات نقش
             </div>
             <div class="card-body">
                 <dl class="row">
                     <dt class="col-sm-4">شناسه:</dt>
-                    <dd class="col-sm-8">@Model.Id</dd>
+                    <dd class="col-sm-8"><code>@Model.Id</code></dd>
                     
                     <dt class="col-sm-4">نام فعلی:</dt>
-                    <dd class="col-sm-8">@Model.Name</dd>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-primary fs-6">@Model.Name</span>
+                    </dd>
                     
                     @if (Model.UserRoles?.Any() == true)
                     {
                         <dt class="col-sm-4">تعداد کاربران:</dt>
                         <dd class="col-sm-8">
-                            <span class="badge bg-primary">@Model.UserRoles.Count کاربر</span>
+                            <span class="badge bg-success">@Model.UserRoles.Count کاربر</span>
+                        </dd>
+                    }
+                    else
+                    {
+                        <dt class="col-sm-4">تعداد کاربران:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-secondary">بدون کاربر</span>
                         </dd>
                     }
                 </dl>
-                
-                <div class="alert alert-warning">
-                    <small>
-                        <i class="fa-solid fa-warning"></i>
-                        تغییر نام گروه کاربری بر روی تمام کاربران عضو این گروه تأثیر می‌گذارد.
-                    </small>
-                </div>
             </div>
         </div>
+
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <i class="fa-solid fa-ban"></i> ممنوع
+            </div>
+            <div class="card-body">
+                <p class="mb-2"><strong>نام‌های غیرمجاز:</strong></p>
+                <ul class="text-danger mb-0">
+                    <li><del>مدیر</del> - حروف فارسی ❌</li>
+                    <li><del>Admin User</del> - فاصله ❌</li>
+                    <li><del>Admin@123</del> - کاراکتر خاص ❌</li>
+                    <li><del>123Admin</del> - شروع با عدد ❌</li>
+                </ul>
+            </div>
+        </div>
+
+        @if (Model.UserRoles?.Any() == true)
+        {
+            <div class="card border-warning mt-3">
+                <div class="card-header bg-warning">
+                    <i class="fa-solid fa-users"></i> کاربران متأثر
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">
+                        <strong>@Model.UserRoles.Count کاربر</strong> به این نقش اختصاص داده شده است.
+                        تغییر نام بر همه آنها تأثیر می‌گذارد.
+                    </p>
+                </div>
+            </div>
+        }
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Real-time validation feedback
+        document.getElementById('Name').addEventListener('input', function(e) {
+            const value = e.target.value;
+            const pattern = /^[a-zA-Z][a-zA-Z0-9_]*$/;
+            
+            if (value && !pattern.test(value)) {
+                e.target.classList.add('is-invalid');
+            } else if (value) {
+                e.target.classList.remove('is-invalid');
+                e.target.classList.add('is-valid');
+            } else {
+                e.target.classList.remove('is-invalid', 'is-valid');
+            }
+        });
+    </script>
 }

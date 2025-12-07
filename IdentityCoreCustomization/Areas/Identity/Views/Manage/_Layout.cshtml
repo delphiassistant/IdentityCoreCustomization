@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/lib/font_awesome/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/navigation-dropdown.css" />
-
+    @RenderSection("Styles", required: false)
 </head>
 <body>
     <header>
@@ -47,8 +47,6 @@
         </div>
     </div>
 
-
-
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; @DateTime.Now.ToString("yyyy") - سفارشی سازی آیدنتیتی
@@ -60,3 +58,4 @@
     <script src="~/js/navigation-dropdown.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
+</html>

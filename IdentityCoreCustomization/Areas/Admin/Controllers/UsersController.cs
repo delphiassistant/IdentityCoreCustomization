@@ -120,8 +120,11 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     { 
                         UserName = model.Username.Trim(), 
                         Email = model.Email?.Trim(),
-                        EmailConfirmed = !string.IsNullOrEmpty(model.Email), // Auto-confirm admin-created users
-                        LockoutEnabled = true
+                        PhoneNumber = model.PhoneNumber?.Trim(),
+                        EmailConfirmed = model.EmailConfirmed,
+                        PhoneNumberConfirmed = model.PhoneNumberConfirmed,
+                        LockoutEnabled = model.LockoutEnabled,
+                        TwoFactorEnabled = model.TwoFactorEnabled
                     };
 
                     var result = await _userManager.CreateAsync(user, model.Password);
@@ -222,7 +225,13 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                 var model = new EditUserModel()
                 {
                     UserID = user.Id,
-                    Username = user.UserName
+                    Username = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    EmailConfirmed = user.EmailConfirmed,
+                    PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+                    LockoutEnabled = user.LockoutEnabled,
+                    TwoFactorEnabled = user.TwoFactorEnabled
                 };
 
                 return View(model);

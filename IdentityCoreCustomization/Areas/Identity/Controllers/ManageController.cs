@@ -26,20 +26,25 @@ namespace IdentityCoreCustomization.Areas.Identity.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ISmsService smsService;
         private readonly IEmailSender _emailSender;
+        private readonly UrlEncoder _urlEncoder;
         private ApplicationDbContext db;
+
+        private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
         public ManageController(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager, 
             SignInManager<ApplicationUser> signInManager, 
             IEmailSender emailSender,
-            ISmsService smsService)
+            ISmsService smsService,
+            UrlEncoder urlEncoder)
         {
             db = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             this.smsService = smsService;
+            _urlEncoder = urlEncoder;
         }
         
         public async Task<IActionResult> Index()
@@ -239,10 +244,19 @@ namespace IdentityCoreCustomization.Areas.Identity.Controllers
                 return NotFound($"کاربری با شناسه '{_userManager.GetUserId(User)}' یافت نشد.");
             }
 
+            var hasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null;
+            var is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
+            var isMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user);
+            var recoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user);
+
             var model = new TwoFactorAuthenticationModel()
             {
-                Is2faEnabled = user.TwoFactorEnabled,
-                CanEnable2fa = user.PhoneNumberConfirmed && (!string.IsNullOrEmpty(user.PhoneNumber))
+                Is2faEnabled = is2faEnabled,
+                CanEnable2fa = user.PhoneNumberConfirmed && (!string.IsNullOrEmpty(user.PhoneNumber)),
+                HasAuthenticator = hasAuthenticator,
+                RecoveryCodesLeft = recoveryCodesLeft,
+                IsMachineRemembered = isMachineRemembered,
+                PhoneNumber = user.PhoneNumber
             };
             return View(model);
         }
@@ -382,7 +396,7 @@ namespace IdentityCoreCustomization.Areas.Identity.Controllers
 
             var decoded = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, decoded);
-            var message = result.Succeeded ? "ایمیل شما با موفقیت تایید شد." : "خطا در تایید ایمیل.";
+            var message = result.Succeeded ? "ایمیل شما با موفقیت تایید شد." : "خطا در تایید ایمeil.";
             return View("ConfirmEmail", new ManageIndexModel { StatusMessage = message });
         }
 
@@ -416,6 +430,230 @@ namespace IdentityCoreCustomization.Areas.Identity.Controllers
             }
 
             return View("ConfirmEmailChange", new ManageIndexModel { StatusMessage = "خطا در تغییر ایمیل." });
+        }
+
+        public async Task<IActionResult> EnableAuthenticator()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"کاربری با شناسه '{_userManager.GetUserId(User)}' یافت نشد.");
+            }
+
+            var model = await LoadSharedKeyAndQrCodeUriAsync(user);
+            return View(model);
+        }
+
+        private async Task<EnableAuthenticatorModel> LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user)
+        {
+            // Load the authenticator key & QR code URI to display on the form
+            var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
+            if (string.IsNullOrEmpty(unformattedKey))
+            {
+                await _userManager.ResetAuthenticatorKeyAsync(user);
+                unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
+            }
+
+            var model = new EnableAuthenticatorModel
+            {
+                SharedKey = FormatKey(unformattedKey),
+                AuthenticatorUri = GenerateQrCodeUri(user.Email ?? user.UserName, unformattedKey)
+            };
+
+            return model;
+        }
+
+        private string FormatKey(string unformattedKey)
+        {
+            var result = new StringBuilder();
+            int currentPosition = 0;
+            while (currentPosition + 4 < unformattedKey.Length)
+            {
+                result.Append(unformattedKey.Substring(currentPosition, 4)).Append(" ");
+                currentPosition += 4;
+            }
+            if (currentPosition < unformattedKey.Length)
+            {
+                result.Append(unformattedKey.Substring(currentPosition));
+            }
+
+            return result.ToString().ToLowerInvariant();
+        }
+
+        private string GenerateQrCodeUri(string email, string unformattedKey)
+        {
+            return string.Format(
+                AuthenticatorUriFormat,
+                _urlEncoder.Encode("سفارشی سازی آیدنتیتی"),
+                _urlEncoder.Encode(email),
+                unformattedKey);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EnableAuthenticator(EnableAuthenticatorModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"کاربری با شناسه '{_userManager.GetUserId(User)}' یافت نشد.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var loadModel = await LoadSharedKeyAndQrCodeUriAsync(user);
+                loadModel.Code = model.Code;
+                return View(loadModel);
+            }
+
+            // Strip spaces and hyphens
+            var verificationCode = model.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
+
+            var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(
+                user, _userManager.Options.Tokens.AuthenticatorTokenProvider, verificationCode);
+
+            if (!is2faTokenValid)
+            {
+                ModelState.AddModelError("Code", "کد تایید صحیح نیست.");
+                var loadModel = await LoadSharedKeyAndQrCodeUriAsync(user);
+                loadModel.Code = model.Code;
+                return View(loadModel);
+            }
+
+            await _userManager.SetTwoFactorEnabledAsync(user, true);
+            
+            // Generate recovery codes immediately
+            var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+            
+            TempData["RecoveryCodes"] = recoveryCodes.ToArray();
+            TempData["StatusMessage"] = "برنامه احراز هویت شما تایید شد.";
+
+            return RedirectToAction("ShowRecoveryCodes");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateRecoveryCodes()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"کاربری با شناسه '{_userManager.GetUserId(User)}' یافت نشد.");
+            }
+
+            var isTwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
+            if (!isTwoFactorEnabled)
+            {
+                return BadRequest($"نمی توان کدهای بازیابی را برای کاربری که احراز هویت 2 مرحله ای ندارد ایجاد کرد.");
+            }
+
+            var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+            
+            TempData["RecoveryCodes"] = recoveryCodes.ToArray();
+
+            return RedirectToAction("ShowRecoveryCodes");
+        }
+
+        public async Task<IActionResult> ShowRecoveryCodes(ShowRecoveryCodesModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"کاربری با شناسه '{_userManager.GetUserId(User)}' یافت نشد.");
+            }
+
+            var recoveryCodes = TempData["RecoveryCodes"] as string[];
+            var statusMessage = TempData["StatusMessage"] as string;
+
+            if (recoveryCodes == null || !recoveryCodes.Any())
+            {
+                return RedirectToAction("TwoFactorAuthentication");
+            }
+
+            var recoveryCodesModel = new ShowRecoveryCodesModel
+            {
+                RecoveryCodes = recoveryCodes,
+                StatusMessage = statusMessage
+            };
+
+            return View(recoveryCodesModel);
+        }
+
+        public async Task<IActionResult> ResetAuthenticatorWarning()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"کاربری با شناسه '{_userManager.GetUserId(User)}' یافت نشد.");
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetAuthenticatorKey()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"کاربری با شناسه '{_userManager.GetUserId(User)}' یافت نشد.");
+            }
+
+            await _userManager.SetTwoFactorEnabledAsync(user, false);
+            await _userManager.ResetAuthenticatorKeyAsync(user);
+            
+            await _signInManager.RefreshSignInAsync(user);
+
+            return RedirectToAction("EnableAuthenticator");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetRecoveryCodes()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"کاربری با شناسه '{_userManager.GetUserId(User)}' یافت نشد.");
+            }
+
+            var isTwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
+            if (!isTwoFactorEnabled)
+            {
+                return BadRequest($"نمی توان کدهای بازیابی را برای کاربری که احراز هویت 2 مرحله ای ندارد بازنشانی کرد.");
+            }
+
+            var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+            
+            TempData["RecoveryCodes"] = recoveryCodes.ToArray();
+            TempData["StatusMessage"] = "کدهای بازیابی جدید شما ایجاد شد.";
+
+            return RedirectToAction("ShowRecoveryCodes");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Disable2fa()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"کاربری با شناسه '{_userManager.GetUserId(User)}' یافت نشد.");
+            }
+
+            var disable2faResult = await _userManager.SetTwoFactorEnabledAsync(user, false);
+            if (!disable2faResult.Succeeded)
+            {
+                return BadRequest($"خطای غیرمنتظره در غیرفعال کردن احراز هویت دو مرحله ای.");
+            }
+
+            await _signInManager.RefreshSignInAsync(user);
+            
+            return RedirectToAction("TwoFactorAuthentication");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgetBrowser()
+        {
+            await _signInManager.ForgetTwoFactorClientAsync();
+            
+            return RedirectToAction("TwoFactorAuthentication");
         }
     }
 }

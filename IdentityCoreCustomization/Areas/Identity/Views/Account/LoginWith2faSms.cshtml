@@ -10,6 +10,7 @@
     <div class="col-md-6 mx-auto col-sm-12" >
         <h1>@ViewData["Title"]</h1>
         <hr />
+        <p>یک کد امنیتی به شماره موبایل شما ارسال شد. آن را در کادر زیر وارد کنید.</p>
         <form asp-action="LoginWith2faSms">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="AuthenticationKey"/>
@@ -17,15 +18,19 @@
             <input type="hidden" name="rememberMe" value="@ViewData["RememberMe"]" />
             <div class="mb-3">
                 <label asp-for="AuthenticationCode"></label>
-                <input asp-for="AuthenticationCode" class="form-control"/>
+                <input asp-for="AuthenticationCode" class="form-control" placeholder="123456" />
                 <span asp-validation-for="AuthenticationCode" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <button type="submit" value="Create" class="btn btn-primary">
-                    <i class="fa-solid fa-question fa-flip-horizontal"></i> بررسی
+                    <i class="fa-solid fa-right-to-bracket"></i> ورود
                 </button>
             </div>
         </form>
+        <p>
+            کد پیامکی دریافت نکردید؟ می‌توانید با استفاده از 
+            <a asp-action="LoginWithRecoveryCode" asp-route-returnUrl="@ViewData["ReturnUrl"]">کد بازیابی</a> وارد شوید.
+        </p>
     </div>
 </div>
 
