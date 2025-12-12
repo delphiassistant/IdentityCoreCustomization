@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using IdentityCoreCustomization.Areas.Identity.Models;
+using IdentityCoreCustomization.Areas.Users.Models;
 using IdentityCoreCustomization.Models;
 using IdentityCoreCustomization.Models.Identity;
 

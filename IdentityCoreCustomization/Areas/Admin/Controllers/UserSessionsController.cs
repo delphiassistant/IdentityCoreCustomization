@@ -142,7 +142,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     {
                         await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
                         if (IsAjaxRequest()) return Json(new { success = true, self = true, message = "شما از سیستم خارج شدید." });
-                        return RedirectToAction("Login", "Account", new { area = "Identity" });
+                        return RedirectToAction("Login", "Account", new { area = "Users" });
                     }
 
                     if (IsAjaxRequest()) return Json(new { success = true, message = "کاربر با موفقیت از سیستم خارج شد." });

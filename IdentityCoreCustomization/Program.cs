@@ -71,9 +71,9 @@ services.AddOptions<CookieAuthenticationOptions>(IdentityConstants.ApplicationSc
 
 services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = new PathString("/Identity/Account/Login");
-    options.LogoutPath = new PathString("/Identity/Account/Logout");
-    options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
+    options.LoginPath = new PathString("/Users/Account/Login");
+    options.LogoutPath = new PathString("/Users/Account/Logout");
+    options.AccessDeniedPath = new PathString("/Users/Account/AccessDenied");
 });
 
 // Password hasher and alternatives (left commented to preserve original intent)

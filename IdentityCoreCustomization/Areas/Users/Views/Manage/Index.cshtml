@@ -1,0 +1,44 @@
+﻿@model ManageIndexModel
+@{
+    ViewData["Title"] = "پرونده";
+    ViewData["ActivePage"] = "Index";
+}
+
+<h4><i class="fa-solid fa-user-gear"></i> @ViewData["Title"]</h4>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        <form id="profile-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="Username"></label>
+                <input asp-for="Username" class="form-control" disabled />
+            </div>
+        </form>
+        @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+        {
+            if (Model.PhoneNumberConfirmed)
+            {
+                <div class="alert alert-success" role="alert">
+                    شماره موبایل شما تایید شده است.
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning" role="alert">
+                    شماره موبایل شما اضافه شده اما تایید نشده است.
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                شماره موبایل اضافه نشده است. <a href="@Url.Action("AddPhoneNumber", "Manage", new { area = "Users" })">اضافه کردن شماره موبایل</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

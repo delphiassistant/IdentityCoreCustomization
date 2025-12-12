@@ -54,13 +54,13 @@
                 
                 <!-- User Menu Section -->
                 <div class="px-2 mt-3 mb-1 text-white-50 small">@User.Identity?.Name</div>
-                <a class="nav-link text-start" asp-area="Identity" asp-controller="Manage" asp-action="Index" target="_blank">
+                <a class="nav-link text-start" asp-area="Users" asp-controller="Manage" asp-action="Index" target="_blank">
                     <i class="fa-solid fa-user-gear"></i> پرونده کاربری
                 </a>
                 <a class="nav-link text-start" asp-area="" asp-controller="Home" asp-action="Index" target="_blank" rel="noopener">
                     <i class="fa-solid fa-house"></i> بازگشت به سایت
                 </a>
-                <a class="nav-link text-start text-danger" asp-area="Identity" asp-controller="Account" asp-action="Logout">
+                <a class="nav-link text-start text-danger" asp-area="Users" asp-controller="Account" asp-action="Logout">
                     <i class="fa-solid fa-right-from-bracket"></i> خروج
                 </a>
             </nav>

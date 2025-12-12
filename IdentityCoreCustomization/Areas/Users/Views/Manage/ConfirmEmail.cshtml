@@ -1,0 +1,11 @@
+﻿@model IdentityCoreCustomization.Areas.Users.Models.ManageIndexModel
+@{
+    Layout = "/Areas/Users/Views/Manage/_Layout.cshtml";
+    ViewData["Title"] = "تایید ایمیل";
+}
+
+<h4>@ViewData["Title"]</h4>
+<div class="alert alert-info">
+    @Model.StatusMessage
+</div>
+<a asp-area="Users" asp-controller="Manage" asp-action="Index" class="btn btn-primary">بازگشت به پرونده</a>

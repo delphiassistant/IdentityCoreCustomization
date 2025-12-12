@@ -20,7 +20,7 @@
             
             <!-- User Management -->
             <li>
-                <a class="dropdown-item" asp-area="Identity" asp-controller="Manage" asp-action="Index" title="مدیریت حساب کاربری">
+                <a class="dropdown-item" asp-area="Users" asp-controller="Manage" asp-action="Index" title="مدیریت حساب کاربری">
                     <i class="fa-solid fa-user-gear"></i> مدیریت حساب کاربری
                 </a>
             </li>
@@ -46,7 +46,7 @@
                 <hr class="dropdown-divider">
             </li>
             <li>
-                <a asp-area="Identity" asp-controller="Account" asp-action="Logout" title="خروج از حساب کاربری"
+                <a asp-area="Users" asp-controller="Account" asp-action="Logout" title="خروج از حساب کاربری"
                    class="dropdown-item text-danger">
                         <i class="fa-solid fa-person-walking-arrow-right"></i> خروج از حساب کاربری
                 </a>
@@ -63,12 +63,12 @@ else
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="guestAccountDropdown">
             <li>
-                <a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Register">
+                <a class="dropdown-item" asp-area="Users" asp-controller="Account" asp-action="Register">
                     <i class="fa-solid fa-user-plus"></i> ایجاد حساب کاربری
                 </a>
             </li>
             <li>
-                <a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Login">
+                <a class="dropdown-item" asp-area="Users" asp-controller="Account" asp-action="Login">
                     <i class="fa-solid fa-person-walking-arrow-right fa-flip-horizontal"></i> ورود به حساب کاربری
                 </a>
             </li>
