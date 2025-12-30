@@ -81,7 +81,6 @@ namespace IdentityCoreCustomization.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during database cleanup");
-                throw; // Re-throw so Hangfire can handle retry logic
             }
         }
     }

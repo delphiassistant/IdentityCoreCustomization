@@ -6,6 +6,22 @@ This document tracks all changes, improvements, and fixes made to the IdentityCo
 
 ---
 
+## 2025-12-30 - Version 1.8
+
+### Removed
+- Eliminated Hangfire server, dashboard, and recurring job registration.
+- Removed `Hangfire.AspNetCore` and `Hangfire.SqlServer` package dependencies.
+
+### Added
+- Implemented `DatabaseCleanupBackgroundService` using `BackgroundService` + `PeriodicTimer` to run `IDatabaseCleanerService.CleanDatabaseAsync` every 20 seconds.
+- Registered the hosted cleanup service in `Program.cs` and retained scoped `IDatabaseCleanerService`.
+
+### Changed
+- Documentation updated to describe the hosted-service-based cleanup and remove Hangfire references.
+- Cleanup service now logs errors without rethrowing to keep the background loop alive.
+
+---
+
 ## 2024-12-02 17:45 - Version 1.7
 
 ### Fixed
@@ -234,7 +250,7 @@ Area rename checklist must include:
 ## Project Information
 
 **Project**: IdentityCoreCustomization  
-**Version**: 1.7
+**Version**: 1.8
 **Target Framework**: .NET 10  
 **Project Type**: ASP.NET Core MVC with Identity  
 **Language**: C# 13.0  
@@ -245,18 +261,16 @@ Area rename checklist must include:
 - Razor Views
 - Bootstrap 5
 - Font Awesome icons
-- Hangfire (background jobs)
 - MailKit (email)
 - ParsGreen (SMS)
 - QRCoder (2FA QR codes)
+- BackgroundService for recurring cleanup
 - CheckBoxList.Core (UI component)
 - **PwnedPasswords.Validator** (password breach detection)
 
 ### NuGet Packages
 ```xml
 <PackageReference Include="CheckBoxList.Core" Version="1.1.0" />
-<PackageReference Include="Hangfire.AspNetCore" Version="1.8.22" />
-<PackageReference Include="Hangfire.SqlServer" Version="1.8.22" />
 <PackageReference Include="MailKit" Version="4.14.1" />
 <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0" />
 <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.14.0" />

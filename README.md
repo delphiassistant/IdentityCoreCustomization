@@ -16,7 +16,7 @@ Features
 - Server-side cookie session storage via `ITicketStore` implementation `DatabaseTicketStore` and `AuthenticationTicket` model.
 - Online user session management dashboard (`/UserSessions`) with Bootstrap confirmations and admin actions (force logout, cleanup expired, clear all).
 - In-memory `MemoryCacheTicketStore` utility for session ticket management (optional).
-- Hangfire integration with SQL Server storage, dashboard, and recurring job `DatabaseCleanerService` for cleanup.
+- Background hosted service for recurring cleanup of expired SMS logins, phone tokens, and authentication tickets.
 - Admin area to manage users and roles: create users, assign roles, reset passwords.
 - Role-based UI visibility with `RolesTagHelper` using `visible-to-roles` attribute in Razor.
 - `ClaimsPrincipal` helpers in `IdentityExtensions` for user id/name/email access.
@@ -419,79 +419,34 @@ public async Task<string> StoreAsync(AuthenticationTicket ticket)
 
 ---
 
-### 10) Hangfire integration and recurring jobs
+### 10) Background cleanup hosted service
 
-**Registration and dashboard**:
+- What: Hosted service using `BackgroundService` + `PeriodicTimer` to run `IDatabaseCleanerService.CleanDatabaseAsync` every 20 seconds.
+- Purpose: purge expired SMS logins, phone tokens, and authentication tickets to keep the database lean.
 
-```csharp
-services.AddHangfire(hf => hf
-    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-    .UseSimpleAssemblyNameTypeSerializer()
-    .UseRecommendedSerializerSettings()
-    .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
-
-services.AddHangfireServer();
-app.MapHangfireDashboard();
-```
-
-**Recurring job**:
+Registration:
 
 ```csharp
-RecurringJob.AddOrUpdate<IDatabaseCleanerService>(
-    "CleanDatabaseJob",
-    service => service.CleanDatabaseAsync(),
-    "*/20 * * * * *");
+services.AddScoped<IDatabaseCleanerService, DatabaseCleanerService>();
+services.AddHostedService<DatabaseCleanupBackgroundService>();
 ```
 
----
-
-### 11) ClaimsPrincipal helper extensions
-
-Helpers to get logged-in user id/name/email from claims.
-
----
-
-### 12) Cookie paths and Identity options
-
-```csharp
-services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/Identity/Account/Login";
-    options.LogoutPath = "/Identity/Account/Logout";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-});
-
-services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
-{
-    options.SignIn.RequireConfirmedAccount = false;
-    options.User.RequireUniqueEmail = false;
-});
-```
-
----
-
-### 13) Minimal hosting with endpoints and middleware
+Pipeline (unchanged):
 
 ```csharp
 app.MapControllerRoute(name: "areas", pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapHangfireDashboard();
 ```
 
+Cleaner service remains responsible for the deletion logic.
+
 ---
-
-## Additional Updates
-
-- Added `DatabaseSeeder.SeedRolesAsync(app.Services)` at startup to ensure base roles exist.
-- In views, replaced all `confirm()` prompts with Bootstrap modals for consistent UX.
-- Force-logout uses AJAX with proper anti-forgery and shows Bootstrap confirmation before posting.
 
 ## Notes and Considerations
 
 - Normalize inputs consistently for multi-identifier login; consider enforcing unique phone/email if required.
 - Add throttling/rate-limits and audit logs for SMS flows.
-- Secure Hangfire dashboard (e.g., authorization filter).
-- Periodically purge `AuthenticationTickets` to avoid DB growth.
+- Periodically purge `AuthenticationTickets` to avoid DB growth (handled by the hosted cleanup service).
 - Replace placeholder email/SMS with production providers.
 
 ## Getting Started
@@ -529,14 +484,7 @@ services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
 services.AddTransient<IEmailSender, EmailSender>();
 services.AddScoped<ISmsService, SmsService>();
 services.AddScoped<IDatabaseCleanerService, DatabaseCleanerService>();
-
-// Hangfire
-services.AddHangfire(hf => hf
-    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-    .UseSimpleAssemblyNameTypeSerializer()
-    .UseRecommendedSerializerSettings()
-    .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
-services.AddHangfireServer();
+services.AddHostedService<DatabaseCleanupBackgroundService>();
 
 // Controllers and endpoints
 services.AddControllersWithViews();
@@ -547,13 +495,6 @@ var app = builder.Build();
 
 app.MapControllerRoute(name: "areas", pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapHangfireDashboard();
-
-// Recurring job
-RecurringJob.AddOrUpdate<IDatabaseCleanerService>(
-    "CleanDatabaseJob",
-    service => service.CleanDatabaseAsync(),
-    "*/20 * * * * *");
 
 // Seed roles
 await DatabaseSeeder.SeedRolesAsync(app.Services);

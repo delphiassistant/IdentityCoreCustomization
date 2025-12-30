@@ -315,41 +315,19 @@ Effect: keeps view logic clean; avoids duplicating role checks.
 
 ---
 
-## 10) Hangfire integration and recurring jobs
+## 10) Background cleanup hosted service
 
-- What: Hangfire with SQL Server storage + dashboard. A recurring job cleans expired SMS logins and pre-registrations.
+- What: Hosted service using `BackgroundService` + `PeriodicTimer` to run `IDatabaseCleanerService.CleanDatabaseAsync` every 20 seconds.
+- Purpose: purge expired SMS logins, phone tokens, and authentication tickets to keep the database lean.
 
-Registration and dashboard:
-
-```csharp
-services.AddHangfire(hf => hf
-    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-    .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
-services.AddHangfireServer();
-app.MapHangfireDashboard();
-```
-
-Recurring job:
+Registration:
 
 ```csharp
-var dbCleanerService = app.Services.GetRequiredService<IDatabaseCleanerService>();
-RecurringJob.AddOrUpdate("CleanDatabaseJob", () => dbCleanerService.CleanDatabaseAsync(), "*/20 * * * * *");
+services.AddScoped<IDatabaseCleanerService, DatabaseCleanerService>();
+services.AddHostedService<DatabaseCleanupBackgroundService>();
 ```
 
-Cleaner service:
-
-```csharp
-public async Task CleanDatabaseAsync()
-{
-    var expiredSmsLogins = await db.UserLoginWithSms.Where(l => l.ExpireDate < DateTime.Now).ToListAsync();
-    db.UserLoginWithSms.RemoveRange(expiredSmsLogins);
-    var expiredPreRegs = await db.PreRegistrations.Where(l => l.ExpireTime < DateTime.Now).ToListAsync();
-    db.PreRegistrations.RemoveRange(expiredPreRegs);
-    await db.SaveChangesAsync();
-}
-```
-
-Effect: background processing support; automatic cleanup of transient auth data.
+Cleaner service remains responsible for the deletion logic.
 
 ---
 
@@ -395,9 +373,8 @@ Effect: routes align with Identity area; registration less strict (duplicate ema
 - What: `Program.cs` contains all service registrations and pipeline, replacing classic Startup.
 
 ```csharp
-app.MapControllerRoute(name: "areas", pattern: "{area:exists}/{controller=Home}/{action=Index}/{idی}");
-app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{idی}");
-app.MapHangfireDashboard();
+app.MapControllerRoute(name: "areas", pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 ```
 
 Effect: aligns with ASP.NET Core 8 minimal hosting model.
@@ -408,6 +385,5 @@ Effect: aligns with ASP.NET Core 8 minimal hosting model.
 
 - Normalize inputs consistently for multi-identifier login; consider enforcing unique phone/email if required.
 - Add throttling/rate-limits and audit logs for SMS flows.
-- Secure Hangfire dashboard (e.g., authorization filter).
-- Periodically purge `AuthenticationTickets` to avoid DB growth.
+- Periodically purge `AuthenticationTickets` to avoid DB growth (handled by the hosted cleanup service).
 - Consider using production-grade email/SMS providers and robust error handling.
