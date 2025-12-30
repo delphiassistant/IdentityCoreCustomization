@@ -95,17 +95,17 @@ services.AddIdentity<ApplicationUser, ApplicationRole>(options => { ... })
 The password breach check is automatically enforced in:
 
 ### 1. User Registration
-- **Route**: `/Identity/Account/Register`
+- **Route**: `/Users/Account/Register`
 - **Trigger**: When a new user signs up
 - **Behavior**: Registration fails if password is pwned
 
 ### 2. Password Change (User)
-- **Route**: `/Identity/Manage/ChangePassword`
+- **Route**: `/Users/Manage/ChangePassword`
 - **Trigger**: When user changes their password
 - **Behavior**: Password change fails if new password is pwned
 
 ### 3. Password Reset
-- **Route**: `/Identity/Account/ResetPassword`
+- **Route**: `/Users/Account/ResetPassword`
 - **Trigger**: After user requests password reset
 - **Behavior**: Reset fails if new password is pwned
 

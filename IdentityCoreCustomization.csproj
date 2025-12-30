@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <UserSecretsId>aspnet-IdentityCoreCustomization-4181714E-D8ED-48C3-BB18-F8FADA7C7FDD</UserSecretsId>
     <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+    <NeutralLanguage>fa-IR</NeutralLanguage>
+    <SatelliteResourceLanguages>fa-IR</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>

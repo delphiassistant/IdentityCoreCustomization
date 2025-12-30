@@ -27,10 +27,10 @@ This document tracks all changes, improvements, and fixes made to the IdentityCo
 ### Fixed
 
 #### Hardcoded Area References After Identity→Users Rename ⚠️ **CRITICAL**
-- **Location**: Multiple controller files with hardcoded "Identity" area strings
+- **Location**: Multiple controller files with hardcoded old area strings
 - **Issue**: After renaming the Identity area to Users, OAuth redirects and email confirmation links were broken
-  - Google OAuth was redirecting to `/Account/ExternalLoginCallback?area=Identity` causing 404 errors
-  - Email confirmation links, password reset links, and other callback URLs still referenced the old "Identity" area
+  - Google OAuth was redirecting to `/Account/ExternalLoginCallback` using the old area name, causing 404 errors
+  - Email confirmation links, password reset links, and other callback URLs still referenced the old area name
   - Root cause: Hardcoded area name strings in `Url.Action()` calls were not updated during the rename
 - **Files Modified**:
   1. **AccountController.cs** - Fixed 4 hardcoded references
@@ -44,7 +44,7 @@ This document tracks all changes, improvements, and fixes made to the IdentityCo
 - **Fix Applied**:
   ```csharp
   // BEFORE (causing 404 errors)
-  new { area = "Identity", ... }
+  new { area = "[old Identity area]", ... }
   
   // AFTER (correct routing)
   new { area = "Users", ... }
@@ -155,7 +155,7 @@ Area rename checklist must include:
   - Integrated Have I Been Pwned (HIBP) API for password breach detection
   - Uses k-anonymity model for secure password checking (only first 5 characters of SHA-1 hash sent)
   - Automatic validation during user registration and password changes
-  - Applied to both end-user registration (`/Identity/Account/Register`) and admin user management (`/Admin/Users/Create`, `/Admin/Users/ChangePassword`)
+  - Applied to both end-user registration (`/Users/Account/Register`) and admin user management (`/Admin/Users/Create`, `/Admin/Users/ChangePassword`)
   - Custom Persian error message: "هشدار: این رمز عبور در لیست رمزهای نشت‌شده دیده شده است. لطفاً یک رمز عبور قوی‌تر و منحصربه‌فرد انتخاب کنید."
 - **Security Impact**: 
   - Prevents users from choosing passwords that have appeared in known data breaches

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityCoreCustomization", "IdentityCoreCustomization\IdentityCoreCustomization.csproj", "{AB8E0493-1346-4152-B614-193B2BB6B7F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityCoreCustomization", "IdentityCoreCustomization.csproj", "{AB8E0493-1346-4152-B614-193B2BB6B7F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

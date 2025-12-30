@@ -156,7 +156,7 @@ public async Task<IActionResult> LoginWithSmsResponse(LoginWithSmsResponseModel 
     if (row != null && row.AuthenticationCode == model.AuthenticationCode)
     {
         await _signInManager.SignInAsync(row.User, true);
-        return RedirectToAction("Index", "Manage", new { area = "Identity" });
+        return RedirectToAction("Index", "Manage", new { area = "Users" });
     }
     // handle errors
 }
@@ -352,9 +352,9 @@ Effect: reduces boilerplate in controllers/views.
 ```csharp
 services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Identity/Account/Login";
-    options.LogoutPath = "/Identity/Account/Logout";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.LoginPath = "/Users/Account/Login";
+    options.LogoutPath = "/Users/Account/Logout";
+    options.AccessDeniedPath = "/Users/Account/AccessDenied";
 });
 
 services.AddIdentity<ApplicationUser, ApplicationRole>(options =>

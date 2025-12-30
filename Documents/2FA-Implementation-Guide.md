@@ -44,7 +44,7 @@ This document outlines the complete Two-Factor Authentication (2FA) implementati
 ### Setup Process
 
 #### 1. Enable Authenticator App
-**Route:** `/Identity/Manage/EnableAuthenticator`
+**Route:** `/Users/Manage/EnableAuthenticator`
 
 **Features:**
 - **QR Code Generation:** Server-side QR code using QRCoder library (200x200px)
@@ -70,7 +70,7 @@ This document outlines the complete Two-Factor Authentication (2FA) implementati
 
 ### Login with Authenticator
 
-**Route:** `/Identity/Account/LoginWith2fa`
+**Route:** `/Users/Account/LoginWith2fa`
 
 **Features:**
 - Enter 6-digit TOTP code from authenticator app
@@ -87,7 +87,7 @@ This document outlines the complete Two-Factor Authentication (2FA) implementati
 
 ### Reset Authenticator
 
-**Route:** `/Identity/Manage/ResetAuthenticatorWarning`
+**Route:** `/Users/Manage/ResetAuthenticatorWarning`
 
 **Features:**
 - Warning page with consequences
@@ -102,7 +102,7 @@ This document outlines the complete Two-Factor Authentication (2FA) implementati
 
 ### Setup Process
 
-**Route:** `/Identity/Manage/AddPhoneNumber`
+**Route:** `/Users/Manage/AddPhoneNumber`
 
 **Features:**
 - Phone number verification via SMS
@@ -112,7 +112,7 @@ This document outlines the complete Two-Factor Authentication (2FA) implementati
 
 ### Login with SMS
 
-**Route:** `/Identity/Account/LoginWith2faSms`
+**Route:** `/Users/Account/LoginWith2faSms`
 
 **Features:**
 - SMS code sent to registered phone number
@@ -132,11 +132,11 @@ This document outlines the complete Two-Factor Authentication (2FA) implementati
 - Each code usable only once
 
 **Manual Regeneration:**
-**Route:** `/Identity/Manage/GenerateRecoveryCodes` (POST)
+**Route:** `/Users/Manage/GenerateRecoveryCodes` (POST)
 
 ### Display and Download
 
-**Route:** `/Identity/Manage/ShowRecoveryCodes`
+**Route:** `/Users/Manage/ShowRecoveryCodes`
 
 **Features:**
 - ⚠️ **Security Warning:** Displayed prominently
@@ -167,7 +167,7 @@ This document outlines the complete Two-Factor Authentication (2FA) implementati
 
 ### Using Recovery Codes
 
-**Route:** `/Identity/Account/LoginWithRecoveryCode`
+**Route:** `/Users/Account/LoginWithRecoveryCode`
 
 **Features:**
 - Enter recovery code (spaces/hyphens ignored)
@@ -189,12 +189,12 @@ This document outlines the complete Two-Factor Authentication (2FA) implementati
 
 | Model | Purpose | Location |
 |-------|---------|----------|
-| `EnableAuthenticatorModel` | QR code setup | Areas/Identity/Models/ |
-| `ShowRecoveryCodesModel` | Display recovery codes | Areas/Identity/Models/ |
-| `ResetAuthenticatorWarningModel` | Reset confirmation | Areas/Identity/Models/ |
-| `LoginWith2faModel` | TOTP login | Areas/Identity/Models/ |
-| `LoginWithRecoveryCodeModel` | Recovery code login | Areas/Identity/Models/ |
-| `TwoFactorAuthenticationModel` | 2FA dashboard (updated) | Areas/Identity/Models/ |
+| `EnableAuthenticatorModel` | QR code setup | Areas/Users/Models/ |
+| `ShowRecoveryCodesModel` | Display recovery codes | Areas/Users/Models/ |
+| `ResetAuthenticatorWarningModel` | Reset confirmation | Areas/Users/Models/ |
+| `LoginWith2faModel` | TOTP login | Areas/Users/Models/ |
+| `LoginWithRecoveryCodeModel` | Recovery code login | Areas/Users/Models/ |
+| `TwoFactorAuthenticationModel` | 2FA dashboard (updated) | Areas/Users/Models/ |
 
 ### Controller Actions
 
@@ -270,7 +270,7 @@ Confirmed: Verification status
 
 ### First-Time Setup (Authenticator App)
 
-1. Navigate to `/Identity/Manage/TwoFactorAuthentication`
+1. Navigate to `/Users/Manage/TwoFactorAuthentication`
 2. Click "افزودن برنامه احراز هویت" (Add Authenticator App)
 3. Install authenticator app (Google/Microsoft Authenticator)
 4. Scan QR code OR copy manual key
@@ -284,27 +284,27 @@ Confirmed: Verification status
 **Scenario 1: Authenticator App Available**
 1. Enter username/password
 2. System detects authenticator configured
-3. Redirected to `/Identity/Account/LoginWith2fa`
+3. Redirected to `/Users/Account/LoginWith2fa`
 4. Enter 6-digit TOTP code from app
 5. Optionally check "Remember this device"
 6. Successfully logged in
 
 **Scenario 2: Authenticator Not Available**
 1. Click recovery code link
-2. Redirected to `/Identity/Account/LoginWithRecoveryCode`
+2. Redirected to `/Users/Account/LoginWithRecoveryCode`
 3. Enter one recovery code
 4. Successfully logged in (code consumed)
 
 **Scenario 3: SMS-Based 2FA**
 1. Enter username/password (no authenticator)
 2. System sends SMS code
-3. Redirected to `/Identity/Account/LoginWith2faSms`
+3. Redirected to `/Users/Account/LoginWith2faSms`
 4. Enter SMS code
 5. Successfully logged in
 
 ### Managing 2FA Settings
 
-**Dashboard:** `/Identity/Manage/TwoFactorAuthentication`
+**Dashboard:** `/Users/Manage/TwoFactorAuthentication`
 
 Available Actions:
 - ✅ View authenticator status
@@ -511,9 +511,9 @@ Available Actions:
 
 ### Related Files
 
-- **Controllers:** `Areas/Identity/Controllers/ManageController.cs`, `AccountController.cs`
-- **Views:** `Areas/Identity/Views/Manage/`, `Areas/Identity/Views/Account/`
-- **Models:** `Areas/Identity/Models/`
+- **Controllers:** `Areas/Users/Controllers/ManageController.cs`, `AccountController.cs`
+- **Views:** `Areas/Users/Views/Manage/`, `Areas/Users/Views/Account/`
+- **Models:** `Areas/Users/Models/`
 - **Services:** `Services/SmsService.cs`
 
 ### Contact

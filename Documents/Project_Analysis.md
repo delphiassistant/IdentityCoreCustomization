@@ -267,7 +267,7 @@ As a user, I want to:
 **Implementation Tasks:**
 1. Parse User-Agent for device/browser info
 2. Add GeoIP lookup for approximate location
-3. Create `/Identity/Manage/Sessions` page
+3. Create `/Users/Manage/Sessions` page
 4. Add logout actions for individual/all sessions
 
 ### 7. **Password Policy - Basic Implementation**

@@ -5,7 +5,7 @@ Goal
 
 Features
 - .NET 8 minimal hosting with all setup consolidated in `Program.cs`.
-- MVC controllers in Identity area replacing default Razor Pages Identity.
+- MVC controllers in `Users` area (renamed from Identity) replacing default Razor Pages Identity.
 - Identity with `int` keys: custom `ApplicationUser`, `ApplicationRole`, and related entities.
 - Custom EF Core schema mapping: renamed tables/columns in `ApplicationDbContext` (e.g., `Users`, `Roles`, `UserID`).
 - Persian `IdentityErrorDescriber` for localized Identity error messages.
@@ -27,7 +27,7 @@ Features
 
 - Set `DefaultConnection` in `appsettings.json` to your SQL Server.
 - Apply migrations (e.g., `dotnet ef database update`).
-- Run the app (`dotnet run`) and browse to `/Identity/Account/Login` or `/Admin`.
+- Run the app (`dotnet run`) and browse to `/Users/Account/Login` or `/Admin`.
 
 
 ## 🔐 Two-Factor Authentication (2FA) - NEW ✨
@@ -69,12 +69,12 @@ This project now includes a **complete Two-Factor Authentication (2FA)** impleme
 
 | Route | Purpose |
 |-------|---------|
-| `/Identity/Manage/TwoFactorAuthentication` | 2FA management dashboard |
-| `/Identity/Manage/EnableAuthenticator` | Setup authenticator app with QR code |
-| `/Identity/Manage/ShowRecoveryCodes` | View and download recovery codes |
-| `/Identity/Account/LoginWith2fa` | Login with authenticator TOTP code |
-| `/Identity/Account/LoginWithRecoveryCode` | Login with recovery code |
-| `/Identity/Account/LoginWith2faSms` | Login with SMS verification code |
+| `/Users/Manage/TwoFactorAuthentication` | 2FA management dashboard |
+| `/Users/Manage/EnableAuthenticator` | Setup authenticator app with QR code |
+| `/Users/Manage/ShowRecoveryCodes` | View and download recovery codes |
+| `/Users/Account/LoginWith2fa` | Login with authenticator TOTP code |
+| `/Users/Account/LoginWithRecoveryCode` | Login with recovery code |
+| `/Users/Account/LoginWith2faSms` | Login with SMS verification code |
 
 ### Technical Implementation
 
@@ -99,7 +99,7 @@ This project now includes a **complete Two-Factor Authentication (2FA)** impleme
 
 For complete documentation including setup workflows, security considerations, testing checklists, and troubleshooting, see:
 
-**[2FA Implementation Guide](2FA-Implementation-Guide.md)** 📖
+**[2FA Implementation Guide](Documents/2FA-Implementation-Guide.md)** 📖
 
 The detailed guide includes:
 - Complete feature overview and status
@@ -269,7 +269,7 @@ public async Task<IActionResult> LoginWithSmsResponse(LoginWithSmsResponseModel 
     if (row != null && row.AuthenticationCode == model.AuthenticationCode)
     {
         await _signInManager.SignInAsync(row.User, true);
-        return RedirectToAction("Index", "Manage", new { area = "Identity" });
+        return RedirectToAction("Index", "Manage", new { area = "Users" });
     }
     // handle errors
 }
