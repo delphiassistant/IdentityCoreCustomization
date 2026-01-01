@@ -319,10 +319,11 @@ namespace IdentityCoreCustomization
                 throw new ArgumentNullException(nameof(normalizedUserName));
             }
 
-            // IMPROVED: More efficient query with better normalization and indexing considerations
+            var normalized = normalizedUserName.ToUpperInvariant();
+
             var dbUser = await _db.Users.FirstOrDefaultAsync(u =>
-                    u.NormalizedUserName == normalizedUserName.ToUpperInvariant()
-                 || u.NormalizedEmail == normalizedUserName.ToUpperInvariant()
+                    u.NormalizedUserName == normalized
+                 || u.NormalizedEmail == normalized
                  || u.PhoneNumber == normalizedUserName, // Phone numbers are not normalized
                 cancellationToken);
 
@@ -774,10 +775,17 @@ namespace IdentityCoreCustomization
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
+            if (string.IsNullOrWhiteSpace(roleName))
+            {
+                throw new ArgumentException("Value cannot be null or empty.", nameof(roleName));
+            }
+
+            var normalizedRoleName = roleName.ToUpperInvariant();
+
             IList<ApplicationUser> users = await _db.UserRoles
                 .Include(ur => ur.Role)
                 .Include(ur => ur.User)
-                .Where(ur => ur.Role.Name == roleName)
+                .Where(ur => ur.Role.NormalizedName == normalizedRoleName || ur.Role.Name == roleName)
                 .Select(ur => ur.User)
                 .ToListAsync(cancellationToken);
             return users;
