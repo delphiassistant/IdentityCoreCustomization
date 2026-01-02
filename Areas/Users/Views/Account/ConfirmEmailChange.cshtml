@@ -1,11 +1,95 @@
 ﻿@{
-    ViewData["Title"] = "تایید تغییر ایمیل شما";
+    ViewData["Title"] = "تأیید تغییر ایمیل";
+    Layout = "~/Areas/Users/Views/Shared/_AuthLayout.cshtml";
 }
 
-<h1>@ViewData["Title"]</h1>
-@{ var statusMessageClass = ViewBag.StatusMessage.StartsWith("خطا") ? "danger" : "success"; }
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="icon">
+                @if (!string.IsNullOrEmpty(ViewBag.StatusMessage) && !ViewBag.StatusMessage.ToString().StartsWith("خطا"))
+                {
+                    <i class="fa-solid fa-circle-check"></i>
+                }
+                else
+                {
+                    <i class="fa-solid fa-circle-xmark"></i>
+                }
+            </div>
+            <h1>@ViewData["Title"]</h1>
+        </div>
 
-<div class="alert alert-@statusMessageClass alert-dismissible fade show" role="alert">
-    @ViewBag.StatusMessage
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="auth-body">
+            @if (!string.IsNullOrEmpty(ViewBag.StatusMessage))
+            {
+                var statusClass = ViewBag.StatusMessage.StartsWith("خطا") ? "danger" : "success";
+                var iconClass = ViewBag.StatusMessage.StartsWith("خطا") ? "circle-exclamation" : "check-circle";
+                
+                <div class="auth-alert auth-alert-@statusClass">
+                    <i class="fa-solid fa-@iconClass"></i>
+                    <p class="mb-0">
+                        @ViewBag.StatusMessage
+                    </p>
+                </div>
+
+                @if (!ViewBag.StatusMessage.ToString().StartsWith("خطا"))
+                {
+                    <div class="text-center py-4">
+                        <div class="feature-icon feature-icon-success mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                            <i class="fa-solid fa-envelope-circle-check"></i>
+                        </div>
+                        <h4 class="mb-3">ایمیل شما با موفقیت تغییر کرد</h4>
+                        <p class="text-muted mb-4">
+                            آدرس ایمیل جدید شما تأیید و فعال شد.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <div class="feature-icon feature-icon-danger mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <h4 class="mb-3">خطا در تغییر ایمیل</h4>
+                        <p class="text-muted mb-4">
+                            لینک تأیید نامعتبر یا منقضی شده است.
+                        </p>
+                    </div>
+                }
+            }
+
+            <div class="auth-links">
+                <div class="auth-divider">
+                    <span>مراحل بعدی</span>
+                </div>
+                
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a asp-area="Users" asp-controller="Manage" asp-action="Index" class="auth-link" style="color: var(--auth-primary); font-weight: 600;">
+                        <i class="fa-solid fa-user-gear text-primary"></i>
+                        <span>مدیریت حساب کاربری</span>
+                    </a>
+                    
+                    <a href="/" class="auth-link">
+                        <i class="fa-solid fa-home text-info"></i>
+                        <span>صفحه اصلی</span>
+                    </a>
+                }
+                else
+                {
+                    <a asp-action="Login" class="auth-link" style="color: var(--auth-primary); font-weight: 600;">
+                        <i class="fa-solid fa-right-to-bracket fa-flip-horizontal text-primary"></i>
+                        <span>ورود به حساب کاربری</span>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="back-to-home">
+        <a href="/">
+            <i class="fa-solid fa-home"></i>
+            بازگشت به صفحه اصلی
+        </a>
+    </div>
 </div>

@@ -3,64 +3,101 @@
     ViewData["Title"] = "کدهای بازیابی";
 }
 
-<partial name="_StatusMessage" for="StatusMessage" />
-<h4>@ViewData["Title"]</h4>
-<div class="alert alert-warning" role="alert">
-    <p>
-        <span class="fa-solid fa-triangle-exclamation"></span>
-        <strong>این کدهای بازیابی را در مکانی امن نگه دارید.</strong>
-    </p>
-    <p>
-        اگر دسترسی به دستگاه احراز هویت خود را از دست بدهید، می‌توانید از این کدها برای ورود به سیستم استفاده کنید.
-        <strong>هر کد فقط یک بار قابل استفاده است.</strong>
-        اگر تمام کدهای بازیابی خود را استفاده کردید، می‌توانید کدهای جدید ایجاد کنید.
-    </p>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="recovery-codes-container p-3 border rounded bg-light" id="recovery-codes-container">
-            @foreach (var code in Model.RecoveryCodes)
-            {
-                <code class="d-block mb-2 recovery-code">@code</code>
-            }
+<div class="page-header">
+    <div class="d-flex align-items-center">
+        <div class="page-title-icon">
+            <i class="fa-solid fa-key"></i>
+        </div>
+        <div class="flex-grow-1">
+            <h1 class="page-title mb-0">کدهای بازیابی</h1>
+            <p class="page-description">کدهای بازیابی احراز هویت دو مرحله‌ای شما</p>
         </div>
     </div>
 </div>
-<div class="mt-3">
-    <button type="button" class="btn btn-success me-2" id="downloadCodesBtn">
-        <i class="fa-solid fa-download"></i> دانلود کدها
-    </button>
-    <a asp-action="TwoFactorAuthentication" class="btn btn-primary">تایید</a>
-</div>
 
-@section Styles {
-    <style>
-        .recovery-codes-container {
-            font-family: 'Courier New', monospace;
-            direction: ltr;
-            text-align: left;
-        }
-        .recovery-code {
-            font-size: 1.1em;
-            padding: 5px;
-            background-color: #fff;
-            border: 1px solid #dee2e6;
-        }
-    </style>
-}
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="manage-card">
+            <div class="manage-card-header">
+                <h2 class="manage-card-title">
+                    <i class="fa-solid fa-shield-halved text-warning"></i>
+                    کدهای بازیابی شما
+                </h2>
+            </div>
+            <div class="manage-card-body">
+                <div class="alert alert-warning">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> هشدار مهم
+                    </h6>
+                    <p class="mb-2"><strong>این کدهای بازیابی را در مکانی امن نگه دارید.</strong></p>
+                    <ul class="small mb-0">
+                        <li>اگر دسترسی به دستگاه احراز هویت خود را از دست بدهید، می‌توانید از این کدها برای ورود استفاده کنید</li>
+                        <li><strong>هر کد فقط یک بار قابل استفاده است</strong></li>
+                        <li>اگر تمام کدها را استفاده کردید، می‌توانید کدهای جدید ایجاد کنید</li>
+                    </ul>
+                </div>
+
+                <div class="recovery-codes-container p-4 border rounded bg-light" id="recovery-codes-container" style="font-family: 'Courier New', monospace; direction: ltr; text-align: left;">
+                    @foreach (var code in Model.RecoveryCodes)
+                    {
+                        <code class="d-block mb-2 recovery-code" style="font-size: 1.1em; padding: 8px; background-color: #fff; border: 1px solid #dee2e6; border-radius: 4px;">@code</code>
+                    }
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="button" class="manage-btn manage-btn-primary" id="downloadCodesBtn">
+                        <i class="fa-solid fa-download"></i> دانلود کدها
+                    </button>
+                    <a asp-action="TwoFactorAuthentication" class="btn btn-success">
+                        <i class="fa-solid fa-check"></i> تأیید
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="manage-card">
+            <div class="manage-card-header">
+                <h2 class="manage-card-title">
+                    <i class="fa-solid fa-info-circle text-info"></i>
+                    راهنما
+                </h2>
+            </div>
+            <div class="manage-card-body">
+                <h6 class="fw-bold mb-2">چگونه استفاده کنیم؟</h6>
+                <ol class="small mb-3">
+                    <li>این کدها را دانلود یا چاپ کنید</li>
+                    <li>در مکانی امن نگه دارید</li>
+                    <li>هنگام ورود، یکی از کدها را وارد کنید</li>
+                    <li>هر کد فقط یک بار کار می‌کند</li>
+                </ol>
+
+                <div class="alert alert-info mb-0">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-lightbulb"></i> نکته
+                    </h6>
+                    <p class="small mb-0">
+                        توصیه می‌شود این کدها را در چند مکان مختلف (فیزیکی و دیجیتال) ذخیره کنید.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
         document.getElementById('downloadCodesBtn').addEventListener('click', function() {
-            // Get all recovery codes
             var codes = [];
             var codeElements = document.querySelectorAll('.recovery-code');
             codeElements.forEach(function(element) {
                 codes.push(element.textContent.trim());
             });
             
-            // Create file content
-            var content = 'کدهای بازیابی احراز هویت دو مرحله ای\n';
+            var content = 'کدهای بازیابی احراز هویت دو مرحله‌ای\n';
             content += '==========================================\n\n';
             content += 'تاریخ ایجاد: ' + new Date().toLocaleString('fa-IR') + '\n\n';
             content += 'هشدار: این کدها را در مکانی امن نگه دارید.\n';
@@ -73,7 +110,6 @@
             content += '\n==========================================\n';
             content += 'این کدها را حذف نکنید!\n';
             
-            // Create blob and download
             var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
             var url = window.URL.createObjectURL(blob);
             var a = document.createElement('a');

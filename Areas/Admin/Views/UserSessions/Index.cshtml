@@ -5,238 +5,315 @@
 
 @section Styles {
     <style>
+        .page-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .page-header h1 {
+            color: white;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-header h1::after {
+            display: none;
+        }
+
         .online-status {
             display: inline-block;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            margin-left: 5px;
+            margin-left: 8px;
+            box-shadow: 0 0 8px currentColor;
+            animation: pulse 2s ease-in-out infinite;
         }
-        .status-online { background-color: #28a745; }
-        .status-inactive { background-color: #ffc107; }
-        .status-offline { background-color: #dc3545; }
+
+        @@keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .status-online { background-color: #10b981; }
+        .status-inactive { background-color: #f59e0b; }
+        .status-offline { background-color: #ef4444; }
         
         .session-card {
-            transition: all 0.3s ease;
-            border-left: 4px solid #007bff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
+
         .session-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .session-card .card-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-bottom: 2px solid #e5e7eb;
+            font-weight: 600;
         }
         
         .refresh-indicator {
             opacity: 0;
             transition: opacity 0.3s ease;
         }
+
         .refresh-indicator.show {
             opacity: 1;
         }
         
         .auto-refresh-controls {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            background: white;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .stats-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+        }
+
+        .action-toolbar {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
     </style>
 }
 
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="fa-solid fa-users"></i> @ViewData["Title"]</h1>
-        <div class="d-flex align-items-center">
-            <span class="badge bg-success fs-6 me-2">
-                <i class="fa-solid fa-circle"></i> آنلاین: @ViewBag.OnlineUserCount
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="mb-0">
+                <i class="fa-solid fa-users-gear"></i> @ViewData["Title"]
+            </h1>
+            <p class="mb-0 mt-2 opacity-75">مشاهده و مدیریت کاربران فعال سیستم</p>
+        </div>
+        <div class="d-flex flex-column align-items-end gap-2">
+            <span class="badge bg-light text-dark stats-badge">
+                <i class="fa-solid fa-circle text-success"></i> آنلاین: @ViewBag.OnlineUserCount
             </span>
-            <span class="badge bg-info fs-6 me-2">
+            <span class="badge bg-light text-dark stats-badge">
                 <i class="fa-solid fa-clock"></i> نشست فعال: @ViewBag.ActiveSessionCount
             </span>
+        </div>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        <i class="fa-solid fa-circle-exclamation"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["WarningMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show">
+        <i class="fa-solid fa-exclamation-triangle"></i> @TempData["WarningMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Auto-refresh Controls -->
+<div class="auto-refresh-controls">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="autoRefreshToggle" checked>
+                <label class="form-check-label fw-semibold" for="autoRefreshToggle">
+                    <i class="fa-solid fa-arrows-rotate text-primary"></i> بروزرسانی خودکار (هر 30 ثانیه)
+                </label>
+            </div>
+        </div>
+        <div class="col-md-6 text-end">
             <button class="btn btn-outline-primary btn-sm" onclick="refreshOnlineUsers()">
-                <i class="fa-solid fa-refresh" id="refreshIcon"></i> بروزرسانی
+                <i class="fa-solid fa-refresh" id="refreshIcon"></i> بروزرسانی دستی
             </button>
+            <small class="text-muted d-block mt-2">
+                آخرین بروزرسانی: <span id="lastRefresh" class="fw-semibold">@ViewBag.RefreshTime</span>
+                <span class="refresh-indicator ms-2" id="refreshIndicator">
+                    <i class="fa-solid fa-spinner fa-spin text-primary"></i>
+                </span>
+            </small>
         </div>
     </div>
+</div>
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show">
-            <i class="fa-solid fa-circle-exclamation"></i> @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (TempData["WarningMessage"] != null)
-    {
-        <div class="alert alert-warning alert-dismissible fade show">
-            <i class="fa-solid fa-exclamation-triangle"></i> @TempData["WarningMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    <!-- Auto-refresh Controls -->
-    <div class="auto-refresh-controls">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="autoRefreshToggle" checked>
-                    <label class="form-check-label" for="autoRefreshToggle">
-                        <i class="fa-solid fa-arrows-rotate"></i> بروزرسانی خودکار (هر 30 ثانیه)
-                    </label>
-                </div>
-            </div>
-            <div class="col-md-6 text-end">
-                <small class="text-muted">
-                    آخرین بروزرسانی: <span id="lastRefresh">@ViewBag.RefreshTime</span>
-                    <span class="refresh-indicator ms-2" id="refreshIndicator">
-                        <i class="fa-solid fa-spinner fa-spin text-primary"></i>
-                    </span>
-                </small>
-            </div>
-        </div>
+<!-- Management Actions -->
+<div class="action-toolbar">
+    <div class="d-flex flex-wrap gap-2">
+        <form id="cleanupForm" method="post" asp-action="CleanupExpiredSessions" style="display: inline;">
+            @Html.AntiForgeryToken()
+            <button type="button" id="cleanupBtn" class="btn btn-warning">
+                <i class="fa-solid fa-broom"></i> پاک‌سازی نشست‌های منقضی
+            </button>
+        </form>
+        <form id="clearAllForm" method="post" asp-action="ClearAllSessions" style="display: inline;">
+            @Html.AntiForgeryToken()
+            <button type="button" id="clearAllBtn" class="btn btn-danger">
+                <i class="fa-solid fa-power-off"></i> خروج همه کاربران
+            </button>
+        </form>
     </div>
+</div>
 
-    <!-- Management Actions -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-                <button class="btn btn-outline-secondary" onclick="refreshOnlineUsers()">
-                    <i class="fa-solid fa-arrows-rotate"></i> بروزرسانی فهرست
-                </button>
-                <form id="cleanupForm" method="post" asp-action="CleanupExpiredSessions" style="display: inline;">
-                    @Html.AntiForgeryToken()
-                    <button type="button" id="cleanupBtn" class="btn btn-outline-warning">
-                        <i class="fa-solid fa-broom"></i> پاک‌سازی نشست‌های منقضی
-                    </button>
-                </form>
-                <form id="clearAllForm" method="post" asp-action="ClearAllSessions" style="display: inline;">
-                    @Html.AntiForgeryToken()
-                    <button type="button" id="clearAllBtn" class="btn btn-danger">
-                        <i class="fa-solid fa-power-off"></i> خروج همه کاربران
-                    </button>
-                </form>
-        </div>
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center">
+        <i class="fa-solid fa-info-circle fa-3x mb-3 d-block"></i>
+        <h4>هیچ کاربری آنلاین نیست</h4>
+        <p class="mb-0">در حال حاضر هیچ کاربر فعالی در سیستم موجود نیست.</p>
     </div>
-
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info text-center">
-            <i class="fa-solid fa-info-circle fa-2x mb-3"></i>
-            <h4>هیچ کاربری آنلاین نیست</h4>
-            <p class="mb-0">در حال حاضر هیچ کاربر فعالی در سیستم موجود نیست.</p>
-        </div>
-    }
-    else
-    {
-        <!-- Online Users List -->
-        <div class="row" id="onlineUsersList">
-            @foreach (var user in Model)
-            {
-                <div class="col-lg-6 col-xl-4 mb-4">
-                    <div class="card session-card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <span class="online-status @(user.IsActive ? "status-online" : user.IsExpired ? "status-offline" : "status-inactive")"></span>
-                                <strong>@user.UserName</strong>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <form method="post" asp-controller="UserSessions" asp-action="ForceLogoutUser">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="userId" value="@user.UserId" />
-                                            <input type="hidden" name="userName" value="@user.UserName" />
-                                            <button type="button" class="dropdown-item text-danger force-logout-btn" 
-                                                    data-username="@user.UserName">
-                                                <i class="fa-solid fa-sign-out-alt"></i> خروج اجباری
-                                            </button>
-                                        </form>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="javascript:void(0)" onclick="showUserDetails('@user.UserId', '@user.UserName')">
-                                            <i class="fa-solid fa-info-circle"></i> جزئیات نشست
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
+}
+else
+{
+    <!-- Online Users List -->
+    <div class="row" id="onlineUsersList">
+        @foreach (var user in Model)
+        {
+            <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="card session-card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <span class="online-status @(user.IsActive ? "status-online" : user.IsExpired ? "status-offline" : "status-inactive")"></span>
+                            <i class="fa-solid fa-user-circle text-primary ms-2"></i>
+                            <strong>@user.UserName</strong>
                         </div>
-                        <div class="card-body">
-                            <div class="row g-2">
-                                <div class="col-12">
-                                    <small class="text-muted d-block">
-                                        <i class="fa-solid fa-envelope"></i> ایمیل:
-                                    </small>
-                                    <span class="fw-normal">@(user.Email ?? "ثبت نشده")</span>
-                                </div>
-                                <div class="col-12">
-                                    <small class="text-muted d-block">
-                                        <i class="fa-solid fa-phone"></i> تلفن:
-                                    </small>
-                                    <span class="fw-normal">@(user.PhoneNumber ?? "ثبت نشده")</span>
-                                </div>
-                                <div class="col-6">
-                                    <small class="text-muted d-block">
-                                        <i class="fa-solid fa-clock"></i> مدت نشست:
-                                    </small>
-                                    <span class="fw-normal">@user.SessionDuration.ToString(@"hh\:mm\:ss")</span>
-                                </div>
-                                <div class="col-6">
-                                    <small class="text-muted d-block">
-                                        <i class="fa-solid fa-history"></i> آخرین فعالیت:
-                                    </small>
-                                    <span class="fw-normal">@user.TimeSinceLastActivity.ToString(@"hh\:mm\:ss") پیش</span>
-                                </div>
-                                <div class="col-12">
-                                    <small class="text-muted d-block">
-                                        <i class="fa-solid fa-calendar-alt"></i> زمان ورود:
-                                    </small>
-                                    <span class="fw-normal">@user.LoginTime.ToString("yyyy/MM/dd HH:mm:ss")</span>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <form method="post" asp-controller="UserSessions" asp-action="ForceLogoutUser">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="userId" value="@user.UserId" />
+                                        <input type="hidden" name="userName" value="@user.UserName" />
+                                        <button type="button" class="dropdown-item text-danger force-logout-btn" 
+                                                data-username="@user.UserName">
+                                            <i class="fa-solid fa-sign-out-alt"></i> خروج اجباری
+                                        </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0)" onclick="showUserDetails('@user.UserId', '@user.UserName')">
+                                        <i class="fa-solid fa-info-circle"></i> جزئیات نشست
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa-solid fa-envelope text-primary ms-2"></i>
+                                    <div>
+                                        <small class="text-muted d-block">ایمیل</small>
+                                        <span class="fw-normal">@(user.Email ?? "ثبت نشده")</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge @(user.IsActive ? "bg-success" : user.IsExpired ? "bg-danger" : "bg-warning")">
-                                    @(user.IsActive ? "فعال" : user.IsExpired ? "منقضی" : "غیرفعال")
-                                </span>
-                                <small class="text-muted">شناسه نشست: @user.TicketId</small>
+                            <div class="col-12">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa-solid fa-phone text-success ms-2"></i>
+                                    <div>
+                                        <small class="text-muted d-block">تلفن</small>
+                                        <span class="fw-normal ltr d-inline-block">@(user.PhoneNumber ?? "ثبت نشده")</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa-solid fa-clock text-info ms-2"></i>
+                                    <div>
+                                        <small class="text-muted d-block">مدت نشست</small>
+                                        <span class="fw-semibold text-info">@user.SessionDuration.ToString(@"hh\:mm\:ss")</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa-solid fa-history text-warning ms-2"></i>
+                                    <div>
+                                        <small class="text-muted d-block">آخرین فعالیت</small>
+                                        <span class="fw-semibold text-warning">@user.TimeSinceLastActivity.ToString(@"hh\:mm\:ss")</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa-solid fa-calendar-alt text-secondary ms-2"></i>
+                                    <div>
+                                        <small class="text-muted d-block">زمان ورود</small>
+                                        <span class="fw-normal">@user.LoginTime.ToString("yyyy/MM/dd HH:mm:ss")</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="card-footer bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge @(user.IsActive ? "bg-success" : user.IsExpired ? "bg-danger" : "bg-warning")">
+                                <i class="fa-solid fa-circle"></i>
+                                @(user.IsActive ? "فعال" : user.IsExpired ? "منقضی" : "غیرفعال")
+                            </span>
+                            <small class="text-muted">
+                                <i class="fa-solid fa-ticket"></i> #@user.TicketId
+                            </small>
+                        </div>
+                    </div>
                 </div>
-            }
-        </div>
-    }
-</div>
+            </div>
+        }
+    </div>
+}
 
 <!-- User Details Modal -->
 <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-gradient">
                 <h5 class="modal-title" id="userDetailsModalLabel">
-                    <i class="fa-solid fa-info-circle"></i> جزئیات نشست کاربر
+                    <i class="fa-solid fa-info-circle text-primary"></i> جزئیات نشست کاربر
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="userDetailsContent">
-                <div class="text-center">
-                    <i class="fa-solid fa-spinner fa-spin fa-2x text-primary"></i>
-                    <p class="mt-2">در حال بارگذاری...</p>
+                <div class="text-center py-4">
+                    <i class="fa-solid fa-spinner fa-spin fa-3x text-primary mb-3"></i>
+                    <p class="text-muted">در حال بارگذاری...</p>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-times"></i> بستن
+                </button>
             </div>
         </div>
     </div>

@@ -1,8 +1,76 @@
 ﻿@{
-    ViewData["Title"] = "انسداد حساب کاربری";
+    ViewData["Title"] = "حساب کاربری مسدود شده";
+    Layout = "~/Areas/Users/Views/Shared/_AuthLayout.cshtml";
 }
 
-<header>
-    <h1 class="text-danger">@ViewData["Title"]</h1>
-    <p class="text-danger">این حساب کاربری مسدود شده است، لطفا بعدا سعی کنید.</p>
-</header>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="icon">
+                <i class="fa-solid fa-user-lock"></i>
+            </div>
+            <h1>@ViewData["Title"]</h1>
+        </div>
+
+        <div class="auth-body">
+            <div class="auth-alert auth-alert-danger">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <p class="mb-0">
+                    <strong>حساب شما موقتاً مسدود شده است.</strong> به دلیل تلاش‌های ناموفق متعدد برای ورود.
+                </p>
+            </div>
+
+            <div class="text-center py-4">
+                <div class="feature-icon feature-icon-danger mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <h4 class="mb-3">لطفاً چند دقیقه صبر کنید</h4>
+                <p class="text-muted mb-4">
+                    این یک اقدام امنیتی برای محافظت از حساب کاربری شماست.
+                </p>
+                <div class="alert alert-info text-start">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-info-circle"></i> چرا این اتفاق افتاد؟
+                    </h6>
+                    <ul class="small mb-0">
+                        <li>تلاش‌های متعدد با کلمه عبور اشتباه</li>
+                        <li>فعالیت مشکوک در حساب کاربری</li>
+                        <li>حفاظت خودکار از حساب شما</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="auth-links">
+                <div class="auth-divider">
+                    <span>اقدامات پیشنهادی</span>
+                </div>
+                
+                <a asp-action="ForgotPassword" class="auth-link" style="color: var(--auth-warning); font-weight: 600;">
+                    <i class="fa-solid fa-key text-warning"></i>
+                    <span>بازیابی کلمه عبور</span>
+                </a>
+                
+                <a asp-action="Login" class="auth-link">
+                    <i class="fa-solid fa-rotate text-primary"></i>
+                    <span>تلاش مجدد برای ورود</span>
+                </a>
+            </div>
+
+            <div class="alert alert-warning mt-4 mb-0">
+                <h6 class="fw-bold mb-2">
+                    <i class="fa-solid fa-shield-halved"></i> نکته امنیتی
+                </h6>
+                <p class="small mb-0">
+                    اگر شما این تلاش‌ها را انجام نداده‌اید، لطفاً هرچه سریع‌تر کلمه عبور خود را تغییر دهید.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="back-to-home">
+        <a href="/">
+            <i class="fa-solid fa-home"></i>
+            بازگشت به صفحه اصلی
+        </a>
+    </div>
+</div>

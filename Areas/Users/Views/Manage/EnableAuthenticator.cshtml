@@ -3,118 +3,144 @@
 @{
     ViewData["Title"] = "پیکربندی برنامه احراز هویت";
     
-    // Generate QR Code with smaller size
     var qrGenerator = new QRCodeGenerator();
     var qrCodeData = qrGenerator.CreateQrCode(Model.AuthenticatorUri, QRCodeGenerator.ECCLevel.Q);
     var qrCode = new PngByteQRCode(qrCodeData);
-    var qrCodeImage = qrCode.GetGraphic(10); // Reduced from 20 to 10 for smaller size
+    var qrCodeImage = qrCode.GetGraphic(10);
     var qrCodeBase64 = Convert.ToBase64String(qrCodeImage);
 }
 
+<div class="page-header">
+    <div class="d-flex align-items-center">
+        <div class="page-title-icon">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+        </div>
+        <div class="flex-grow-1">
+            <h1 class="page-title mb-0">پیکربندی برنامه احراز هویت</h1>
+            <p class="page-description">راه‌اندازی احراز هویت دو مرحله‌ای با برنامه موبایل</p>
+        </div>
+    </div>
+</div>
+
 <partial name="_StatusMessage" for="StatusMessage" />
-<h4>@ViewData["Title"]</h4>
-<div>
-    <p>برای استفاده از برنامه احراز هویت مراحل زیر را دنبال کنید:</p>
-    <ol class="list">
-        <li>
-            <p>
-                یک برنامه احراز هویت مانند Microsoft Authenticator برای
-                <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a> و
-                <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a> یا
-                Google Authenticator برای
-                <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a> و
-                <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a> دانلود کنید.
-            </p>
-        </li>
-        <li>
-            <p>کد QR زیر را در برنامه احراز هویت خود اسکن کنید:</p>
-            <div id="qrCode" class="mb-3 text-center">
-                <img src="data:image/png;base64,@qrCodeBase64" alt="QR Code" style="max-width: 200px; height: auto;" />
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="manage-card">
+            <div class="manage-card-header">
+                <h2 class="manage-card-title">
+                    <i class="fa-solid fa-list-ol text-primary"></i>
+                    مراحل راه‌اندازی
+                </h2>
             </div>
-            <p class="text-muted">
-                <small>اگر نمی‌توانید کد QR را اسکن کنید، کد زیر را به صورت دستی در برنامه احراز هویت وارد کنید.</small>
-            </p>
-            <div class="alert alert-primary d-flex justify-content-between align-items-center" role="alert" style="direction: ltr;">
-                <code class="fs-5" id="sharedKey">@Model.SharedKey</code>
-                <button type="button" class="btn btn-sm btn-outline-primary" id="copyKeyBtn" title="کپی کردن">
-                    <i class="fa-solid fa-copy"></i> کپی
-                </button>
-            </div>
-            
-        </li>
-        <li>
-            <p>
-                پس از اسکن کد QR یا وارد کردن کلید بالا، برنامه احراز هویت شما یک کد منحصر به فرد ارائه خواهد داد.
-                آن کد را در کادر تایید زیر وارد کنید.
-            </p>
-            <div class="row">
-                <div class="col-md-6">
-                    <form id="send-code" method="post">
-                        <div class="mb-3">
-                            <label asp-for="Code" class="form-label"></label>
-                            <input asp-for="Code" class="form-control" autocomplete="off" placeholder="123456" />
-                            <span asp-validation-for="Code" class="text-danger"></span>
+            <div class="manage-card-body">
+                <ol class="list-group list-group-numbered">
+                    <li class="list-group-item border-0 bg-transparent">
+                        <h6 class="fw-bold mb-2">دانلود برنامه احراز هویت</h6>
+                        <p class="mb-2">یک برنامه احراز هویت مانند:</p>
+                        <ul class="small">
+                            <li>Microsoft Authenticator برای <a href="https://go.microsoft.com/fwlink/?Linkid=825072" target="_blank">Android</a> و <a href="https://go.microsoft.com/fwlink/?Linkid=825073" target="_blank">iOS</a></li>
+                            <li>Google Authenticator برای <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en" target="_blank">Android</a> و <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" target="_blank">iOS</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="list-group-item border-0 bg-transparent">
+                        <h6 class="fw-bold mb-2">اسکن کد QR</h6>
+                        <div class="text-center my-3">
+                            <div class="d-inline-block p-3 bg-white border rounded">
+                                <img src="data:image/png;base64,@qrCodeBase64" alt="QR Code" style="max-width: 200px; height: auto;" />
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">تایید</button>
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    </form>
+                        <p class="text-muted small">اگر نمی‌توانید کد QR را اسکن کنید، کد زیر را به صورت دستی وارد کنید:</p>
+                        <div class="alert alert-primary d-flex justify-content-between align-items-center" style="direction: ltr;">
+                            <code class="fs-6" id="sharedKey">@Model.SharedKey</code>
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="copyKeyBtn">
+                                <i class="fa-solid fa-copy"></i> کپی
+                            </button>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item border-0 bg-transparent">
+                        <h6 class="fw-bold mb-2">تأیید کد</h6>
+                        <p>کد ۶ رقمی که برنامه نمایش می‌دهد را وارد کنید:</p>
+                        <form id="send-code" method="post" class="manage-form">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                            <div class="mb-3">
+                                <label asp-for="Code" class="form-label">
+                                    <i class="fa-solid fa-key text-success"></i>
+                                    @Html.DisplayNameFor(m => m.Code)
+                                </label>
+                                <input asp-for="Code" class="form-control text-center" autocomplete="off" maxlength="6" style="font-size: 1.5rem; letter-spacing: 0.5rem;" />
+                                <span asp-validation-for="Code" class="text-danger"></span>
+                            </div>
+                            <button type="submit" class="manage-btn manage-btn-primary">
+                                <i class="fa-solid fa-check"></i> تأیید و فعال‌سازی
+                            </button>
+                        </form>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="manage-card">
+            <div class="manage-card-header">
+                <h2 class="manage-card-title">
+                    <i class="fa-solid fa-info-circle text-info"></i>
+                    راهنما
+                </h2>
+            </div>
+            <div class="manage-card-body">
+                <h6 class="fw-bold mb-2">چرا برنامه احراز هویت؟</h6>
+                <ul class="small mb-3">
+                    <li>امن‌تر از پیامک</li>
+                    <li>کار می‌کند حتی بدون اینترنت</li>
+                    <li>کدهای موقت ۶ رقمی</li>
+                    <li>پشتیبانی از چند حساب</li>
+                </ul>
+
+                <div class="alert alert-warning mb-0">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-shield-halved"></i> نکته امنیتی
+                    </h6>
+                    <p class="small mb-0">
+                        کد QR و کلید را در مکانی امن نگه دارید. این اطلاعات برای بازیابی دسترسی شما ضروری است.
+                    </p>
                 </div>
             </div>
-        </li>
-    </ol>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    
     <script>
         document.getElementById('copyKeyBtn').addEventListener('click', function() {
-            // Get the shared key text (remove spaces for copying)
             var sharedKey = document.getElementById('sharedKey').textContent.trim();
             var keyWithoutSpaces = sharedKey.replace(/\s+/g, '');
             
-            // Copy to clipboard
             navigator.clipboard.writeText(keyWithoutSpaces).then(function() {
-                // Change button text and icon temporarily
                 var btn = document.getElementById('copyKeyBtn');
                 var originalHTML = btn.innerHTML;
                 btn.innerHTML = '<span dir="rtl"><i class="fa-solid fa-check"></i> کپی شد!</span>';
                 btn.classList.remove('btn-outline-primary');
                 btn.classList.add('btn-success');
                 
-                // Revert after 2 seconds
                 setTimeout(function() {
                     btn.innerHTML = originalHTML;
                     btn.classList.remove('btn-success');
                     btn.classList.add('btn-outline-primary');
                 }, 2000);
             }).catch(function(err) {
-                // Fallback for older browsers
-                var textArea = document.createElement('textarea');
-                textArea.value = keyWithoutSpaces;
-                textArea.style.position = 'fixed';
-                textArea.style.left = '-999999px';
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    // Show success message
-                    var btn = document.getElementById('copyKeyBtn');
-                    var originalHTML = btn.innerHTML;
-                    btn.innerHTML = '<span dir="rtl"><i class="fa-solid fa-check"></i> کپی شد!</span>';
-                    btn.classList.remove('btn-outline-primary');
-                    btn.classList.add('btn-success');
-                    
-                    setTimeout(function() {
-                        btn.innerHTML = originalHTML;
-                        btn.classList.remove('btn-success');
-                        btn.classList.add('btn-outline-primary');
-                    }, 2000);
-                } catch (err) {
-                    alert('خطا در کپی کردن. لطفا به صورت دستی کپی کنید.');
-                }
-                document.body.removeChild(textArea);
+                alert('خطا در کپی کردن. لطفا به صورت دستی کپی کنید.');
             });
+        });
+
+        document.getElementById('send-code').addEventListener('submit', function(e) {
+            if ($(this).valid()) {
+                this.classList.add('auth-loading');
+            }
         });
     </script>
 }

@@ -4,44 +4,147 @@
     ViewData["Title"] = "گروه های کاربران";
 }
 
-<h1>@ViewData["Title"]</h1>
+@section Styles {
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+        }
 
-<p>
-    <a asp-action="Create" class="btn btn-success"><i class="fa-solid fa-plus"></i> افزودن گروه جدید</a>
-</p>
-<div class="card">
-    <div class="card-body">
+        .page-header h1 {
+            color: white;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-header h1::after {
+            display: none;
+        }
+
+        .role-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+        .role-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .role-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .role-card:hover .role-icon {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table-hover tbody tr:hover {
+            background: linear-gradient(to left, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.05));
+            transform: scale(1.005);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+}
+
+<div class="page-header">
+    <h1 class="mb-0">
+        <i class="fa-solid fa-user-tag"></i> @ViewData["Title"]
+    </h1>
+    <p class="mb-0 mt-2 opacity-75">مدیریت نقش‌ها و سطوح دسترسی</p>
+</div>
+
+<div class="mb-4">
+    <a asp-action="Create" class="btn btn-success btn-lg shadow">
+        <i class="fa-solid fa-plus"></i> افزودن نقش جدید
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover mb-0">
                 <thead class="table-dark">
                     <tr>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Name)
+                        <th style="width: 50px;">
+                            <i class="fa-solid fa-hashtag"></i>
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.NormalizedName)
+                            <i class="fa-solid fa-tag"></i> @Html.DisplayNameFor(model => model.Name)
                         </th>
-                        <th>دستورات</th>
+                        <th>
+                            <i class="fa-solid fa-font"></i> @Html.DisplayNameFor(model => model.NormalizedName)
+                        </th>
+                        <th class="text-center" style="width: 150px;">
+                            <i class="fa-solid fa-cog"></i> دستورات
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
+                    @{
+                        var index = 1;
+                    }
                     @foreach (var item in Model)
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Name)
+                                <div class="role-icon bg-success bg-opacity-10 text-success" style="width: 40px; height: 40px; font-size: 1rem;">
+                                    <strong>@index</strong>
+                                </div>
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.NormalizedName)
+                                <div class="d-flex align-items-center">
+                                    <i class="fa-solid fa-user-tag text-success ms-2"></i>
+                                    <strong class="fs-6">@Html.DisplayFor(modelItem => item.Name)</strong>
+                                </div>
                             </td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i> ویرایش</a>
-
+                                <code class="bg-light px-3 py-2 rounded">@Html.DisplayFor(modelItem => item.NormalizedName)</code>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-action="Details" asp-route-id="@item.Id" 
+                                       class="btn btn-info btn-sm" title="مشاهده جزئیات">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" 
+                                       class="btn btn-primary btn-sm" title="ویرایش">
+                                        <i class="fa-solid fa-pen-to-square"></i> ویرایش
+                                    </a>
+                                </div>
                             </td>
                         </tr>
+                        index++;
                     }
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center mt-4">
+        <i class="fa-solid fa-info-circle fs-3 d-block mb-2"></i>
+        <strong>هیچ نقشی تعریف نشده است.</strong>
+        <p class="mb-0 mt-2">برای شروع، یک نقش جدید ایجاد کنید.</p>
+    </div>
+}

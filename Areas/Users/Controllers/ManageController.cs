@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
     [Area("Users")]
     public class ManageController : Controller
     {
+        private IConfiguration Configuration { get; }
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ISmsService smsService;
@@ -32,13 +34,16 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
         private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
         public ManageController(
+            IConfiguration configuration,
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager, 
             SignInManager<ApplicationUser> signInManager, 
             IEmailSender emailSender,
             ISmsService smsService,
-            UrlEncoder urlEncoder)
+            UrlEncoder urlEncoder
+            )
         {
+            Configuration = configuration;
             db = context;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -304,7 +309,7 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
                 await db.SaveChangesAsync();
                 await smsService.SendSms(
                     $"کد امنیتی شما: {phoneTokenModel.AuthenticationCode}\r\n\r\n",
-                    new List<string>() { model.PhoneNumber });
+                    model.PhoneNumber);
                 return RedirectToAction("VerifyPhoneNumber", new { Key = phoneTokenModel.AuthenticationKey });
             }
             return View(model);
@@ -482,9 +487,10 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
 
         private string GenerateQrCodeUri(string email, string unformattedKey)
         {
+            var siteTitle = Configuration.GetValue<string>("GeneralConfig:SiteTitle");
             return string.Format(
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("سفارشی سازی آیدنتیتی"),
+                _urlEncoder.Encode(siteTitle),
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }

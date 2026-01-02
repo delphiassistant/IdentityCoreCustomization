@@ -4,62 +4,251 @@
     ViewData["Title"] = "ویرایش کاربر";
 }
 
-<h1>@ViewData["Title"]</h1>
-<hr />
+@section Styles {
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);
+        }
+
+        .page-header h1 {
+            color: white;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-header h1::after {
+            display: none;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .form-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-control:focus,
+        .form-check-input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 0.2rem rgba(245, 158, 11, 0.25);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+    </style>
+}
+
+<div class="page-header">
+    <h1 class="mb-0">
+        <i class="fa-solid fa-user-pen"></i> @ViewData["Title"]
+    </h1>
+    <p class="mb-0 mt-2 opacity-75">ویرایش اطلاعات کاربر: <strong>@Model.Username</strong></p>
+</div>
+
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-lg-8">
+        <form asp-action="Edit" class="form-card">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger mx-3 mt-3"></div>
             <input type="hidden" asp-for="UserID"/>
-            <div class="mb-3">
-                <label asp-for="Username" class="form-label"></label>
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control ltr" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <div class="form-check">
-                    <input asp-for="EmailConfirmed" class="form-check-input" type="checkbox" />
-                    <label asp-for="EmailConfirmed" class="form-check-label"></label>
+            
+            <!-- Account Information Section -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fa-solid fa-user-circle text-warning"></i>
+                    اطلاعات حساب کاربری
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Username" class="form-label">
+                            <i class="fa-solid fa-user text-warning"></i> @Html.DisplayNameFor(m => m.Username)
+                        </label>
+                        <input asp-for="Username" class="form-control" />
+                        <span asp-validation-for="Username" class="text-danger small"></span>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label">
+                            <i class="fa-solid fa-envelope text-warning"></i> @Html.DisplayNameFor(m => m.Email)
+                        </label>
+                        <input asp-for="Email" class="form-control ltr" dir="ltr" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
                 </div>
             </div>
-            <div class="mb-3">
-                <label asp-for="PhoneNumber" class="form-label"></label>
-                <input asp-for="PhoneNumber" class="form-control ltr" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-           
-            <div class="mb-3">
-                <div class="form-check">
-                    <input asp-for="PhoneNumberConfirmed" class="form-check-input" type="checkbox" />
-                    <label asp-for="PhoneNumberConfirmed" class="form-check-label"></label>
+
+            <!-- Contact & Verification Section -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fa-solid fa-address-book text-info"></i>
+                    اطلاعات تماس و تأیید
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="PhoneNumber" class="form-label">
+                            <i class="fa-solid fa-phone text-info"></i> @Html.DisplayNameFor(m => m.PhoneNumber)
+                        </label>
+                        <input asp-for="PhoneNumber" class="form-control ltr" dir="ltr" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="fa-solid fa-check-circle text-success"></i> تأیید اطلاعات
+                        </label>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <div class="form-check">
+                                <input asp-for="EmailConfirmed" class="form-check-input" type="checkbox" />
+                                <label asp-for="EmailConfirmed" class="form-check-label"></label>
+                            </div>
+                            <div class="form-check">
+                                <input asp-for="PhoneNumberConfirmed" class="form-check-input" type="checkbox" />
+                                <label asp-for="PhoneNumberConfirmed" class="form-check-label"></label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="mb-3">
-                <div class="form-check">
-                    <input asp-for="LockoutEnabled" class="form-check-input" type="checkbox" />
-                    <label asp-for="LockoutEnabled" class="form-check-label"></label>
+
+            <!-- Security Settings Section -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fa-solid fa-shield-halved text-danger"></i>
+                    تنظیمات امنیتی
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input asp-for="LockoutEnabled" class="form-check-input" type="checkbox" role="switch" />
+                            <label asp-for="LockoutEnabled" class="form-check-label"></label>
+                        </div>
+                        <small class="text-muted">امکان قفل شدن حساب در صورت ورود ناموفق</small>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input asp-for="TwoFactorEnabled" class="form-check-input" type="checkbox" role="switch" />
+                            <label asp-for="TwoFactorEnabled" class="form-check-label"></label>
+                        </div>
+                        <small class="text-muted">احراز هویت دو مرحله‌ای برای امنیت بیشتر</small>
+                    </div>
                 </div>
             </div>
-            <div class="mb-3">
-                <div class="form-check">
-                    <input asp-for="TwoFactorEnabled" class="form-check-input" type="checkbox" />
-                    <label asp-for="TwoFactorEnabled" class="form-check-label"></label>
+
+            <!-- Roles Section -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fa-solid fa-user-tag text-primary"></i>
+                    نقش‌های کاربری
+                </div>
+                <check-box-list name="selectedRoles" items="ViewBag.RolesList" template="Bootstrap5Basic"></check-box-list>
+                <div class="warning-box mt-3">
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    <strong>توجه:</strong> تغییر نقش‌ها نیاز به خروج و ورود مجدد کاربر دارد.
                 </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">گروه های عضو</label>
-                <check-box-list name="selectedRoles" items="ViewBag.RolesList" template="Bootstrap5Basic" class="form-control"></check-box-list>
-            </div>
-            <div class="mb-3">
-                <button type="submit" value="Create" class="btn btn-primary"><i class="fa-solid fa-down-to-bracket"></i> ثبت</button>
-                <a asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-arrow-turn-down-left"></i> بازگشت به فهرست</a>
+
+            <!-- Action Buttons -->
+            <div class="form-section">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-warning px-4">
+                        <i class="fa-solid fa-save"></i> ذخیره تغییرات
+                    </button>
+                    <a asp-action="Details" asp-route-id="@Model.UserID" class="btn btn-info px-4">
+                        <i class="fa-solid fa-eye"></i> مشاهده جزئیات
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary px-4">
+                        <i class="fa-solid fa-arrow-left"></i> بازگشت به فهرست
+                    </a>
+                </div>
             </div>
         </form>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-gradient">
+                <h5 class="card-title mb-0">
+                    <i class="fa-solid fa-info-circle text-warning"></i> راهنما
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6 class="fw-bold">تغییرات قابل اعمال:</h6>
+                <ul class="small mb-3">
+                    <li>ویرایش نام کاربری (باید منحصر به فرد باشد)</li>
+                    <li>تغییر ایمیل و شماره تلفن</li>
+                    <li>تأیید یا لغو تأیید اطلاعات تماس</li>
+                    <li>فعال/غیرفعال کردن قفل خودکار</li>
+                    <li>مدیریت نقش‌های کاربری</li>
+                </ul>
+                
+                <div class="alert alert-warning">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-key"></i> تغییر کلمه عبور
+                    </h6>
+                    <p class="small mb-2">
+                        برای تغییر کلمه عبور، از بخش "تغییر کلمه عبور" استفاده کنید.
+                    </p>
+                    <a asp-action="ChangePassword" asp-route-id="@Model.UserID" class="btn btn-sm btn-dark w-100">
+                        <i class="fa-solid fa-key"></i> تغییر کلمه عبور
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-gradient">
+                <h5 class="card-title mb-0">
+                    <i class="fa-solid fa-tools text-secondary"></i> عملیات سریع
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Details" asp-route-id="@Model.UserID" class="btn btn-sm btn-info">
+                        <i class="fa-solid fa-eye"></i> مشاهده جزئیات
+                    </a>
+                    <a asp-action="ChangePassword" asp-route-id="@Model.UserID" class="btn btn-sm btn-dark">
+                        <i class="fa-solid fa-key"></i> تغییر کلمه عبور
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

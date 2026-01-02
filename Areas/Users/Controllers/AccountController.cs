@@ -217,8 +217,7 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
                         await db.SaveChangesAsync();
 
                         await smsService.SendSms(
-                            $"کد امنیتی شما: {token.AuthenticationCode}",
-                            new List<string> { user.PhoneNumber });
+                            $"کد امنیتی شما: {token.AuthenticationCode}", user.PhoneNumber);
 
                         return RedirectToAction("LoginWith2faSms", new { Key = token.AuthenticationKey, ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                     }
@@ -278,7 +277,7 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
 
                 await smsService.SendSms(
                     $"کد امنیتی شما: {loginWithSms.AuthenticationCode}",
-                    new List<string>() { loginWithSms.PhoneNumber }
+                    loginWithSms.PhoneNumber
                 );
                 return RedirectToAction("LoginWithSmsResponse",new {Key = loginWithSms.AuthenticationKey, ReturnUrl = returnUrl});
             }
@@ -363,7 +362,7 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
                 await db.SaveChangesAsync();
                 await smsService.SendSms(
                     $"کد امنیتی شما: {model.AuthenticationCode}\r\n\r\n",
-                    new List<string>() {model.PhoneNumber});
+                    model.PhoneNumber);
                 return RedirectToAction("PreRegisterConfirm", new { Key = model.AuthenticationKey});
             }
             return View(model);

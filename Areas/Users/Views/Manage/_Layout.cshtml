@@ -1,61 +1,148 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var userName = user?.UserName ?? "کاربر";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - سفارشی سازی آیدنتیتی</title>
+    <title>@ViewData["Title"] - مدیریت حساب کاربری</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
     <link href="~/lib/persian_fonts/vazirmatnfd/vazirmatn-fd-font-face.css" rel="stylesheet" />
-    <link rel="stylesheet" href="~/lib/font_awesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/navigation-dropdown.css" />
-    @RenderSection("Styles", required: false)
+    <link rel="stylesheet" href="~/css/manage.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-address-card"></i> سفارشی سازی آیدنتیتی</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-house"></i> اصلی</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy"><i class="fa-solid fa-face-zipper"></i> محرمانگی</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
+    <div class="manage-layout">
+        <!-- Sidebar -->
+        <aside class="manage-sidebar" id="manageSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fa-solid fa-user-gear"></i>
+                </div>
+                <h1 class="sidebar-title">مدیریت حساب</h1>
+                <p class="sidebar-subtitle">تنظیمات کاربری</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="sidebar-nav-section">
+                    <div class="sidebar-nav-title">حساب کاربری</div>
+                    
+                    <a asp-action="Index" class="sidebar-nav-item @(currentAction == "Index" ? "active" : "")">
+                        <div class="sidebar-nav-icon">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <span class="sidebar-nav-text">پروفایل</span>
+                    </a>
+
+                    <a asp-action="Email" class="sidebar-nav-item @(currentAction == "Email" ? "active" : "")">
+                        <div class="sidebar-nav-icon">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <span class="sidebar-nav-text">ایمیل</span>
+                    </a>
+
+                    <a asp-action="ChangePassword" class="sidebar-nav-item @(currentAction == "ChangePassword" ? "active" : "")">
+                        <div class="sidebar-nav-icon">
+                            <i class="fa-solid fa-key"></i>
+                        </div>
+                        <span class="sidebar-nav-text">کلمه عبور</span>
+                    </a>
+                </div>
+
+                <div class="sidebar-nav-section">
+                    <div class="sidebar-nav-title">امنیت</div>
+                    
+                    <a asp-action="TwoFactorAuthentication" class="sidebar-nav-item @(currentAction == "TwoFactorAuthentication" || currentAction == "EnableAuthenticator" || currentAction == "ResetAuthenticatorWarning" || currentAction == "ShowRecoveryCodes" ? "active" : "")">
+                        <div class="sidebar-nav-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <span class="sidebar-nav-text">احراز هویت دو مرحله‌ای</span>
+                    </a>
+
+                    <a asp-action="PersonalData" class="sidebar-nav-item @(currentAction == "PersonalData" ? "active" : "")">
+                        <div class="sidebar-nav-icon">
+                            <i class="fa-solid fa-database"></i>
+                        </div>
+                        <span class="sidebar-nav-text">اطلاعات شخصی</span>
+                    </a>
+                </div>
+
+                <div class="sidebar-nav-section">
+                    <div class="sidebar-nav-title">سایر</div>
+                    
+                    <a href="/" class="sidebar-nav-item">
+                        <div class="sidebar-nav-icon">
+                            <i class="fa-solid fa-home"></i>
+                        </div>
+                        <span class="sidebar-nav-text">صفحه اصلی</span>
+                    </a>
+
+                    <form asp-area="Users" asp-controller="Account" asp-action="Logout" method="post" style="margin: 0;">
+                        <button type="submit" class="sidebar-nav-item" style="width: 100%; background: none; border: none; text-align: right; cursor: pointer;">
+                            <div class="sidebar-nav-icon">
+                                <i class="fa-solid fa-right-from-bracket fa-flip-horizontal"></i>
+                            </div>
+                            <span class="sidebar-nav-text">خروج</span>
+                        </button>
+                    </form>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="sidebar-user-avatar">
+                        @userName.Substring(0, 1).ToUpper()
+                    </div>
+                    <div class="sidebar-user-info">
+                        <div class="sidebar-user-name">@userName</div>
+                        <div class="sidebar-user-role">کاربر سیستم</div>
+                    </div>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <h4><i class="fa-solid fa-user-gear"></i> مدیریت تنظیمات پرونده</h4>
-        <hr />
-        <div class="row">
-            <div class="col-md-3">
-                <partial name="_ManageNav" />
-            </div>
-            <div class="col-md-9">
-                @RenderBody()
-            </div>
-        </div>
+        </aside>
+
+        <!-- Mobile Toggle Button -->
+        <button class="sidebar-toggle" id="sidebarToggle" type="button">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <!-- Main Content -->
+        <main class="manage-content">
+            @RenderBody()
+        </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; @DateTime.Now.ToString("yyyy") - سفارشی سازی آیدنتیتی
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/navigation-dropdown.js" asp-append-version="true"></script>
-    @RenderSection("Scripts", required: false)
+    
+    <script>
+        // Mobile sidebar toggle
+        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
+            document.getElementById('manageSidebar').classList.toggle('show');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('manageSidebar');
+            const toggle = document.getElementById('sidebarToggle');
+            
+            if (window.innerWidth <= 992 && 
+                sidebar.classList.contains('show') && 
+                !sidebar.contains(e.target) && 
+                !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

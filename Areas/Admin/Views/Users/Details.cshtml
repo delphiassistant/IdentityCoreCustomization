@@ -4,117 +4,318 @@
     ViewData["Title"] = "جزئیات کاربر";
 }
 
-<h1>جزئیات کاربر</h1>
+@section Styles {
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .page-header h1 {
+            color: white;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-header h1::after {
+            display: none;
+        }
+
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .detail-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .detail-card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .detail-row {
+            padding: 1rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6b7280;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            color: #1f2937;
+        }
+
+        .action-card {
+            position: sticky;
+            top: 20px;
+        }
+    </style>
+}
+
+<div class="page-header">
+    <div class="d-flex align-items-center gap-3">
+        <div class="user-avatar">
+            <i class="fa-solid fa-user"></i>
+        </div>
+        <div>
+            <h1 class="mb-0">@Model.UserName</h1>
+            <p class="mb-0 mt-2 opacity-75">
+                <span class="badge bg-light text-dark">شناسه: @Model.Id</span>
+                @if (Model.LockoutEnd.HasValue && Model.LockoutEnd > DateTimeOffset.UtcNow)
+                {
+                    <span class="badge bg-danger ms-2">
+                        <i class="fa-solid fa-lock"></i> قفل شده
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-success ms-2">
+                        <i class="fa-solid fa-circle-check"></i> فعال
+                    </span>
+                }
+            </p>
+        </div>
+    </div>
+</div>
 
 <div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title mb-0">
-                    <i class="fa-solid fa-user"></i> @Model.UserName
-                </h4>
+    <div class="col-lg-8">
+        <!-- Contact Information Card -->
+        <div class="detail-card mb-4">
+            <div class="card-header bg-gradient">
+                <h5 class="card-title mb-0">
+                    <i class="fa-solid fa-address-card text-primary"></i> اطلاعات تماس
+                </h5>
             </div>
             <div class="card-body">
-                <dl class="row">
-                    <dt class="col-sm-3">شناسه کاربر:</dt>
-                    <dd class="col-sm-9">@Model.Id</dd>
-                    
-                    <dt class="col-sm-3">نام کاربری:</dt>
-                    <dd class="col-sm-9">@Model.UserName</dd>
-                    
-                    <dt class="col-sm-3">ایمیل:</dt>
-                    <dd class="col-sm-9">
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <i class="fa-solid fa-envelope"></i> ایمیل
+                    </div>
+                    <div class="detail-value mt-2">
                         @if (!string.IsNullOrEmpty(Model.Email))
                         {
-                            <span>@Model.Email</span>
-                            @if (Model.EmailConfirmed)
-                            {
-                                <span class="badge bg-success ms-2">تأیید شده</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-warning ms-2">تأیید نشده</span>
-                            }
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="ltr">@Model.Email</span>
+                                @if (Model.EmailConfirmed)
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fa-solid fa-circle-check"></i> تأیید شده
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fa-solid fa-circle-xmark"></i> تأیید نشده
+                                    </span>
+                                }
+                            </div>
                         }
                         else
                         {
-                            <span class="text-muted">ایمیل ثبت نشده</span>
+                            <span class="text-muted">
+                                <i class="fa-solid fa-minus"></i> ایمیل ثبت نشده
+                            </span>
                         }
-                    </dd>
-                    
-                    <dt class="col-sm-3">شماره تلفن:</dt>
-                    <dd class="col-sm-9">
+                    </div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <i class="fa-solid fa-phone"></i> شماره تلفن
+                    </div>
+                    <div class="detail-value mt-2">
                         @if (!string.IsNullOrEmpty(Model.PhoneNumber))
                         {
-                            <span>@Model.PhoneNumber</span>
-                            @if (Model.PhoneNumberConfirmed)
-                            {
-                                <span class="badge bg-success ms-2">تأیید شده</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-warning ms-2">تأیید نشده</span>
-                            }
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="ltr">@Model.PhoneNumber</span>
+                                @if (Model.PhoneNumberConfirmed)
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fa-solid fa-circle-check"></i> تأیید شده
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fa-solid fa-circle-xmark"></i> تأیید نشده
+                                    </span>
+                                }
+                            </div>
                         }
                         else
                         {
-                            <span class="text-muted">شماره ثبت نشده</span>
+                            <span class="text-muted">
+                                <i class="fa-solid fa-minus"></i> شماره ثبت نشده
+                            </span>
                         }
-                    </dd>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Status Card -->
+        <div class="detail-card mb-4">
+            <div class="card-header bg-gradient">
+                <h5 class="card-title mb-0">
+                    <i class="fa-solid fa-shield-halved text-success"></i> وضعیت امنیتی
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fa-solid fa-lock"></i> وضعیت قفل
+                            </div>
+                            <div class="detail-value mt-2">
+                                @if (Model.LockoutEnd.HasValue && Model.LockoutEnd > DateTimeOffset.UtcNow)
+                                {
+                                    <span class="badge bg-danger fs-6">
+                                        <i class="fa-solid fa-lock"></i> قفل شده
+                                    </span>
+                                    <div class="small text-muted mt-1">
+                                        تا @Model.LockoutEnd.Value.ToString("yyyy/MM/dd HH:mm")
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success fs-6">
+                                        <i class="fa-solid fa-unlock"></i> فعال
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
                     
-                    <dt class="col-sm-3">وضعیت قفل:</dt>
-                    <dd class="col-sm-9">
-                        @if (Model.LockoutEnd.HasValue && Model.LockoutEnd > DateTimeOffset.UtcNow)
-                        {
-                            <span class="badge bg-danger">قفل شده تا @Model.LockoutEnd.Value.ToString("yyyy/MM/dd HH:mm")</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-success">فعال</span>
-                        }
-                    </dd>
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fa-solid fa-shield-alt"></i> احراز هویت دو مرحله‌ای
+                            </div>
+                            <div class="detail-value mt-2">
+                                @if (Model.TwoFactorEnabled)
+                                {
+                                    <span class="badge bg-success fs-6">
+                                        <i class="fa-solid fa-check-circle"></i> فعال
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary fs-6">
+                                        <i class="fa-solid fa-times-circle"></i> غیرفعال
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
                     
-                    <dt class="col-sm-3">تلاش‌های ناموفق:</dt>
-                    <dd class="col-sm-9">
-                        <span class="badge bg-info">@Model.AccessFailedCount</span>
-                    </dd>
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fa-solid fa-exclamation-triangle"></i> تلاش‌های ناموفق
+                            </div>
+                            <div class="detail-value mt-2">
+                                @if (Model.AccessFailedCount > 0)
+                                {
+                                    <span class="badge bg-warning text-dark fs-6">
+                                        @Model.AccessFailedCount بار
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success fs-6">0 بار</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
                     
-                    <dt class="col-sm-3">دو مرحله‌ای:</dt>
-                    <dd class="col-sm-9">
-                        @if (Model.TwoFactorEnabled)
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fa-solid fa-toggle-on"></i> قابلیت قفل شدن
+                            </div>
+                            <div class="detail-value mt-2">
+                                @if (Model.LockoutEnabled)
+                                {
+                                    <span class="badge bg-info fs-6">فعال</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary fs-6">غیرفعال</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Roles Card -->
+        <div class="detail-card">
+            <div class="card-header bg-gradient">
+                <h5 class="card-title mb-0">
+                    <i class="fa-solid fa-user-tag text-primary"></i> نقش‌های کاربری
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model.UserRoles?.Any() == true)
+                {
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var userRole in Model.UserRoles)
                         {
-                            <span class="badge bg-success">فعال</span>
+                            <span class="badge bg-primary fs-6 px-3 py-2">
+                                <i class="fa-solid fa-tag"></i> @userRole.Role?.Name
+                            </span>
                         }
-                        else
-                        {
-                            <span class="badge bg-secondary">غیرفعال</span>
-                        }
-                    </dd>
-                    
-                    <dt class="col-sm-3">گروه‌های کاربری:</dt>
-                    <dd class="col-sm-9">
-                        @if (Model.UserRoles?.Any() == true)
-                        {
-                            @foreach (var userRole in Model.UserRoles)
-                            {
-                                <span class="badge bg-primary me-1">@userRole.Role?.Name</span>
-                            }
-                        }
-                        else
-                        {
-                            <span class="text-muted">هیچ گروهی اختصاص داده نشده</span>
-                        }
-                    </dd>
-                </dl>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning mb-0">
+                        <i class="fa-solid fa-info-circle"></i>
+                        هیچ نقشی به این کاربر اختصاص داده نشده است.
+                    </div>
+                }
             </div>
         </div>
     </div>
     
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
+    <div class="col-lg-4">
+        <!-- Actions Card -->
+        <div class="detail-card action-card mb-4">
+            <div class="card-header bg-gradient">
                 <h5 class="card-title mb-0">
-                    <i class="fa-solid fa-tools"></i> عملیات
+                    <i class="fa-solid fa-tools text-secondary"></i> عملیات
                 </h5>
             </div>
             <div class="card-body">
@@ -123,30 +324,27 @@
                         <i class="fa-solid fa-edit"></i> ویرایش کاربر
                     </a>
                     
-                    <a asp-action="ChangePassword" asp-route-id="@Model.Id" class="btn btn-info">
+                    <a asp-action="ChangePassword" asp-route-id="@Model.Id" class="btn btn-dark">
                         <i class="fa-solid fa-key"></i> تغییر کلمه عبور
                     </a>
                     
                     @if (Model.LockoutEnd.HasValue && Model.LockoutEnd > DateTimeOffset.UtcNow)
                     {
-                        <form asp-action="ToggleLockout" asp-route-id="@Model.Id" method="post" class="d-inline">
+                        <form asp-action="ToggleLockout" asp-route-id="@Model.Id" method="post">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-success w-100" onclick="return confirm('آیا مطمئن هستید که می‌خواهید این کاربر را از حالت قفل خارج کنید؟')">
                                 <i class="fa-solid fa-unlock"></i> خروج از قفل
                             </button>
                         </form>
                     }
-                    else
+                    else if (Model.UserName != User.Identity.Name)
                     {
-                        @if (Model.UserName != User.Identity.Name)
-                        {
-                            <form asp-action="ToggleLockout" asp-route-id="@Model.Id" method="post" class="d-inline">
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-warning w-100" onclick="return confirm('آیا مطمئن هستید که می‌خواهید این کاربر را قفل کنید؟')">
-                                    <i class="fa-solid fa-lock"></i> قفل کردن
-                                </button>
-                            </form>
-                        }
+                        <form asp-action="ToggleLockout" asp-route-id="@Model.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-warning w-100" onclick="return confirm('آیا مطمئن هستید که می‌خواهید این کاربر را قفل کنید؟')">
+                                <i class="fa-solid fa-lock"></i> قفل کردن
+                            </button>
+                        </form>
                     }
                     
                     @if (Model.UserName != User.Identity.Name)
@@ -162,6 +360,8 @@
                         </button>
                     }
                     
+                    <hr>
+                    
                     <a asp-action="Index" class="btn btn-secondary">
                         <i class="fa-solid fa-arrow-left"></i> بازگشت به فهرست
                     </a>
@@ -169,22 +369,26 @@
             </div>
         </div>
         
-        <div class="card mt-3">
-            <div class="card-header">
+        <!-- System Information Card -->
+        <div class="detail-card">
+            <div class="card-header bg-gradient">
                 <h5 class="card-title mb-0">
-                    <i class="fa-solid fa-info-circle"></i> اطلاعات سیستمی
+                    <i class="fa-solid fa-info-circle text-info"></i> اطلاعات سیستمی
                 </h5>
             </div>
             <div class="card-body">
-                <small>
-                    <dl class="row mb-0">
-                        <dt class="col-6">شناسه همگام‌سازی:</dt>
-                        <dd class="col-6"><code class="small">@Model.ConcurrencyStamp</code></dd>
-                        
-                        <dt class="col-6">نشانه امنیتی:</dt>
-                        <dd class="col-6"><code class="small">@(Model.SecurityStamp?.Substring(0, 8) + "...")</code></dd>
-                    </dl>
-                </small>
+                <div class="detail-row">
+                    <div class="detail-label">نشانه همگام‌سازی</div>
+                    <div class="detail-value mt-2">
+                        <code class="small">@Model.ConcurrencyStamp?.Substring(0, 16)...</code>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">نشانه امنیتی</div>
+                    <div class="detail-value mt-2">
+                        <code class="small">@(Model.SecurityStamp?.Substring(0, 16) + "...")</code>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

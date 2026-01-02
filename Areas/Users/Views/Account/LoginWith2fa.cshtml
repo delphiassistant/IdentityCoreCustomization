@@ -1,40 +1,120 @@
 @model LoginWith2faModel
 @{
-    ViewData["Title"] = "احراز هویت دو مرحله ای";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "احراز هویت دو مرحله‌ای";
+    Layout = "~/Areas/Users/Views/Shared/_AuthLayout.cshtml";
 }
 
-<div class="row">
-    <div class="col-md-6 mx-auto col-sm-12">
-        <h1>@ViewData["Title"]</h1>
-        <hr />
-        <p>برنامه احراز هویت شما یک کد امنیتی برای ورود به حساب کاربری شما ایجاد کرده است.</p>
-        <form method="post">
-            <input type="hidden" asp-for="ReturnUrl" />
-            <input type="hidden" asp-for="RememberMe" />
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="mb-3">
-                <label asp-for="TwoFactorCode" class="form-label"></label>
-                <input asp-for="TwoFactorCode" class="form-control" autocomplete="off" placeholder="123456" />
-                <span asp-validation-for="TwoFactorCode" class="text-danger"></span>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="icon">
+                <i class="fa-solid fa-shield-halved"></i>
             </div>
-            <div class="form-check mb-3">
-                <input asp-for="RememberMachine" class="form-check-input" />
-                <label asp-for="RememberMachine" class="form-check-label"></label>
+            <h1>@ViewData["Title"]</h1>
+        </div>
+
+        <div class="auth-body">
+            @if (ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="auth-alert auth-alert-danger">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div asp-validation-summary="ModelOnly" class="mb-0"></div>
+                </div>
+            }
+
+            <div class="auth-alert auth-alert-info mb-4">
+                <i class="fa-solid fa-info-circle"></i>
+                <p class="mb-0">
+                    برنامه احراز هویت شما یک کد امنیتی ۶ رقمی ایجاد کرده است. کد را وارد کنید.
+                </p>
             </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-right-to-bracket"></i> ورود
+
+            <form method="post" class="auth-form">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <input type="hidden" asp-for="RememberMe" />
+                
+                <div class="mb-3">
+                    <label asp-for="TwoFactorCode" class="form-label">
+                        <i class="fa-solid fa-key text-success"></i>
+                        @Html.DisplayNameFor(m => m.TwoFactorCode)
+                    </label>
+                    <input asp-for="TwoFactorCode" class="form-control text-center" 
+                           autocomplete="off" 
+                           maxlength="6"
+                           style="font-size: 1.5rem; letter-spacing: 0.5rem; font-weight: 600;"
+                           autofocus />
+                    <span asp-validation-for="TwoFactorCode" class="text-danger small"></span>
+                    <small class="text-muted d-block mt-2">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                        کد ۶ رقمی را از برنامه احراز هویت خود وارد کنید
+                    </small>
+                </div>
+                
+                <div class="form-check mb-4">
+                    <input asp-for="RememberMachine" class="form-check-input" id="rememberMachine" />
+                    <label asp-for="RememberMachine" class="form-check-label" for="rememberMachine">
+                        @Html.DisplayNameFor(m => m.RememberMachine)
+                    </label>
+                    <small class="text-muted d-block mt-1">
+                        در این دستگاه دیگر از شما کد نخواهد خواست
+                    </small>
+                </div>
+
+                <button type="submit" class="auth-btn auth-btn-primary">
+                    <i class="fa-solid fa-right-to-bracket fa-flip-horizontal"></i>
+                    تأیید و ورود
                 </button>
-            </div>
-        </form>
-        <p>
-            دسترسی به دستگاه احراز هویت خود را ندارید؟ می‌توانید با استفاده از 
-            <a asp-action="LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl">کد بازیابی</a> وارد شوید.
-        </p>
+
+                <div class="auth-links">
+                    <div class="auth-divider">
+                        <span>مشکل در دریافت کد؟</span>
+                    </div>
+                    
+                    <a asp-action="LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link" style="color: var(--auth-warning); font-weight: 600;">
+                        <i class="fa-solid fa-life-ring text-warning"></i>
+                        <span>استفاده از کد بازیابی</span>
+                    </a>
+                    
+                    <a asp-action="Login" class="auth-link">
+                        <i class="fa-solid fa-arrow-left text-secondary"></i>
+                        <span>بازگشت به صفحه ورود</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="back-to-home">
+        <a href="/">
+            <i class="fa-solid fa-home"></i>
+            بازگشت به صفحه اصلی
+        </a>
     </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Auto-focus and auto-submit on 6 digits
+        const codeInput = document.querySelector('[asp-for="TwoFactorCode"]');
+        codeInput.addEventListener('input', function(e) {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Auto-submit when 6 digits are entered
+            if (this.value.length === 6) {
+                this.form.classList.add('auth-loading');
+                setTimeout(() => {
+                    this.form.submit();
+                }, 300);
+            }
+        });
+
+        // Add loading state on form submit (only if valid)
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // Check if form is valid using jQuery validation
+            if ($(this).valid()) {
+                this.classList.add('auth-loading');
+            }
+        });
+    </script>
 }

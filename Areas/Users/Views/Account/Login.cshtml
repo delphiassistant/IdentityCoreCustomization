@@ -2,56 +2,125 @@
 
 @{
     ViewData["Title"] = "ورود به حساب کاربری";
+    Layout = "~/Areas/Users/Views/Shared/_AuthLayout.cshtml";
 }
 
-<div class="row">
-    <div class="col-md-6 mx-auto col-sm-12">
-        <h1><i class="fa-solid fa-person-walking-arrow-right fa-flip-horizontal"></i> @ViewData["Title"]</h1>
-        <section>
-            <form id="account" method="post">
-                <hr />
-                <div asp-validation-summary="All" class="text-danger"></div>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="icon">
+                <i class="fa-solid fa-right-to-bracket fa-flip-horizontal"></i>
+            </div>
+            <h1>@ViewData["Title"]</h1>
+        </div>
+
+        <div class="auth-body">
+            @if (ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="auth-alert auth-alert-danger">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div asp-validation-summary="All" class="mb-0"></div>
+                </div>
+            }
+
+            <form id="account" method="post" class="auth-form">
                 <input type="hidden" asp-for="ReturnUrl" />
+                
                 <div class="mb-3">
-                    <label asp-for="Username"></label>
-                    <input asp-for="Username" class="form-control" />
-                    <span asp-validation-for="Username" class="text-danger"></span>
+                    <label asp-for="Username" class="form-label">
+                        <i class="fa-solid fa-user text-primary"></i>
+                        @Html.DisplayNameFor(m => m.Username)
+                    </label>
+                    <input asp-for="Username" class="form-control" placeholder="نام کاربری خود را وارد کنید" autofocus />
+                    <span asp-validation-for="Username" class="text-danger small"></span>
                 </div>
+                
                 <div class="mb-3">
-                    <label asp-for="Password"></label>
-                    <input asp-for="Password" class="form-control ltr" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <label asp-for="Password" class="form-label">
+                        <i class="fa-solid fa-lock text-success"></i>
+                        @Html.DisplayNameFor(m => m.Password)
+                    </label>
+                    <div class="position-relative">
+                        <input asp-for="Password" class="form-control ltr pe-5" id="passwordInput" dir="ltr"/>
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i class="fa-solid fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
-                <div class="mb-2 form-check">
-                    <label asp-for="RememberMe" class="form-check-label">
-                        <input asp-for="RememberMe" class="form-check-input" />
+                
+                <div class="mb-4 form-check">
+                    <input asp-for="RememberMe" class="form-check-input" id="rememberMe" />
+                    <label asp-for="RememberMe" class="form-check-label" for="rememberMe">
                         @Html.DisplayNameFor(m => m.RememberMe)
                     </label>
                 </div>
 
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right-to-arc fa-flip-horizontal"></i> ورود</button>
-                </div>
-                <div class="mb-3">
-                    <p>
-                        <a id="login-with-sms" asp-action="LoginWithSms" asp-route-returnUrl="@Model.ReturnUrl"><i class="fa-solid fa-message-sms"></i> ورود از طریق پیامک</a>
-                    </p>
-                    <p>
-                        <a id="forgot-password" asp-action="ForgotPassword"><i class="fa-solid fa-person-circle-question"></i> کلمه عبورتان را فراموش کرده اید؟</a>
-                    </p>
-                    <p>
-                        <a asp-action="Register"><i class="fa-solid fa-circle-user"></i> ایجاد حساب کاربری جدید</a>
-                    </p>
-                    <p>
-                        <a id="resend-confirmation" asp-action="ResendEmailConfirmation"><i class="fa-solid fa-circle-envelope"></i> ارسال مجدد ایمیل فعال سازی</a>
-                    </p>
+                <button type="submit" class="auth-btn auth-btn-primary">
+                    <i class="fa-solid fa-arrow-right-to-arc fa-flip-horizontal"></i>
+                    ورود به حساب
+                </button>
+
+                <div class="auth-links">
+                    <a asp-action="LoginWithSms" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link">
+                        <i class="fa-solid fa-mobile-screen-button text-info"></i>
+                        <span>ورود از طریق پیامک</span>
+                    </a>
+                    
+                    <a asp-action="ForgotPassword" class="auth-link">
+                        <i class="fa-solid fa-key text-warning"></i>
+                        <span>کلمه عبور خود را فراموش کرده‌اید؟</span>
+                    </a>
+                    
+                    <div class="auth-divider">
+                        <span>حساب کاربری ندارید؟</span>
+                    </div>
+                    
+                    <a asp-action="Register" class="auth-link" style="color: var(--auth-primary); font-weight: 600;">
+                        <i class="fa-solid fa-user-plus text-primary"></i>
+                        <span>ایجاد حساب کاربری جدید</span>
+                    </a>
+                    
+                    <a asp-action="ResendEmailConfirmation" class="auth-link">
+                        <i class="fa-solid fa-envelope-circle-check text-secondary"></i>
+                        <span>ارسال مجدد ایمیل فعال‌سازی</span>
+                    </a>
                 </div>
             </form>
-        </section>
+        </div>
     </div>
 
+    <div class="back-to-home">
+        <a href="/">
+            <i class="fa-solid fa-home"></i>
+            بازگشت به صفحه اصلی
+        </a>
+    </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Add loading state on form submit (only if valid)
+        document.getElementById('account').addEventListener('submit', function(e) {
+            // Check if form is valid using jQuery validation
+            if ($(this).valid()) {
+                this.classList.add('auth-loading');
+            }
+        });
+    </script>
 }

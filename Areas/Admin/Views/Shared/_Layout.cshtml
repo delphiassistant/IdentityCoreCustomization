@@ -6,7 +6,7 @@
     <title>@ViewData["Title"] - پنل مدیریت</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
     <link href="~/lib/persian_fonts/vazirmatnfd/vazirmatn-fd-font-face.css" rel="stylesheet" />
-    <link rel="stylesheet" href="~/lib/font_awesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/navigation-dropdown.css" />
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
@@ -19,7 +19,13 @@
             <button class="navbar-toggler d-lg-none" type="button" id="sidebarToggle" aria-label="Toggle sidebar">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <span class="navbar-brand mb-0 h1">پنل مدیریت</span>
+            <span class="navbar-brand mb-0 h1">
+                <i class="fa-solid fa-shield-halved"></i> پنل مدیریت
+            </span>
+            <div class="d-none d-lg-flex align-items-center text-white">
+                <i class="fa-regular fa-user-circle ms-2"></i>
+                <span class="small">@User.Identity?.Name</span>
+            </div>
         </div>
     </nav>
 
@@ -31,17 +37,20 @@
         <div class="sidebar-inner h-100 d-flex flex-column">
             <!-- Brand at top of sidebar -->
             <a class="d-flex align-items-center px-3 py-3 text-decoration-none text-white border-bottom border-secondary" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
-                <i class="fa-solid fa-shield-halved ms-2"></i> <span class="fs-5 ms-1">پنل مدیریت</span>
+                <i class="fa-solid fa-shield-halved ms-2 fs-4"></i> 
+                <span class="fs-5 fw-semibold ms-1">پنل مدیریت</span>
             </a>
             
-            <nav class="nav nav-pills flex-column px-2 py-2 gap-1">
+            <nav class="nav nav-pills flex-column px-2 py-3 gap-1">
                 <!-- Dashboard -->
                 <a class="nav-link text-start @(ViewContext.RouteData.Values["controller"]?.ToString()=="Dashboard"?"active":"")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
                     <i class="fa-solid fa-gauge"></i> داشبورد
                 </a>
                 
                 <!-- Users Section -->
-                <div class="px-2 mt-2 mb-1 text-white-50 small">کاربران</div>
+                <div class="px-2 mt-3 mb-2 text-white-50 small fw-bold">
+                    <i class="fa-solid fa-users-cog"></i> مدیریت کاربران
+                </div>
                 <a class="nav-link text-start @(ViewContext.RouteData.Values["controller"]?.ToString()=="Users"?"active":"")" asp-area="Admin" asp-controller="Users" asp-action="Index">
                     <i class="fa-solid fa-users"></i> کاربران
                 </a>
@@ -53,16 +62,22 @@
                 </a>
                 
                 <!-- User Menu Section -->
-                <div class="px-2 mt-3 mb-1 text-white-50 small">@User.Identity?.Name</div>
+                <div class="px-2 mt-4 mb-2 text-white-50 small fw-bold">
+                    <i class="fa-solid fa-user"></i> @User.Identity?.Name
+                </div>
                 <a class="nav-link text-start" asp-area="Users" asp-controller="Manage" asp-action="Index" target="_blank">
                     <i class="fa-solid fa-user-gear"></i> پرونده کاربری
                 </a>
                 <a class="nav-link text-start" asp-area="" asp-controller="Home" asp-action="Index" target="_blank" rel="noopener">
                     <i class="fa-solid fa-house"></i> بازگشت به سایت
                 </a>
-                <a class="nav-link text-start text-danger" asp-area="Users" asp-controller="Account" asp-action="Logout">
-                    <i class="fa-solid fa-right-from-bracket"></i> خروج
-                </a>
+                
+                <!-- Logout at bottom -->
+                <div class="mt-auto mb-2">
+                    <a class="nav-link text-start text-danger" asp-area="Users" asp-controller="Account" asp-action="Logout">
+                        <i class="fa-solid fa-right-from-bracket"></i> خروج از سیستم
+                    </a>
+                </div>
             </nav>
         </div>
     </aside>
@@ -74,7 +89,14 @@
         </main>
         <footer class="border-top footer text-muted px-3">
             <div class="container-fluid">
-                &copy; @DateTime.Now.ToString("yyyy") - سفارشی سازی آیدنتیتی
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>
+                        &copy; @DateTime.Now.ToString("yyyy") - سفارشی سازی آیدنتیتی
+                    </span>
+                    <span class="small text-muted">
+                        <i class="fa-solid fa-code"></i> ساخته شده با عشق
+                    </span>
+                </div>
             </div>
         </footer>
     </div>

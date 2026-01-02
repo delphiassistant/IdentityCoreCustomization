@@ -1,40 +1,131 @@
 ﻿@model EmailChangeModel
 @{
     ViewData["Title"] = "مدیریت ایمیل";
-    //ViewData["ActivePage"] = ManageNavPages.Email;
 }
 
-<h4>@ViewData["Title"]</h4>
+<div class="page-header">
+    <div class="d-flex align-items-center">
+        <div class="page-title-icon">
+            <i class="fa-solid fa-envelope"></i>
+        </div>
+        <div class="flex-grow-1">
+            <h1 class="page-title mb-0">مدیریت ایمیل</h1>
+            <p class="page-description">تغییر یا تأیید آدرس ایمیل خود</p>
+        </div>
+    </div>
+</div>
+
 <partial name="_StatusMessage" model="Model.StatusMessage" />
+
 <div class="row">
-    <div class="col-md-6">
-        <form id="email-form" method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                @if (Model.IsEmailConfirmed)
-                {
-                    <div class="input-group">
-                        <input asp-for="Email" class="form-control" readonly="readonly" />
-                        <span class="input-group-text text-success fw-bold">✓</span>
+    <div class="col-lg-8">
+        <div class="manage-card">
+            <div class="manage-card-header">
+                <h2 class="manage-card-title">
+                    <i class="fa-solid fa-at text-info"></i>
+                    تغییر ایمیل
+                </h2>
+            </div>
+            <div class="manage-card-body">
+                <form id="email-form" method="post" class="manage-form">
+                    @if (ViewData.ModelState.ErrorCount > 0)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <div asp-validation-summary="All" class="mb-0"></div>
+                        </div>
+                    }
+                    
+                    <div class="mb-4">
+                        <label asp-for="Email" class="form-label">
+                            <i class="fa-solid fa-envelope text-info"></i>
+                            @Html.DisplayNameFor(m => m.Email)
+                        </label>
+                        <input asp-for="Email" class="form-control ltr" dir="ltr" readonly />
+                        
+                        @if (Model.IsEmailConfirmed)
+                        {
+                            <div class="status-badge status-badge-success mt-2">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <span>ایمیل تأیید شده است</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="status-badge status-badge-warning mt-2">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                <span>ایمیل تأیید نشده است</span>
+                            </div>
+                            <button type="submit" asp-action="SendVerificationEmail" class="btn btn-warning btn-sm mt-2">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                ارسال ایمیل تأیید
+                            </button>
+                        }
                     </div>
-                }
-                 else
-                {
-                    <input asp-for="Email" class="form-control" readonly="readonly" />
-                    <button id="email-verification" type="submit" asp-action="SendVerificationEmail" class="btn btn-link">ارسال ایمیل تایید</button>
-                }
+                    
+                    <div class="mb-4">
+                        <label asp-for="NewEmail" class="form-label">
+                            <i class="fa-solid fa-envelope-circle-check text-success"></i>
+                            @Html.DisplayNameFor(m => m.NewEmail)
+                        </label>
+                        <input asp-for="NewEmail" class="form-control ltr" dir="ltr" placeholder="example@domain.com" />
+                        <span asp-validation-for="NewEmail" class="text-danger small"></span>
+                        <small class="text-muted d-block mt-2">
+                            <i class="fa-solid fa-info-circle"></i>
+                            پس از تغییر، لینک تأیید به ایمیل جدید ارسال خواهد شد
+                        </small>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="manage-btn manage-btn-primary">
+                            <i class="fa-solid fa-save"></i> تغییر ایمیل
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary px-4">
+                            <i class="fa-solid fa-arrow-left"></i> بازگشت
+                        </a>
+                    </div>
+                </form>
             </div>
-            <div class="mb-3">
-                <label asp-for="NewEmail" class="form-label"></label>
-                <input asp-for="NewEmail" class="form-control" />
-                <span asp-validation-for="NewEmail" class="text-danger"></span>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="manage-card">
+            <div class="manage-card-header">
+                <h2 class="manage-card-title">
+                    <i class="fa-solid fa-info-circle text-info"></i>
+                    درباره ایمیل
+                </h2>
             </div>
-            <button id="change-email-button" type="submit" class="btn btn-primary">تغییر ایمیل</button>
-        </form>
+            <div class="manage-card-body">
+                <h6 class="fw-bold mb-2">چرا ایمیل مهم است؟</h6>
+                <ul class="small mb-3">
+                    <li>بازیابی حساب کاربری</li>
+                    <li>اعلان‌های امنیتی</li>
+                    <li>تأیید دو مرحله‌ای</li>
+                    <li>دریافت اطلاعیه‌ها</li>
+                </ul>
+                
+                <div class="alert alert-info mb-0">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-shield-halved"></i> نکته امنیتی
+                    </h6>
+                    <p class="small mb-0">
+                        همیشه از یک آدرس ایمیل معتبر و قابل دسترس استفاده کنید. این ایمیل برای بازیابی حساب شما ضروری است.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('email-form').addEventListener('submit', function(e) {
+            if ($(this).valid()) {
+                this.classList.add('auth-loading');
+            }
+        });
+    </script>
 }

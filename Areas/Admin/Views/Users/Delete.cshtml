@@ -4,93 +4,177 @@
     ViewData["Title"] = "حذف کاربر";
 }
 
-<h1>حذف کاربر</h1>
+@section Styles {
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+            animation: shake 0.5s ease;
+        }
 
-<div class="alert alert-danger">
-    <h4 class="alert-heading">
-        <i class="fa-solid fa-exclamation-triangle"></i> هشدار!
+        @@keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .page-header h1 {
+            color: white;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-header h1::after {
+            display: none;
+        }
+
+        .danger-card {
+            border: 3px solid #ef4444;
+            border-radius: 1rem;
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2);
+            }
+            50% {
+                box-shadow: 0 8px 30px rgba(239, 68, 68, 0.4);
+            }
+        }
+
+        .user-info-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .warning-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #dc2626;
+            margin: 0 auto 1rem;
+            animation: warningPulse 1.5s ease-in-out infinite;
+        }
+
+        @@keyframes warningPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .consequence-item {
+            padding: 0.75rem;
+            background: #fef2f2;
+            border-right: 4px solid #ef4444;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .consequence-item:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+}
+
+<div class="page-header">
+    <div class="warning-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <h1 class="text-center mb-0">@ViewData["Title"]</h1>
+    <p class="text-center mb-0 mt-2 opacity-75 fs-5">این عمل غیرقابل بازگشت است!</p>
+</div>
+
+<div class="alert alert-danger danger-card">
+    <h4 class="alert-heading fw-bold">
+        <i class="fa-solid fa-exclamation-triangle"></i> هشدار جدی!
     </h4>
-    <p>آیا مطمئن هستید که می‌خواهید کاربر <strong>@Model.UserName</strong> را حذف کنید؟</p>
+    <p class="mb-2">آیا مطمئن هستید که می‌خواهید کاربر <strong class="text-decoration-underline">@Model.UserName</strong> را حذف کنید؟</p>
     <hr>
-    <p class="mb-0">این عمل غیرقابل بازگشت است و تمام اطلاعات مربوط به این کاربر حذف خواهد شد.</p>
+    <p class="mb-0">
+        <i class="fa-solid fa-ban"></i>
+        این عمل <strong>غیرقابل بازگشت</strong> است و تمام اطلاعات مربوط به این کاربر برای همیشه از بین خواهد رفت.
+    </p>
 </div>
 
 <div class="row">
     <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">اطلاعات کاربر</h5>
+        <div class="user-info-card">
+            <div class="card-header bg-gradient">
+                <h5 class="card-title mb-0">
+                    <i class="fa-solid fa-user"></i> اطلاعات کاربر
+                </h5>
             </div>
             <div class="card-body">
-                <dl class="row">
-                    <dt class="col-4">شناسه:</dt>
-                    <dd class="col-8">@Model.Id</dd>
+                <dl class="row mb-0">
+                    <dt class="col-5">
+                        <i class="fa-solid fa-id-badge text-primary"></i> شناسه:
+                    </dt>
+                    <dd class="col-7">
+                        <code>@Model.Id</code>
+                    </dd>
                     
-                    <dt class="col-4">نام کاربری:</dt>
-                    <dd class="col-8">@Model.UserName</dd>
+                    <dt class="col-5">
+                        <i class="fa-solid fa-user text-info"></i> نام کاربری:
+                    </dt>
+                    <dd class="col-7">
+                        <strong>@Model.UserName</strong>
+                    </dd>
                     
-                    <dt class="col-4">ایمیل:</dt>
-                    <dd class="col-8">@(Model.Email ?? "ثبت نشده")</dd>
-                    
-                    <dt class="col-4">شماره تلفن:</dt>
-                    <dd class="col-8">@(Model.PhoneNumber ?? "ثبت نشده")</dd>
-                    
-                    <dt class="col-4">گروه‌ها:</dt>
-                    <dd class="col-8">
-                        @if (Model.UserRoles?.Any() == true)
+                    <dt class="col-5">
+                        <i class="fa-solid fa-envelope text-success"></i> ایمیل:
+                    </dt>
+                    <dd class="col-7">
+                        @if (!string.IsNullOrEmpty(Model.Email))
                         {
-                            @foreach (var userRole in Model.UserRoles)
-                            {
-                                <span class="badge bg-primary me-1">@userRole.Role?.Name</span>
-                            }
+                            <span class="ltr">@Model.Email</span>
                         }
                         else
                         {
-                            <span class="text-muted">هیچ گروهی</span>
+                            <span class="text-muted">ثبت نشده</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-5">
+                        <i class="fa-solid fa-phone text-warning"></i> شماره تلفن:
+                    </dt>
+                    <dd class="col-7">
+                        @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                        {
+                            <span class="ltr">@Model.PhoneNumber</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">ثبت نشده</span>
                         }
                     </dd>
                 </dl>
             </div>
         </div>
-
-        <div class="mt-3">
-            <form asp-action="Delete" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="Id" />
-                <button type="submit" class="btn btn-danger">
-                    <i class="fa-solid fa-trash"></i> تأیید حذف
-                </button>
-                <a asp-action="Index" class="btn btn-secondary">
-                    <i class="fa-solid fa-times"></i> انصراف
-                </a>
-            </form>
-        </div>
     </div>
-    
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fa-solid fa-info-circle"></i> نکات مهم
-                </h5>
-            </div>
-            <div class="card-body">
-                <ul class="mb-0">
-                    <li>تمام اطلاعات کاربر از سیستم حذف خواهد شد</li>
-                    <li>تمام نقش‌های اختصاص داده شده حذف می‌شود</li>
-                    <li>سوابق ورود و فعالیت کاربر حذف خواهد شد</li>
-                    <li>این عمل غیرقابل بازگشت است</li>
-                    <li>در صورت نیاز، می‌توانید کاربر را قفل کنید تا حذف نکنید</li>
-                </ul>
-            </div>
-        </div>
+</div>
 
-        @if (Model.UserName == User.Identity.Name)
-        {
-            <div class="alert alert-warning mt-3">
-                <i class="fa-solid fa-exclamation-triangle"></i>
-                <strong>توجه:</strong> شما نمی‌توانید حساب کاربری خود را حذف کنید.
-            </div>
-        }
-    </div>
+<div class="text-center">
+    <a asp-action="Index" class="btn btn-light shadow-sm">
+        <i class="fa-solid fa-arrow-left"></i> بازگشت به لیست کاربران
+    </a>
+    <a asp-action="DeleteConfirmed" asp-route-id="@Model.Id" class="btn btn-danger shadow-sm">
+        <i class="fa-solid fa-trash"></i> حذف کاربر
+    </a>
 </div>

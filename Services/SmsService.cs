@@ -25,21 +25,20 @@ namespace IdentityCoreCustomization.Services
         }
         public async Task SendSms(string SmsText, List<string> ReceipentPhones)
         {
-            await Task.Run(() =>
-            {
+            //await Task.Run(() =>
+            //{
                 Message msg = new Message(parsGreenConfig.ApiToken);
-                msg.SendSms(SmsText, ReceipentPhones.ToArray(), parsGreenConfig.SendFromNumber);
-            }).ConfigureAwait(false);
-            
+                var result = msg.SendSms(SmsText, ReceipentPhones.ToArray(), parsGreenConfig.SendFromNumber);
+            //}).ConfigureAwait(false);
         }
 
         public async Task SendSms(string SmsText, string ReceipentPhone)
         {
-            await Task.Run(() =>
-            {
+            //await Task.Run(() =>
+            //{
                 Message msg = new Message(parsGreenConfig.ApiToken);
-                msg.SendSms(SmsText, new string[] {ReceipentPhone}, parsGreenConfig.SendFromNumber);
-            }).ConfigureAwait(false);
+                var result = msg.SendSms(SmsText, new[] {ReceipentPhone}, parsGreenConfig.SendFromNumber);
+            //}).ConfigureAwait(false);
         }
     }
 }

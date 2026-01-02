@@ -3,25 +3,81 @@
     ViewData["Title"] = "بازنشانی کلید احراز هویت";
 }
 
-<partial name="_StatusMessage" for="StatusMessage" />
-<h4>@ViewData["Title"]</h4>
-<div class="alert alert-danger" role="alert">
-    <p>
-        <span class="fa-solid fa-triangle-exclamation"></span>
-        <strong>هشدار: این عملیات برگشت پذیر نیست.</strong>
-    </p>
-    <p>
-        اگر کلید احراز هویت خود را بازنشانی کنید:
-    </p>
-    <ul>
-        <li>برنامه احراز هویت شما دیگر کار نخواهد کرد تا زمانی که آن را دوباره پیکربندی کنید.</li>
-        <li>باید برنامه احراز هویت خود را با استفاده از کد QR جدید یا کلید مشترک جدید دوباره پیکربندی کنید.</li>
-        <li>کدهای بازیابی قبلی شما همچنان کار خواهند کرد.</li>
-    </ul>
+<div class="page-header">
+    <div class="d-flex align-items-center">
+        <div class="page-title-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div class="flex-grow-1">
+            <h1 class="page-title mb-0">بازنشانی کلید احراز هویت</h1>
+            <p class="page-description">هشدار: این عملیات برگشت‌پذیر نیست</p>
+        </div>
+    </div>
 </div>
-<div>
-    <form method="post" asp-action="ResetAuthenticatorKey">
-        <button type="submit" class="btn btn-danger">بازنشانی کلید احراز هویت</button>
-        <a asp-action="TwoFactorAuthentication" class="btn btn-secondary">انصراف</a>
-    </form>
+
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="manage-card">
+            <div class="manage-card-header">
+                <h2 class="manage-card-title">
+                    <i class="fa-solid fa-exclamation-triangle text-danger"></i>
+                    هشدار مهم
+                </h2>
+            </div>
+            <div class="manage-card-body">
+                <div class="alert alert-danger">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> توجه: این عملیات برگشت‌پذیر نیست
+                    </h6>
+                    <p class="mb-2">اگر کلید احراز هویت خود را بازنشانی کنید:</p>
+                    <ul class="mb-0">
+                        <li>برنامه احراز هویت شما دیگر کار نخواهد کرد تا زمانی که آن را دوباره پیکربندی کنید</li>
+                        <li>باید برنامه احراز هویت خود را با استفاده از کد QR جدید یا کلید مشترک جدید دوباره پیکربندی کنید</li>
+                        <li>کدهای بازیابی قبلی شما همچنان کار خواهند کرد</li>
+                    </ul>
+                </div>
+
+                <form method="post" asp-action="ResetAuthenticatorKey">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa-solid fa-rotate"></i> بازنشانی کلید احراز هویت
+                        </button>
+                        <a asp-action="TwoFactorAuthentication" class="btn btn-secondary">
+                            <i class="fa-solid fa-arrow-left"></i> انصراف
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="manage-card">
+            <div class="manage-card-header">
+                <h2 class="manage-card-title">
+                    <i class="fa-solid fa-info-circle text-info"></i>
+                    چه زمانی بازنشانی کنیم؟
+                </h2>
+            </div>
+            <div class="manage-card-body">
+                <ul class="small mb-3">
+                    <li>دستگاه احراز هویت را گم کرده‌اید</li>
+                    <li>برنامه احراز هویت را حذف کرده‌اید</li>
+                    <li>می‌خواهید دستگاه جدیدی استفاده کنید</li>
+                    <li>مشکل در ایجاد کدهای صحیح دارید</li>
+                </ul>
+
+                <div class="alert alert-warning mb-0">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-lightbulb"></i> توصیه
+                    </h6>
+                    <p class="small mb-0">
+                        قبل از بازنشانی، مطمئن شوید که کدهای بازیابی خود را دارید.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

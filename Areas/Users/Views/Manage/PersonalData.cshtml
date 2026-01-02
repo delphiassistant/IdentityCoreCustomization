@@ -1,23 +1,83 @@
 ﻿@model PersonalDataModel
 @{
-    ViewData["Title"] = "Personal Data";
-    //ViewData["ActivePage"] = ManageNavPages.PersonalData;
+    ViewData["Title"] = "اطلاعات شخصی";
 }
 
-<h4>@ViewData["Title"]</h4>
+<div class="page-header">
+    <div class="d-flex align-items-center">
+        <div class="page-title-icon">
+            <i class="fa-solid fa-database"></i>
+        </div>
+        <div class="flex-grow-1">
+            <h1 class="page-title mb-0">اطلاعات شخصی</h1>
+            <p class="page-description">مدیریت و دانلود اطلاعات شخصی شما</p>
+        </div>
+    </div>
+</div>
 
 <div class="row">
-    <div class="col-md-6">
-        <p>Your account contains personal data that you have given us. This page allows you to download or delete that data.</p>
-        <p>
-            <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
-        </p>
-        <form id="download-data" asp-area="Users" asp-controller="Manage" asp-action="DownloadPersonalData" method="post" class="mb-3">
-            <button class="btn btn-primary" type="submit">Download</button>
-        </form>
-        <p>
-            <a id="delete" asp-area="Users" asp-controller="Manage" asp-action="DeletePersonalData" class="btn btn-secondary">Delete</a>
-        </p>
+    <div class="col-lg-8">
+        <div class="manage-card">
+            <div class="manage-card-header">
+                <h2 class="manage-card-title">
+                    <i class="fa-solid fa-user-shield text-primary"></i>
+                    داده‌های شخصی شما
+                </h2>
+            </div>
+            <div class="manage-card-body">
+                <p>حساب کاربری شما شامل اطلاعات شخصی است که به ما داده‌اید. این صفحه به شما امکان می‌دهد این داده‌ها را دانلود یا حذف کنید.</p>
+                
+                <div class="alert alert-warning">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-exclamation-triangle"></i> هشدار مهم
+                    </h6>
+                    <p class="mb-0">
+                        <strong>حذف این داده‌ها به طور دائمی حساب کاربری شما را حذف می‌کند و این عمل قابل بازگشت نیست.</strong>
+                    </p>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <form id="download-data" asp-area="Users" asp-controller="Manage" asp-action="DownloadPersonalData" method="post">
+                        <button class="manage-btn manage-btn-primary" type="submit">
+                            <i class="fa-solid fa-download"></i> دانلود اطلاعات
+                        </button>
+                    </form>
+                    
+                    <a id="delete" asp-area="Users" asp-controller="Manage" asp-action="DeletePersonalData" class="btn btn-danger">
+                        <i class="fa-solid fa-trash"></i> حذف حساب کاربری
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="manage-card">
+            <div class="manage-card-header">
+                <h2 class="manage-card-title">
+                    <i class="fa-solid fa-info-circle text-info"></i>
+                    اطلاعات
+                </h2>
+            </div>
+            <div class="manage-card-body">
+                <h6 class="fw-bold mb-2">دانلود اطلاعات شامل:</h6>
+                <ul class="small mb-3">
+                    <li>اطلاعات حساب کاربری</li>
+                    <li>تاریخچه فعالیت‌ها</li>
+                    <li>تنظیمات شخصی</li>
+                    <li>سایر داده‌های ذخیره شده</li>
+                </ul>
+
+                <div class="alert alert-danger mb-0">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-shield-halved"></i> حذف حساب
+                    </h6>
+                    <p class="small mb-0">
+                        حذف حساب کاربری شامل حذف تمام اطلاعات، تنظیمات و داده‌های مرتبط با حساب شما می‌شود. این عمل غیرقابل بازگشت است.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

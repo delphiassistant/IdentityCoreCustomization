@@ -1,10 +1,53 @@
 ﻿@{
-    Layout = "/Areas/Users/Views/Manage/_Layout.cshtml";
-    ViewData["Title"] = "ارسال ایمیل تایید";
+    ViewData["Title"] = "ارسال ایمیل تأیید";
 }
 
-<h4>@ViewData["Title"]</h4>
-<div class="alert alert-info" role="alert">
-    ایمیل تایید برای شما ارسال شد. لطفاً صندوق ایمیل خود را بررسی کنید و روی لینک تایید کلیک کنید.
+<div class="page-header">
+    <div class="d-flex align-items-center">
+        <div class="page-title-icon">
+            <i class="fa-solid fa-paper-plane"></i>
+        </div>
+        <div class="flex-grow-1">
+            <h1 class="page-title mb-0">ارسال ایمیل تأیید</h1>
+            <p class="page-description">ایمیل تأیید با موفقیت ارسال شد</p>
+        </div>
+    </div>
 </div>
-<a asp-area="Users" asp-controller="Manage" asp-action="Email" class="btn btn-primary">بازگشت به مدیریت ایمیل</a>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="manage-card">
+            <div class="manage-card-body text-center py-5">
+                <div class="feature-icon feature-icon-success mx-auto mb-4" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                    <i class="fa-solid fa-envelope-circle-check"></i>
+                </div>
+
+                <h4 class="mb-3">ایمیل تأیید ارسال شد</h4>
+                <p class="text-muted mb-4">
+                    لطفاً ایمیل خود را بررسی کرده و روی لینک تأیید کلیک کنید.
+                </p>
+
+                <div class="alert alert-info text-start mb-4">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-lightbulb"></i> نکات مهم
+                    </h6>
+                    <ul class="small mb-0">
+                        <li>ایمیل ممکن است چند دقیقه طول بکشد</li>
+                        <li>پوشه هرزنامه (Spam) را نیز بررسی کنید</li>
+                        <li>لینک تأیید معتبر محدود است</li>
+                        <li>اگر ایمیل را دریافت نکردید، دوباره درخواست دهید</li>
+                    </ul>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-center">
+                    <a asp-action="Email" class="manage-btn manage-btn-primary">
+                        <i class="fa-solid fa-envelope"></i> مدیریت ایمیل
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fa-solid fa-user"></i> پروفایل
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

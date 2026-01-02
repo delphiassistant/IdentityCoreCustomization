@@ -1,25 +1,90 @@
 ﻿@model LoginWithSmsModel
 @{
     ViewData["Title"] = "ورود از طریق پیامک";
+    Layout = "~/Areas/Users/Views/Shared/_AuthLayout.cshtml";
 }
-<div class="row">
-    <div class="col-md-6 mx-auto col-sm-12" >
-        <h1>@ViewData["Title"]</h1>
-        <form method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
-            <div class="mb-3">
-                <label asp-for="PhoneNumber"></label>
-                <input asp-for="PhoneNumber" class="form-control ltr"/>
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="icon">
+                <i class="fa-solid fa-message-sms"></i>
             </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary mt-1">ارسال کد</button>
+            <h1>@ViewData["Title"]</h1>
+        </div>
+
+        <div class="auth-body">
+            @if (ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="auth-alert auth-alert-danger">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div asp-validation-summary="All" class="mb-0"></div>
+                </div>
+            }
+
+            <div class="auth-alert auth-alert-info mb-4">
+                <i class="fa-solid fa-info-circle"></i>
+                <p class="mb-0">
+                    <strong>راهنما:</strong> شماره موبایل خود را وارد کنید تا کد ورود برای شما پیامک شود.
+                </p>
             </div>
-        </form>
+
+            <form method="post" class="auth-form">
+                <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+                
+                <div class="mb-4">
+                    <label asp-for="PhoneNumber" class="form-label">
+                        <i class="fa-solid fa-mobile-screen-button text-info"></i>
+                        @Html.DisplayNameFor(m => m.PhoneNumber)
+                    </label>
+                    <input asp-for="PhoneNumber" class="form-control ltr" dir="ltr" autofocus />
+                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    <small class="text-muted d-block mt-2">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        شماره موبایلی که هنگام ثبت‌نام استفاده کرده‌اید را وارد کنید
+                    </small>
+                </div>
+
+                <button type="submit" class="auth-btn auth-btn-primary">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    ارسال کد تأیید
+                </button>
+
+                <div class="auth-links">
+                    <div class="auth-divider">
+                        <span>یا</span>
+                    </div>
+                    
+                    <a asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" class="auth-link" style="color: var(--auth-primary); font-weight: 600;">
+                        <i class="fa-solid fa-right-to-bracket fa-flip-horizontal text-primary"></i>
+                        <span>ورود با نام کاربری و کلمه عبور</span>
+                    </a>
+                    
+                    <a asp-action="Register" class="auth-link">
+                        <i class="fa-solid fa-user-plus text-success"></i>
+                        <span>ایجاد حساب کاربری جدید</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="back-to-home">
+        <a href="/">
+            <i class="fa-solid fa-home"></i>
+            بازگشت به صفحه اصلی
+        </a>
     </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Add loading state on form submit (only if valid)
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // Check if form is valid using jQuery validation
+            if ($(this).valid()) {
+                this.classList.add('auth-loading');
+            }
+        });
+    </script>
 }

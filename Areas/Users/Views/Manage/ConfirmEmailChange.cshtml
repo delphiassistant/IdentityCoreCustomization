@@ -1,11 +1,70 @@
-﻿@model IdentityCoreCustomization.Areas.Users.Models.ManageIndexModel
-@{
-    Layout = "/Areas/Users/Views/Manage/_Layout.cshtml";
-    ViewData["Title"] = "تایید تغییر ایمیل";
+﻿@{
+    ViewData["Title"] = "تأیید تغییر ایمیل";
 }
 
-<h4>@ViewData["Title"]</h4>
-<div class="alert alert-info">
-    @Model.StatusMessage
+<div class="page-header">
+    <div class="d-flex align-items-center">
+        <div class="page-title-icon">
+            <i class="fa-solid fa-envelope-circle-check"></i>
+        </div>
+        <div class="flex-grow-1">
+            <h1 class="page-title mb-0">تأیید تغییر ایمیل</h1>
+            <p class="page-description">وضعیت تأیید تغییر ایمیل شما</p>
+        </div>
+    </div>
 </div>
-<a asp-area="Users" asp-controller="Manage" asp-action="Index" class="btn btn-primary">بازگشت به پرونده</a>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="manage-card">
+            <div class="manage-card-body text-center py-5">
+                @if (!string.IsNullOrEmpty(ViewBag.StatusMessage))
+                {
+                    var isSuccess = !ViewBag.StatusMessage.ToString().Contains("خطا") && !ViewBag.StatusMessage.ToString().Contains("Error");
+                    
+                    <div class="feature-icon @(isSuccess ? "feature-icon-success" : "feature-icon-danger") mx-auto mb-4" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                        <i class="fa-solid @(isSuccess ? "fa-circle-check" : "fa-circle-xmark")"></i>
+                    </div>
+
+                    <div class="alert alert-@(isSuccess ? "success" : "danger") text-start">
+                        @ViewBag.StatusMessage
+                    </div>
+
+                    if (isSuccess)
+                    {
+                        <p class="text-muted mb-4">ایمیل شما با موفقیت تغییر یافت. از این پس از ایمیل جدید برای ورود استفاده کنید.</p>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-4">لینک تأیید تغییر ایمیل نامعتبر یا منقضی شده است.</p>
+                    }
+                }
+                else
+                {
+                    <div class="feature-icon feature-icon-info mx-auto mb-4" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <p class="text-muted mb-4">در حال بررسی وضعیت تأیید تغییر ایمیل...</p>
+                }
+
+                <div class="d-flex gap-2 justify-content-center">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a asp-action="Index" class="manage-btn manage-btn-primary">
+                            <i class="fa-solid fa-user"></i> مدیریت حساب
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-area="Users" asp-controller="Account" asp-action="Login" class="manage-btn manage-btn-primary">
+                            <i class="fa-solid fa-right-to-bracket fa-flip-horizontal"></i> ورود به حساب
+                        </a>
+                    }
+                    <a href="/" class="btn btn-secondary">
+                        <i class="fa-solid fa-home"></i> صفحه اصلی
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

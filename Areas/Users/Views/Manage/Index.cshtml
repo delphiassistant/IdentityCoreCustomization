@@ -1,41 +1,142 @@
 ﻿@model ManageIndexModel
 @{
-    ViewData["Title"] = "پرونده";
-    ViewData["ActivePage"] = "Index";
+    ViewData["Title"] = "پروفایل کاربری";
 }
 
-<h4><i class="fa-solid fa-user-gear"></i> @ViewData["Title"]</h4>
+<div class="page-header">
+    <div class="d-flex align-items-center">
+        <div class="page-title-icon">
+            <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="flex-grow-1">
+            <h1 class="page-title mb-0">پروفایل کاربری</h1>
+            <p class="page-description">مشاهده و مدیریت اطلاعات حساب کاربری شما</p>
+        </div>
+    </div>
+</div>
+
 <partial name="_StatusMessage" model="Model.StatusMessage" />
+
 <div class="row">
-    <div class="col-md-6">
-        <form id="profile-form" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="mb-3">
-                <label asp-for="Username"></label>
-                <input asp-for="Username" class="form-control" disabled />
+    <div class="col-lg-8">
+        <div class="manage-card">
+            <div class="manage-card-header">
+                <h2 class="manage-card-title">
+                    <i class="fa-solid fa-id-card text-primary"></i>
+                    اطلاعات حساب کاربری
+                </h2>
             </div>
-        </form>
-        @if (!string.IsNullOrEmpty(Model.PhoneNumber))
-        {
-            if (Model.PhoneNumberConfirmed)
-            {
-                <div class="alert alert-success" role="alert">
-                    شماره موبایل شما تایید شده است.
+            <div class="manage-card-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon info-icon-primary">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">نام کاربری</div>
+                            <div class="info-value">@Model.Username</div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                    {
+                        <div class="info-item">
+                            <div class="info-icon @(Model.PhoneNumberConfirmed ? "info-icon-success" : "info-icon-warning")">
+                                <i class="fa-solid fa-mobile-screen-button"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">شماره موبایل</div>
+                                <div class="info-value d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="ltr">@Model.PhoneNumber</span>
+                                    @if (Model.PhoneNumberConfirmed)
+                                    {
+                                        <span class="status-badge status-badge-success">
+                                            <i class="fa-solid fa-circle-check"></i> تأیید شده
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-badge-warning">
+                                            <i class="fa-solid fa-circle-exclamation"></i> تأیید نشده
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
-            }
-            else
-            {
-                <div class="alert alert-warning" role="alert">
-                    شماره موبایل شما اضافه شده اما تایید نشده است.
+
+                @if (string.IsNullOrEmpty(Model.PhoneNumber))
+                {
+                    <div class="alert alert-info mt-3 mb-0">
+                        <i class="fa-solid fa-info-circle"></i>
+                        شماره موبایل ثبت نشده است.
+                        <a asp-action="AddPhoneNumber" class="alert-link fw-bold">افزودن شماره موبایل</a>
+                    </div>
+                }
+
+                <div class="alert alert-info mt-3 mb-0">
+                    <i class="fa-solid fa-envelope"></i>
+                    برای مدیریت ایمیل خود از بخش
+                    <a asp-action="Email" class="alert-link fw-bold">مدیریت ایمیل</a>
+                    استفاده کنید.
                 </div>
-            }
-        }
-        else
-        {
-            <div class="alert alert-info" role="alert">
-                شماره موبایل اضافه نشده است. <a href="@Url.Action("AddPhoneNumber", "Manage", new { area = "Users" })">اضافه کردن شماره موبایل</a>
             </div>
-        }
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="manage-card">
+            <div class="manage-card-header">
+                <h2 class="manage-card-title">
+                    <i class="fa-solid fa-bolt text-warning"></i>
+                    دسترسی سریع
+                </h2>
+            </div>
+            <div class="manage-card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Email" class="manage-btn manage-btn-primary">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>مدیریت ایمیل</span>
+                    </a>
+
+                    <a asp-action="ChangePassword" class="manage-btn manage-btn-primary">
+                        <i class="fa-solid fa-key"></i>
+                        <span>تغییر کلمه عبور</span>
+                    </a>
+
+                    @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                    {
+                        <a asp-action="AddPhoneNumber" class="manage-btn manage-btn-primary">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                            <span>تغییر شماره موبایل</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-action="AddPhoneNumber" class="manage-btn manage-btn-primary">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>افزودن شماره موبایل</span>
+                        </a>
+                    }
+
+                    <a asp-action="TwoFactorAuthentication" class="manage-btn manage-btn-primary">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>احراز هویت دو مرحله‌ای</span>
+                    </a>
+                </div>
+
+                <div class="alert alert-warning mt-3 mb-0">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        امنیت حساب
+                    </h6>
+                    <p class="small mb-0">
+                        برای امنیت بیشتر، احراز هویت دو مرحله‌ای را فعال کنید.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

@@ -9,7 +9,7 @@ namespace IdentityCoreCustomization.Services
 {
     public class DatabaseCleanupBackgroundService : BackgroundService
     {
-        private static readonly TimeSpan CleanupInterval = TimeSpan.FromSeconds(20);
+        private static readonly TimeSpan CleanupInterval = TimeSpan.FromSeconds(60);
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<DatabaseCleanupBackgroundService> _logger;
 

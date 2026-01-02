@@ -5,51 +5,262 @@
     ViewData["Title"] = "ایجاد کاربر جدید";
 }
 
-<h1>@ViewData["Title"]</h1>
+@section Styles {
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+        }
 
+        .page-header h1 {
+            color: white;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
 
-<hr />
+        .page-header h1::after {
+            display: none;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .form-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-control:focus,
+        .form-check-input:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
+        }
+
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+    </style>
+}
+
+<div class="page-header">
+    <h1 class="mb-0">
+        <i class="fa-solid fa-user-plus"></i> @ViewData["Title"]
+    </h1>
+    <p class="mb-0 mt-2 opacity-75">ایجاد کاربر جدید در سیستم</p>
+</div>
+
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="mb-3">
-                <label asp-for="Username" class="form-label"></label>
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-danger"></span>
+    <div class="col-lg-8">
+        <form asp-action="Create" class="form-card">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger mx-3 mt-3"></div>
+            
+            <!-- Account Information Section -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fa-solid fa-user-circle text-primary"></i>
+                    اطلاعات حساب کاربری
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Username" class="form-label">
+                            <i class="fa-solid fa-user text-primary"></i> @Html.DisplayNameFor(m => m.Username)
+                        </label>
+                        <input asp-for="Username" class="form-control" placeholder="نام کاربری را وارد کنید" />
+                        <span asp-validation-for="Username" class="text-danger small"></span>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label">
+                            <i class="fa-solid fa-envelope text-primary"></i> @Html.DisplayNameFor(m => m.Email)
+                        </label>
+                        <input asp-for="Email" class="form-control ltr" placeholder="example@domain.com" dir="ltr" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control ltr" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+
+            <!-- Security Section -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fa-solid fa-lock text-success"></i>
+                    اطلاعات امنیتی
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Password" class="form-label">
+                            <i class="fa-solid fa-key text-success"></i> @Html.DisplayNameFor(m => m.Password)
+                        </label>
+                        <input asp-for="Password" class="form-control ltr" placeholder="••••••••" dir="ltr" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                        <div class="password-strength bg-secondary" id="passwordStrength"></div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label asp-for="ConfirmPassword" class="form-label">
+                            <i class="fa-solid fa-check-double text-success"></i> @Html.DisplayNameFor(m => m.ConfirmPassword)
+                        </label>
+                        <input asp-for="ConfirmPassword" class="form-control ltr" placeholder="••••••••" dir="ltr" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label asp-for="ConfirmPassword" class="form-label"></label>
-                <input asp-for="ConfirmPassword" class="form-control ltr" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+
+            <!-- Contact Information Section -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fa-solid fa-address-book text-info"></i>
+                    اطلاعات تماس
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="PhoneNumber" class="form-label">
+                            <i class="fa-solid fa-phone text-info"></i> @Html.DisplayNameFor(m => m.PhoneNumber)
+                        </label>
+                        <input asp-for="PhoneNumber" class="form-control ltr" placeholder="09123456789" dir="ltr" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="fa-solid fa-shield-halved text-warning"></i> تنظیمات امنیتی
+                        </label>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <div class="form-check">
+                                <input asp-for="EmailConfirmed" class="form-check-input" type="checkbox" />
+                                <label asp-for="EmailConfirmed" class="form-check-label"></label>
+                            </div>
+                            <div class="form-check">
+                                <input asp-for="PhoneNumberConfirmed" class="form-check-input" type="checkbox" />
+                                <label asp-for="PhoneNumberConfirmed" class="form-check-label"></label>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3 flex-wrap mt-2">
+                            <div class="form-check">
+                                <input asp-for="LockoutEnabled" class="form-check-input" type="checkbox" />
+                                <label asp-for="LockoutEnabled" class="form-check-label"></label>
+                            </div>
+                            <div class="form-check">
+                                <input asp-for="TwoFactorEnabled" class="form-check-input" type="checkbox" />
+                                <label asp-for="TwoFactorEnabled" class="form-check-label"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control ltr" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+
+            <!-- Roles Section -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fa-solid fa-user-tag text-secondary"></i>
+                    نقش‌های کاربری
+                </div>
+                <check-box-list name="selectedRoles" items="ViewBag.RolesList" template="Bootstrap5Basic"></check-box-list>
             </div>
-            <div class="mb-3">
-                <label asp-for="PhoneNumber" class="form-label"></label>
-                <input asp-for="PhoneNumber" class="form-control ltr" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">گروه های عضو</label>                
-                    <check-box-list name="selectedRoles" items="ViewBag.RolesList" template="Bootstrap5Basic" class="form-control"></check-box-list>                
-            </div>
-            <div class="mb-3">
-                <button type="submit" value="Create" class="btn btn-primary"><i class="fa-solid fa-down-to-bracket"></i> ثبت</button>
-                <a asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-arrow-turn-down-left"></i> بازگشت به فهرست</a>
+
+            <!-- Action Buttons -->
+            <div class="form-section">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="fa-solid fa-check"></i> ایجاد کاربر
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary px-4">
+                        <i class="fa-solid fa-arrow-left"></i> بازگشت به فهرست
+                    </a>
+                </div>
             </div>
         </form>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-gradient">
+                <h5 class="card-title mb-0">
+                    <i class="fa-solid fa-info-circle text-primary"></i> راهنما
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6 class="fw-bold">نکات مهم:</h6>
+                <ul class="small mb-3">
+                    <li>نام کاربری باید منحصر به فرد باشد</li>
+                    <li>کلمه عبور باید حداقل 6 کاراکتر باشد</li>
+                    <li>ایمیل و شماره تلفن اختیاری هستند</li>
+                    <li>می‌توانید چندین نقش به کاربر اختصاص دهید</li>
+                </ul>
+                
+                <div class="info-box">
+                    <h6 class="fw-bold text-primary mb-2">
+                        <i class="fa-solid fa-lightbulb"></i> پیشنهاد
+                    </h6>
+                    <p class="small mb-0">
+                        برای امنیت بیشتر، احراز هویت دو مرحله‌ای را فعال کنید و ایمیل/تلفن کاربر را تأیید نمایید.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('Password').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strengthBar = document.getElementById('passwordStrength');
+            let strength = 0;
+            
+            if (password.length >= 6) strength++;
+            if (password.length >= 10) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z\d]/.test(password)) strength++;
+            
+            strengthBar.className = 'password-strength';
+            if (strength === 0) strengthBar.classList.add('bg-secondary');
+            else if (strength <= 2) strengthBar.classList.add('bg-danger');
+            else if (strength <= 3) strengthBar.classList.add('bg-warning');
+            else strengthBar.classList.add('bg-success');
+        });
+    </script>
 }

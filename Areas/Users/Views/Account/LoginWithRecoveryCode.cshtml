@@ -1,40 +1,115 @@
 @model LoginWithRecoveryCodeModel
 @{
     ViewData["Title"] = "ورود با کد بازیابی";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/Users/Views/Shared/_AuthLayout.cshtml";
 }
 
-<div class="row">
-    <div class="col-md-6 mx-auto col-sm-12">
-        <h1>@ViewData["Title"]</h1>
-        <hr />
-        <div class="alert alert-info">
-            <p>
-                شما درخواست ورود با کد بازیابی کرده اید. این ورود کد احراز هویت دو مرحله ای شما را بازنشانی نخواهد کرد.
-                با این حال، ورود با کد بازیابی امنیت حساب کاربری شما را کاهش نخواهد داد. اگر احساس می‌کنید که حساب کاربری شما به خطر افتاده است،
-                باید <a asp-controller="Manage" asp-action="GenerateRecoveryCodes">کدهای بازیابی جدید</a> ایجاد کنید.
-            </p>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="icon">
+                <i class="fa-solid fa-life-ring"></i>
+            </div>
+            <h1>@ViewData["Title"]</h1>
         </div>
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ReturnUrl" />
-            <div class="mb-3">
-                <label asp-for="RecoveryCode" class="form-label"></label>
-                <input asp-for="RecoveryCode" class="form-control" autocomplete="off" placeholder="مثال: ABCD-EFGH" />
-                <span asp-validation-for="RecoveryCode" class="text-danger"></span>
-                <small class="form-text text-muted">
-                    کد بازیابی خود را بدون فاصله یا خط تیره وارد کنید.
-                </small>
+
+        <div class="auth-body">
+            @if (ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="auth-alert auth-alert-danger">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div asp-validation-summary="ModelOnly" class="mb-0"></div>
+                </div>
+            }
+
+            <div class="auth-alert auth-alert-info mb-4">
+                <i class="fa-solid fa-info-circle"></i>
+                <div>
+                    <p class="mb-2">
+                        <strong>نکته:</strong> استفاده از کد بازیابی، احراز هویت دو مرحله‌ای شما را غیرفعال نمی‌کند.
+                    </p>
+                    <p class="small mb-0">
+                        اگر احساس می‌کنید حساب شما در معرض خطر است، بعد از ورود
+                        <a asp-area="Users" asp-controller="Manage" asp-action="GenerateRecoveryCodes" class="alert-link">کدهای جدید ایجاد کنید</a>.
+                    </p>
+                </div>
             </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-right-to-bracket"></i> ورود
+
+            <form method="post" class="auth-form">
+                <input type="hidden" asp-for="ReturnUrl" />
+                
+                <div class="mb-4">
+                    <label asp-for="RecoveryCode" class="form-label">
+                        <i class="fa-solid fa-key text-warning"></i>
+                        @Html.DisplayNameFor(m => m.RecoveryCode)
+                    </label>
+                    <input asp-for="RecoveryCode" 
+                           class="form-control text-center" 
+                           autocomplete="off" 
+                           style="font-size: 1.25rem; letter-spacing: 0.2rem; font-weight: 600; text-transform: uppercase;"
+                           autofocus />
+                    <span asp-validation-for="RecoveryCode" class="text-danger small"></span>
+                    <small class="text-muted d-block mt-2">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        کد را بدون فاصله یا خط تیره وارد کنید (مثال: ABCD1234EFGH5678)
+                    </small>
+                </div>
+
+                <button type="submit" class="auth-btn auth-btn-primary">
+                    <i class="fa-solid fa-right-to-bracket fa-flip-horizontal"></i>
+                    ورود با کد بازیابی
                 </button>
+
+                <div class="auth-links">
+                    <div class="auth-divider">
+                        <span>یا</span>
+                    </div>
+                    
+                    <a asp-action="LoginWith2fa" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link" style="color: var(--auth-primary); font-weight: 600;">
+                        <i class="fa-solid fa-mobile-screen-button text-primary"></i>
+                        <span>بازگشت به احراز هویت دو مرحله‌ای</span>
+                    </a>
+                    
+                    <a asp-action="Login" class="auth-link">
+                        <i class="fa-solid fa-arrow-left text-secondary"></i>
+                        <span>بازگشت به صفحه ورود</span>
+                    </a>
+                </div>
+            </form>
+
+            <div class="alert alert-warning mt-4 mb-0">
+                <h6 class="fw-bold mb-2">
+                    <i class="fa-solid fa-exclamation-triangle"></i> مهم
+                </h6>
+                <p class="small mb-0">
+                    هر کد بازیابی فقط یک‌بار قابل استفاده است. پس از ورود، کدهای جدید ایجاد کنید.
+                </p>
             </div>
-        </form>
+        </div>
+    </div>
+
+    <div class="back-to-home">
+        <a href="/">
+            <i class="fa-solid fa-home"></i>
+            بازگشت به صفحه اصلی
+        </a>
     </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Auto-format recovery code (remove spaces/dashes)
+        const codeInput = document.querySelector('[asp-for="RecoveryCode"]');
+        codeInput.addEventListener('input', function(e) {
+            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        });
+
+        // Add loading state on form submit (only if valid)
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // Check if form is valid using jQuery validation
+            if ($(this).valid()) {
+                this.classList.add('auth-loading');
+            }
+        });
+    </script>
 }

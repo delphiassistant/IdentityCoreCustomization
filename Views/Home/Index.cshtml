@@ -1,8 +1,352 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "صفحه اصلی";
 }
 
-<div class="text-center">
-    <h1 class="display-4">خوش آمدید</h1>
-    <p>صفحه کنونی، صفحه اصلی پروژه سفارشی سازی آیدنتیتی می باشد.</p>
+@section Styles {
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5rem 0 4rem;
+            margin-top: -1rem;
+            margin-left: -1rem;
+            margin-right: -1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-btn {
+            padding: 0.875rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .hero-btn-primary {
+            background: white;
+            color: var(--auth-primary, #667eea);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            color: var(--auth-primary, #667eea);
+        }
+
+        .hero-btn-outline {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-btn-outline:hover {
+            background: white;
+            color: var(--auth-primary, #667eea);
+            transform: translateY(-3px);
+        }
+
+        .features-section {
+            padding: 4rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: 2px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            border-color: #667eea;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-icon-primary {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            color: #667eea;
+        }
+
+        .feature-icon-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
+            color: #10b981;
+        }
+
+        .feature-icon-warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
+            color: #f59e0b;
+        }
+
+        .feature-icon-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+            color: #ef4444;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .feature-description {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .stats-section {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            padding: 3rem 0;
+            margin-left: -1rem;
+            margin-right: -1rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        @@media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .hero-section {
+                padding: 3rem 0 2rem;
+            }
+        }
+    </style>
+}
+
+<div class="hero-section">
+    <div class="container hero-content">
+        <h1 class="hero-title">خوش آمدید</h1>
+        <p class="hero-subtitle">
+            سیستم مدیریت هویت و دسترسی حرفه‌ای با امنیت بالا و امکانات پیشرفته
+        </p>
+        <div class="hero-buttons">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                @if (User.IsInRole("Admin"))
+                {
+                    <a href="/Admin" class="hero-btn hero-btn-primary">
+                        <i class="fa-solid fa-gauge-high"></i>
+                        پنل مدیریت
+                    </a>
+                }
+                <a asp-area="Users" asp-controller="Manage" asp-action="Index" class="hero-btn hero-btn-outline">
+                    <i class="fa-solid fa-user-gear"></i>
+                    مدیریت حساب کاربری
+                </a>
+            }
+            else
+            {
+                <a asp-area="Users" asp-controller="Account" asp-action="Login" class="hero-btn hero-btn-primary">
+                    <i class="fa-solid fa-right-to-bracket fa-flip-horizontal"></i>
+                    ورود به حساب
+                </a>
+                <a asp-area="Users" asp-controller="Account" asp-action="Register" class="hero-btn hero-btn-outline">
+                    <i class="fa-solid fa-user-plus"></i>
+                    ثبت‌نام
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="container features-section">
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold mb-3">امکانات سیستم</h2>
+        <p class="text-muted">قابلیت‌های پیشرفته برای مدیریت کاربران و امنیت</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-primary">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 class="feature-title">امنیت بالا</h3>
+                <p class="feature-description">
+                    احراز هویت دو مرحله‌ای، رمزنگاری قوی و مدیریت امن نشست‌ها
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-success">
+                    <i class="fa-solid fa-users-gear"></i>
+                </div>
+                <h3 class="feature-title">مدیریت کاربران</h3>
+                <p class="feature-description">
+                    پنل مدیریت جامع برای کنترل کاربران، نقش‌ها و دسترسی‌ها
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-warning">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                </div>
+                <h3 class="feature-title">ورود با پیامک</h3>
+                <p class="feature-description">
+                    قابلیت ورود امن با استفاده از کد یکبار مصرف پیامکی
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-danger">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <h3 class="feature-title">مدیریت نشست‌ها</h3>
+                <p class="feature-description">
+                    کنترل کامل نشست‌های فعال و امکان خروج از همه دستگاه‌ها
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="stat-label">امنیت پیشرفته</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div class="stat-label">عملکرد سریع</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">
+                        <i class="fa-solid fa-mobile"></i>
+                    </div>
+                    <div class="stat-label">طراحی واکنش‌گرا</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <div class="stat-label">کد تمیز و مستند</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="text-center">
+        <h2 class="display-6 fw-bold mb-4">آماده شروع هستید؟</h2>
+        <p class="text-muted mb-4">
+            همین حالا حساب کاربری خود را ایجاد کنید یا وارد شوید
+        </p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <a asp-area="Users" asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg px-4">
+                    <i class="fa-solid fa-user-plus"></i> ثبت‌نام رایگان
+                </a>
+                <a asp-controller="Home" asp-action="Privacy" class="btn btn-outline-secondary btn-lg px-4">
+                    <i class="fa-solid fa-shield-halved"></i> حریم خصوصی
+                </a>
+            }
+            else
+            {
+                <a asp-area="Users" asp-controller="Manage" asp-action="Index" class="btn btn-primary btn-lg px-4">
+                    <i class="fa-solid fa-user-gear"></i> مدیریت حساب
+                </a>
+            }
+        </div>
+    </div>
 </div>

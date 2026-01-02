@@ -1,26 +1,99 @@
 ﻿@model ResendEmailConfirmationModel
 @{
-    ViewData["Title"] = "ارسال مجدد ایمیل تایید";
+    ViewData["Title"] = "ارسال مجدد ایمیل تأیید";
+    Layout = "~/Areas/Users/Views/Shared/_AuthLayout.cshtml";
 }
 
-
-<div class="row">
-    <div class="col-md-6 offset-md-3 col-sm-12 offset-sm-1">
-        <h1>@ViewData["Title"]</h1>
-        
-        <hr />
-        <form method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="mb-3">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="icon">
+                <i class="fa-solid fa-envelope-circle-check"></i>
             </div>
-            <button type="submit" class="btn btn-primary">ارسال مجدد</button>
-        </form>
+            <h1>@ViewData["Title"]</h1>
+        </div>
+
+        <div class="auth-body">
+            @if (ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="auth-alert auth-alert-danger">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div asp-validation-summary="All" class="mb-0"></div>
+                </div>
+            }
+
+            <div class="auth-alert auth-alert-info mb-4">
+                <i class="fa-solid fa-info-circle"></i>
+                <p class="mb-0">
+                    اگر ایمیل تأیید را دریافت نکرده‌اید، آدرس ایمیل خود را وارد کنید تا مجدداً برای شما ارسال شود.
+                </p>
+            </div>
+
+            <form method="post" class="auth-form">
+                <div class="mb-4">
+                    <label asp-for="Email" class="form-label">
+                        <i class="fa-solid fa-envelope text-info"></i>
+                        @Html.DisplayNameFor(m => m.Email)
+                    </label>
+                    <input asp-for="Email" class="form-control ltr" dir="ltr" placeholder="example@domain.com" autofocus />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                    <small class="text-muted d-block mt-2">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        ایمیلی که هنگام ثبت‌نام استفاده کرده‌اید را وارد کنید
+                    </small>
+                </div>
+
+                <button type="submit" class="auth-btn auth-btn-primary">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    ارسال مجدد ایمیل تأیید
+                </button>
+
+                <div class="auth-links">
+                    <div class="auth-divider">
+                        <span>یا</span>
+                    </div>
+                    
+                    <a asp-action="Login" class="auth-link" style="color: var(--auth-primary); font-weight: 600;">
+                        <i class="fa-solid fa-right-to-bracket fa-flip-horizontal text-primary"></i>
+                        <span>ورود به حساب کاربری</span>
+                    </a>
+                    
+                    <a asp-action="Register" class="auth-link">
+                        <i class="fa-solid fa-user-plus text-success"></i>
+                        <span>ایجاد حساب جدید</span>
+                    </a>
+                </div>
+            </form>
+
+            <div class="alert alert-info text-start mt-4 mb-0">
+                <h6 class="fw-bold mb-2">
+                    <i class="fa-solid fa-lightbulb"></i> نکات مفید
+                </h6>
+                <ul class="small mb-0">
+                    <li>صندوق هرزنامه (Spam) خود را بررسی کنید</li>
+                    <li>ارسال ایمیل ممکن است چند دقیقه طول بکشد</li>
+                    <li>اطمینان حاصل کنید آدرس ایمیل صحیح است</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="back-to-home">
+        <a href="/">
+            <i class="fa-solid fa-home"></i>
+            بازگشت به صفحه اصلی
+        </a>
     </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Add loading state on form submit (only if valid)
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // Check if form is valid using jQuery validation
+            if ($(this).valid()) {
+                this.classList.add('auth-loading');
+            }
+        });
+    </script>
 }

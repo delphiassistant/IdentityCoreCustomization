@@ -1,33 +1,122 @@
 ﻿@model IdentityCoreCustomization.Models.Identity.UserPhoneTokenConfirmViewModel
 
 @{
-    ViewData["Title"] = "تایید شماره موبایل";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "تأیید کد پیامکی";
+    Layout = "~/Areas/Users/Views/Shared/_AuthLayout.cshtml";
 }
 
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="icon">
+                <i class="fa-solid fa-message-sms"></i>
+            </div>
+            <h1>@ViewData["Title"]</h1>
+        </div>
 
-<div class="row">
-    <div class="col-md-6 mx-auto col-sm-12" >
-        <h1>@ViewData["Title"]</h1>
-        <hr />
-        <form asp-action="PreRegisterConfirm">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="AuthenticationKey"/>
-            <div class="mb-3">
-                <label asp-for="AuthenticationCode"></label>
-                <input asp-for="AuthenticationCode" class="form-control ltr"/>
-                <span asp-validation-for="AuthenticationCode" class="text-danger"></span>
+        <div class="auth-body">
+            @if (ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="auth-alert auth-alert-danger">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div asp-validation-summary="ModelOnly" class="mb-0"></div>
+                </div>
+            }
+
+            <div class="auth-alert auth-alert-info mb-4">
+                <i class="fa-solid fa-info-circle"></i>
+                <p class="mb-0">
+                    <strong>مرحله دوم:</strong> کد تأیید ۶ رقمی که به شماره موبایل شما ارسال شد را وارد کنید.
+                </p>
             </div>
-            <div class="mb-3">
-                <button type="submit" value="Create" class="btn btn-primary">
-                    <i class="fa-solid fa-question fa-flip-horizontal"></i> بررسی
+
+            <form asp-action="PreRegisterConfirm" class="auth-form">
+                <input type="hidden" asp-for="AuthenticationKey"/>
+                
+                <div class="mb-4">
+                    <label asp-for="AuthenticationCode" class="form-label">
+                        <i class="fa-solid fa-key text-success"></i>
+                        @Html.DisplayNameFor(m => m.AuthenticationCode)
+                    </label>
+                    <input asp-for="AuthenticationCode" 
+                           class="form-control text-center" 
+                           autocomplete="off"                            
+                           maxlength="6"
+                           style="font-size: 1.5rem; letter-spacing: 0.5rem; font-weight: 600;"
+                           autofocus />
+                    <span asp-validation-for="AuthenticationCode" class="text-danger small"></span>
+                    <small class="text-muted d-block mt-2">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                        کد ۶ رقمی ارسال شده به موبایل خود را وارد کنید
+                    </small>
+                </div>
+
+                <button type="submit" class="auth-btn auth-btn-primary">
+                    <i class="fa-solid fa-check-circle"></i>
+                    تأیید و ادامه
                 </button>
+
+                <div class="auth-links">
+                    <div class="auth-divider">
+                        <span>مشکل در دریافت کد؟</span>
+                    </div>
+                    
+                    <a asp-action="PreRegister" class="auth-link" style="color: var(--auth-warning); font-weight: 600;">
+                        <i class="fa-solid fa-rotate text-warning"></i>
+                        <span>ارسال مجدد کد</span>
+                    </a>
+                    
+                    <a asp-action="Login" class="auth-link">
+                        <i class="fa-solid fa-arrow-left text-secondary"></i>
+                        <span>بازگشت به صفحه ورود</span>
+                    </a>
+                </div>
+            </form>
+
+            <div class="alert alert-info text-start mt-4 mb-0">
+                <h6 class="fw-bold mb-2">
+                    <i class="fa-solid fa-lightbulb"></i> نکات مهم
+                </h6>
+                <ul class="small mb-0">
+                    <li>کد تأیید ممکن است چند دقیقه طول بکشد</li>
+                    <li>اگر کد را دریافت نکردید، دوباره درخواست دهید</li>
+                    <li>کد تأیید معتبر محدود است</li>
+                </ul>
             </div>
-        </form>
+        </div>
+    </div>
+
+    <div class="back-to-home">
+        <a href="/">
+            <i class="fa-solid fa-home"></i>
+            بازگشت به صفحه اصلی
+        </a>
     </div>
 </div>
 
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Auto-focus and auto-submit on 6 digits
+        const codeInput = document.querySelector('[asp-for="AuthenticationCode"]');
+        codeInput.addEventListener('input', function(e) {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Auto-submit when 6 digits are entered
+            if (this.value.length === 6) {
+                this.form.classList.add('auth-loading');
+                setTimeout(() => {
+                    this.form.submit();
+                }, 300);
+            }
+        });
+
+        // Add loading state on form submit (only if valid)
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // Check if form is valid using jQuery validation
+            if ($(this).valid()) {
+                this.classList.add('auth-loading');
+            }
+        });
+    </script>
 }

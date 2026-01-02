@@ -1,22 +1,102 @@
 ﻿@model RegisterConfirmationModel
 @{
-    ViewData["Title"] = "تاییدیه ثبت نام";
+    ViewData["Title"] = "ثبت‌نام موفقیت‌آمیز";
+    Layout = "~/Areas/Users/Views/Shared/_AuthLayout.cshtml";
 }
 
-<h1>@ViewData["Title"]</h1>
-@{
-    if (@Model.DisplayConfirmAccountLink)
-    {
-        <p>
-            این برنامه هنوز یک کلاس ارسال کننده ایمیل واقعی ندارد، برای آگاهی از نحوه افزودن چنان کلاسی
-            <a href="https://aka.ms/aspaccountconf">این مستندات</a> را مطالعه فرمائید.
-            در حالت عادی چنین متنی ایمیل خواهد شد: <a id="confirm-link" href="@Model.EmailConfirmationUrl">برای تایید جساب کاربری تان اینجا را کلیک کنید</a>
-        </p>
-    }
-    else
-    {
-        <p>
-            برای آگاهی از دستورالعمل تایید حساب کاربری تان ایمیل تان را چک کنید.
-        </p>
-    }
-}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h1>@ViewData["Title"]</h1>
+        </div>
+
+        <div class="auth-body">
+            <div class="auth-alert auth-alert-success">
+                <i class="fa-solid fa-check-circle"></i>
+                <p class="mb-0">
+                    <strong>تبریک!</strong> حساب کاربری شما با موفقیت ایجاد شد.
+                </p>
+            </div>
+
+            @if (Model.DisplayConfirmAccountLink)
+            {
+                <div class="auth-alert auth-alert-info">
+                    <i class="fa-solid fa-info-circle"></i>
+                    <div>
+                        <p class="mb-2">
+                            <strong>توجه:</strong> این برنامه هنوز سرویس ارسال ایمیل واقعی ندارد.
+                        </p>
+                        <p class="mb-2">
+                            در حالت عادی، لینک تأیید به ایمیل شما ارسال می‌شود. برای آزمایش، از لینک زیر استفاده کنید:
+                        </p>
+                        <div class="d-grid mt-3">
+                            <a href="@Model.EmailConfirmationUrl" class="btn btn-primary">
+                                <i class="fa-solid fa-envelope-circle-check"></i>
+                                تأیید ایمیل (لینک آزمایشی)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fa-solid fa-code"></i> برای توسعه‌دهندگان
+                    </h6>
+                    <p class="small mb-0">
+                        برای فعال‌سازی ارسال ایمیل واقعی، 
+                        <a href="https://aka.ms/aspaccountconf" target="_blank" class="alert-link">مستندات ASP.NET Core</a> 
+                        را مطالعه کنید.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <div class="feature-icon feature-icon-primary mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                    </div>
+                    <h4 class="mb-3">ایمیل تأیید ارسال شد</h4>
+                    <p class="text-muted mb-4">
+                        لطفاً صندوق ورودی ایمیل خود را بررسی کنید و روی لینک تأیید کلیک کنید.
+                    </p>
+                    <div class="alert alert-info text-start">
+                        <h6 class="fw-bold mb-2">
+                            <i class="fa-solid fa-lightbulb"></i> نکات مهم
+                        </h6>
+                        <ul class="small mb-0">
+                            <li>ایمیل ممکن است چند دقیقه طول بکشد</li>
+                            <li>پوشه هرزنامه را نیز بررسی کنید</li>
+                            <li>لینک تأیید معتبر محدود است</li>
+                        </ul>
+                    </div>
+                </div>
+            }
+
+            <div class="auth-links">
+                <div class="auth-divider">
+                    <span>مراحل بعدی</span>
+                </div>
+                
+                <a asp-action="Login" class="auth-link" style="color: var(--auth-primary); font-weight: 600;">
+                    <i class="fa-solid fa-right-to-bracket fa-flip-horizontal text-primary"></i>
+                    <span>ورود به حساب کاربری</span>
+                </a>
+                
+                <a asp-action="ResendEmailConfirmation" class="auth-link">
+                    <i class="fa-solid fa-paper-plane text-info"></i>
+                    <span>ارسال مجدد ایمیل تأیید</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="back-to-home">
+        <a href="/">
+            <i class="fa-solid fa-home"></i>
+            بازگشت به صفحه اصلی
+        </a>
+    </div>
+</div>
