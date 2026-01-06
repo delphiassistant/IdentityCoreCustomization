@@ -26,8 +26,8 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
         private IConfiguration Configuration { get; }
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ISmsService smsService;
-        private readonly IEmailSender _emailSender;
+        private readonly IBackgroundSmsQueue _smsQueue;
+        private readonly IBackgroundEmailQueue _emailQueue;
         private readonly UrlEncoder _urlEncoder;
         private ApplicationDbContext db;
 
@@ -38,8 +38,8 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager, 
             SignInManager<ApplicationUser> signInManager, 
-            IEmailSender emailSender,
-            ISmsService smsService,
+            IBackgroundEmailQueue emailQueue,
+            IBackgroundSmsQueue smsQueue,
             UrlEncoder urlEncoder
             )
         {
@@ -47,8 +47,8 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
             db = context;
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSender = emailSender;
-            this.smsService = smsService;
+            _emailQueue = emailQueue;
+            _smsQueue = smsQueue;
             _urlEncoder = urlEncoder;
         }
         
@@ -158,7 +158,8 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
                     values: new { userId = userId, email = model.NewEmail, code = code },
                     protocol: Request.Scheme);
 
-                await _emailSender.SendEmailAsync(
+                // Queue email for background sending (non-blocking)
+                _emailQueue.QueueEmail(
                     model.NewEmail,
                     "Confirm your email",
                     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
@@ -198,7 +199,8 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
                 values: new { area = "Users", userId = userId, code = code },
                 protocol: Request.Scheme);
 
-            await _emailSender.SendEmailAsync(
+            // Queue email for background sending (non-blocking)
+            _emailQueue.QueueEmail(
                 email,
                 "Confirm your email",
                 $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
@@ -213,7 +215,7 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        public async Task<ActionResult> ChangePassword(ChangePasswordModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -307,9 +309,10 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
                 
                 await db.UserPhoneTokens.AddAsync(phoneTokenModel);
                 await db.SaveChangesAsync();
-                await smsService.SendSms(
-                    $"کد امنیتی شما: {phoneTokenModel.AuthenticationCode}\r\n\r\n",
-                    model.PhoneNumber);
+
+                // Queue SMS for background sending (non-blocking)
+                _smsQueue.QueueSms($"کد امنیتی شما: {phoneTokenModel.AuthenticationCode}\r\n\r\n", model.PhoneNumber);
+
                 return RedirectToAction("VerifyPhoneNumber", new { Key = phoneTokenModel.AuthenticationKey });
             }
             return View(model);
@@ -401,7 +404,7 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
 
             var decoded = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, decoded);
-            var message = result.Succeeded ? "ایمیل شما با موفقیت تایید شد." : "خطا در تایید ایمeil.";
+            var message = result.Succeeded ? "ایمیل شما با موفقیت تایید شد." : "خطا در تایید ایمیل.";
             return View("ConfirmEmail", new ManageIndexModel { StatusMessage = message });
         }
 

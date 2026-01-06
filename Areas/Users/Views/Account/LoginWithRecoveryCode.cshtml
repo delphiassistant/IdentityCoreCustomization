@@ -99,17 +99,22 @@
 @section Scripts {
     <script>
         // Auto-format recovery code (remove spaces/dashes)
-        const codeInput = document.querySelector('[asp-for="RecoveryCode"]');
-        codeInput.addEventListener('input', function(e) {
-            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        });
+        const codeInput = document.getElementById('RecoveryCode');
+        if (codeInput) {
+            codeInput.addEventListener('input', function(e) {
+                this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            });
+        }
 
         // Add loading state on form submit (only if valid)
-        document.querySelector('form').addEventListener('submit', function(e) {
-            // Check if form is valid using jQuery validation
-            if ($(this).valid()) {
-                this.classList.add('auth-loading');
-            }
-        });
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Check if form is valid using jQuery validation
+                if ($(this).valid()) {
+                    this.classList.add('auth-loading');
+                }
+            });
+        }
     </script>
 }

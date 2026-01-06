@@ -73,7 +73,15 @@ services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
 builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("Email"));
 services.AddTransient<IEmailSender, EmailSender>();
 
+// Register background email queue and service
+services.AddSingleton<IBackgroundEmailQueue, BackgroundEmailQueue>();
+services.AddHostedService<BackgroundEmailService>();
+
 services.AddScoped<ISmsService, SmsService>();
+// Register background SMS queue and service
+services.AddSingleton<IBackgroundSmsQueue, BackgroundSmsQueue>();
+services.AddHostedService<BackgroundSmsService>();
+
 // FIXED: Changed from Transient to Scoped to match ApplicationDbContext lifetime
 services.AddScoped<IDatabaseCleanerService, DatabaseCleanerService>();
 // NEW: Add user session management service

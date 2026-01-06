@@ -67,9 +67,12 @@
 
                 <div class="auth-links">
                     <div class="auth-divider">
-                        <span>مشکل در دریافت کد؟</span>
+                        <span>برای دریافت کد مشکل دارید؟</span>
                     </div>
-                    
+                    <a asp-action="LoginWithSms" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link">
+                        <i class="fa-solid fa-mobile-screen-button text-info"></i>
+                        <span>ورود از طریق پیامک</span>
+                    </a>
                     <a asp-action="LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link" style="color: var(--auth-warning); font-weight: 600;">
                         <i class="fa-solid fa-life-ring text-warning"></i>
                         <span>استفاده از کد بازیابی</span>
@@ -95,26 +98,31 @@
 @section Scripts {
     <script>
         // Auto-focus and auto-submit on 6 digits
-        const codeInput = document.querySelector('[asp-for="TwoFactorCode"]');
-        codeInput.addEventListener('input', function(e) {
-            // Only allow numbers
-            this.value = this.value.replace(/[^0-9]/g, '');
-            
-            // Auto-submit when 6 digits are entered
-            if (this.value.length === 6) {
-                this.form.classList.add('auth-loading');
-                setTimeout(() => {
-                    this.form.submit();
-                }, 300);
-            }
-        });
+        const codeInput = document.getElementById('TwoFactorCode');
+        if (codeInput) {
+            codeInput.addEventListener('input', function(e) {
+                // Only allow numbers
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                // Auto-submit when 6 digits are entered
+                if (this.value.length === 6) {
+                    this.form.classList.add('auth-loading');
+                    setTimeout(() => {
+                        this.form.submit();
+                    }, 300);
+                }
+            });
+        }
 
         // Add loading state on form submit (only if valid)
-        document.querySelector('form').addEventListener('submit', function(e) {
-            // Check if form is valid using jQuery validation
-            if ($(this).valid()) {
-                this.classList.add('auth-loading');
-            }
-        });
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Check if form is valid using jQuery validation
+                if ($(this).valid()) {
+                    this.classList.add('auth-loading');
+                }
+            });
+        }
     </script>
 }

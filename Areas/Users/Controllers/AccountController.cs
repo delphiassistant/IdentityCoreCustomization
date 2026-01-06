@@ -27,11 +27,11 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
     {
         private ApplicationDbContext db;
         private IConfiguration Configuration { get; }
-        private readonly IEmailSender _emailSender;
+        private readonly IBackgroundEmailQueue _emailQueue;
         private readonly ILogger<RegisterModel> _logger;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ISmsService smsService;
+        private readonly IBackgroundSmsQueue _smsQueue;
 
 
         public AccountController(
@@ -40,8 +40,8 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger, 
-            IEmailSender emailSender,
-            ISmsService smsService
+            IBackgroundEmailQueue emailQueue,
+            IBackgroundSmsQueue smsQueue
         )
         {
             db = context;
@@ -49,8 +49,8 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
-            _emailSender = emailSender;
-            this.smsService = smsService;
+            _emailQueue = emailQueue;
+            _smsQueue = smsQueue;
         }
 
         public string ReturnUrl { get; set; }
@@ -134,7 +134,8 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
                     Request.Scheme
                 );
 
-                await _emailSender.SendEmailAsync(
+                // Queue email for background sending (non-blocking)
+                _emailQueue.QueueEmail(
                     model.Email,
                     "بازنشانی کلمه عبور",
                     $"لطفا با کلیک کردن بر روی <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>این لینک</a> کلمه عبورتان را بازنشانی کنید.");
@@ -216,8 +217,8 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
                         await db.UserPhoneTokens.AddAsync(token);
                         await db.SaveChangesAsync();
 
-                        await smsService.SendSms(
-                            $"کد امنیتی شما: {token.AuthenticationCode}", user.PhoneNumber);
+                        // Queue SMS for background sending (non-blocking)
+                        _smsQueue.QueueSms($"کد امنیتی شما: {token.AuthenticationCode}", user.PhoneNumber);
 
                         return RedirectToAction("LoginWith2faSms", new { Key = token.AuthenticationKey, ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                     }
@@ -275,10 +276,9 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
                 await db.UserLoginWithSms.AddAsync(loginWithSms);
                 await db.SaveChangesAsync();
 
-                await smsService.SendSms(
-                    $"کد امنیتی شما: {loginWithSms.AuthenticationCode}",
-                    loginWithSms.PhoneNumber
-                );
+                // Queue SMS for background sending (non-blocking)
+                _smsQueue.QueueSms($"کد امنیتی شما: {loginWithSms.AuthenticationCode}", loginWithSms.PhoneNumber);
+
                 return RedirectToAction("LoginWithSmsResponse",new {Key = loginWithSms.AuthenticationKey, ReturnUrl = returnUrl});
             }
             return View();
@@ -360,9 +360,10 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
                 model.ExpireTime = DateTime.Now.AddMinutes(5);
                 await db.UserPhoneTokens.AddAsync(model);
                 await db.SaveChangesAsync();
-                await smsService.SendSms(
-                    $"کد امنیتی شما: {model.AuthenticationCode}\r\n\r\n",
-                    model.PhoneNumber);
+
+                // Queue SMS for background sending (non-blocking)
+                _smsQueue.QueueSms($"کد امنیتی شما: {model.AuthenticationCode}\r\n\r\n", model.PhoneNumber);
+
                 return RedirectToAction("PreRegisterConfirm", new { Key = model.AuthenticationKey});
             }
             return View(model);
@@ -478,8 +479,9 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
                         new { area = "Users", userId = user.Id, code, returnUrl },
                         Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    // Queue email for background sending (non-blocking)
+                    _emailQueue.QueueEmail(model.Email, "Confirm your email",
+                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                         return RedirectToAction("RegisterConfirmation",
@@ -551,7 +553,8 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
                 new { userId, code },
                 Request.Scheme);
 
-            await _emailSender.SendEmailAsync(
+            // Queue email for background sending (non-blocking)
+            _emailQueue.QueueEmail(
                 model.Email,
                 "تایید آدرس ایمیل شما",
                 $"لطفا با <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>کلیک کردن این لینک</a> حساب کاربری تان را تایید کنید.");

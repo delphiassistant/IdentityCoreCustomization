@@ -11,11 +11,11 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = "Admin")]
-    public class DashboardController : Controller
+    public class HomeController : Controller
     {
         private readonly ApplicationDbContext _db;
 
-        public DashboardController(ApplicationDbContext db)
+        public HomeController(ApplicationDbContext db)
         {
             _db = db;
         }
