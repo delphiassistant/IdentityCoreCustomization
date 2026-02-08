@@ -21,7 +21,7 @@ using System.Globalization;
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
     .AddJsonFile("appSettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile("appSettings.Development.json", optional: true, reloadOnChange: true) // loaded later → higher precedence
+    .AddJsonFile($"appSettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true) // loaded later → higher precedence
     .AddEnvironmentVariables();
 
 CultureInfo.DefaultThreadCurrentCulture
@@ -36,21 +36,39 @@ services.AddDbContext<ApplicationDbContext>(options =>
 
 services.AddDatabaseDeveloperPageExceptionFilter();
 
-// Register Pwned Passwords HTTP Client (uses k-anonymity for privacy)
-services.AddPwnedPasswordHttpClient(minimumFrequencyToConsiderPwned: 1);
+// Read Identity configuration
+var checkPasswordWithHIBP = configuration.GetValue<bool>("Identity:Password:CheckPasswordWithHIBP");
 
-services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+// Conditionally register Pwned Passwords HTTP Client (uses k-anonymity for privacy)
+if (checkPasswordWithHIBP)
+{
+    services.AddPwnedPasswordHttpClient(minimumFrequencyToConsiderPwned: 1);
+}
+
+var identityBuilder = services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
         options.User.RequireUniqueEmail = false;
+        
+        // Configure password options from appSettings
+        options.Password.RequireDigit = configuration.GetValue<bool>("Identity:Password:RequireDigit");
+        options.Password.RequiredLength = configuration.GetValue<int>("Identity:Password:RequiredLength");
+        options.Password.RequireNonAlphanumeric = configuration.GetValue<bool>("Identity:Password:RequireNonAlphanumeric");
+        options.Password.RequireUppercase = configuration.GetValue<bool>("Identity:Password:RequireUppercase");
+        options.Password.RequireLowercase = configuration.GetValue<bool>("Identity:Password:RequireLowercase");
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
-    .AddErrorDescriber<PersianIdentityErrorDescriber>()
-    .AddPwnedPasswordValidator<ApplicationUser>(options =>
+    .AddErrorDescriber<PersianIdentityErrorDescriber>();
+
+// Conditionally add Pwned Password Validator
+if (checkPasswordWithHIBP)
+{
+    identityBuilder.AddPwnedPasswordValidator<ApplicationUser>(options =>
     {
         options.ErrorMessage = "هشدار: این رمز عبور در لیست رمزهای نشت‌شده دیده شده است. لطفاً یک رمز عبور قوی‌تر و منحصربه‌فرد انتخاب کنید.";
     });
+}
 
 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

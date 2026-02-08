@@ -10,6 +10,7 @@
 *.userosscache
 *.sln.docstates
 appSettings.Development.json
+appSettings.Production.json
 Documents/Images/*
 
 # User-specific files (MonoDevelop/Xamarin Studio)
