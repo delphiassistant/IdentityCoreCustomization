@@ -106,12 +106,14 @@
 .sidebar-nav-item {
     display: flex;
     align-items: center;
-    padding: 0.875rem 1.5rem;
-    color: white;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
-    transition: all 0.3s ease;
-    position: relative;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
     border-right: 3px solid transparent;
+    border-radius: 0.25rem;
 }
 
 .sidebar-nav-item:hover {
@@ -121,47 +123,8 @@
 
 .sidebar-nav-item.active {
     background: rgba(255, 255, 255, 0.15);
+    color: white;
     border-right-color: white;
-}
-
-.sidebar-nav-item.active::before {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 6px;
-    height: 40px;
-    background: white;
-    border-radius: 3px 0 0 3px;
-}
-
-.sidebar-nav-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 1rem;
-    font-size: 1.125rem;
-    background: rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-}
-
-.sidebar-nav-item:hover .sidebar-nav-icon {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.1);
-}
-
-.sidebar-nav-item.active .sidebar-nav-icon {
-    background: white;
-    color: var(--manage-primary);
-}
-
-.sidebar-nav-text {
-    flex: 1;
-    font-weight: 500;
 }
 
 .sidebar-nav-badge {

@@ -33,63 +33,42 @@
             <nav class="sidebar-nav">
                 <div class="sidebar-nav-section">
                     <div class="sidebar-nav-title">حساب کاربری</div>
-                    
+
                     <a asp-action="Index" class="sidebar-nav-item @(currentAction == "Index" ? "active" : "")">
-                        <div class="sidebar-nav-icon">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                        <span class="sidebar-nav-text">پروفایل</span>
+                        <i class="fa-solid fa-user"></i> پروفایل
                     </a>
 
                     <a asp-action="Email" class="sidebar-nav-item @(currentAction == "Email" ? "active" : "")">
-                        <div class="sidebar-nav-icon">
-                            <i class="fa-solid fa-envelope"></i>
-                        </div>
-                        <span class="sidebar-nav-text">ایمیل</span>
+                        <i class="fa-solid fa-envelope"></i> ایمیل
                     </a>
 
                     <a asp-action="ChangePassword" class="sidebar-nav-item @(currentAction == "ChangePassword" ? "active" : "")">
-                        <div class="sidebar-nav-icon">
-                            <i class="fa-solid fa-key"></i>
-                        </div>
-                        <span class="sidebar-nav-text">کلمه عبور</span>
+                        <i class="fa-solid fa-key"></i> کلمه عبور
                     </a>
                 </div>
 
                 <div class="sidebar-nav-section">
                     <div class="sidebar-nav-title">امنیت</div>
-                    
+
                     <a asp-action="TwoFactorAuthentication" class="sidebar-nav-item @(currentAction == "TwoFactorAuthentication" || currentAction == "EnableAuthenticator" || currentAction == "ResetAuthenticatorWarning" || currentAction == "ShowRecoveryCodes" ? "active" : "")">
-                        <div class="sidebar-nav-icon">
-                            <i class="fa-solid fa-shield-halved"></i>
-                        </div>
-                        <span class="sidebar-nav-text">احراز هویت دو مرحله‌ای</span>
+                        <i class="fa-solid fa-shield-halved"></i> احراز هویت دو مرحله‌ای
                     </a>
 
                     <a asp-action="PersonalData" class="sidebar-nav-item @(currentAction == "PersonalData" ? "active" : "")">
-                        <div class="sidebar-nav-icon">
-                            <i class="fa-solid fa-database"></i>
-                        </div>
-                        <span class="sidebar-nav-text">اطلاعات شخصی</span>
+                        <i class="fa-solid fa-database"></i> اطلاعات شخصی
                     </a>
                 </div>
 
                 <div class="sidebar-nav-section">
                     <div class="sidebar-nav-title">سایر</div>
-                    
+
                     <a href="/" class="sidebar-nav-item">
-                        <div class="sidebar-nav-icon">
-                            <i class="fa-solid fa-home"></i>
-                        </div>
-                        <span class="sidebar-nav-text">صفحه اصلی</span>
+                        <i class="fa-solid fa-home"></i> صفحه اصلی
                     </a>
 
                     <form asp-area="Users" asp-controller="Account" asp-action="Logout" method="post" style="margin: 0;">
                         <button type="submit" class="sidebar-nav-item" style="width: 100%; background: none; border: none; text-align: right; cursor: pointer;">
-                            <div class="sidebar-nav-icon">
-                                <i class="fa-solid fa-right-from-bracket fa-flip-horizontal"></i>
-                            </div>
-                            <span class="sidebar-nav-text">خروج</span>
+                            <i class="fa-solid fa-right-from-bracket fa-flip-horizontal"></i> خروج
                         </button>
                     </form>
                 </div>
