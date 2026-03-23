@@ -464,3 +464,26 @@
     color: #1f2937;
     word-break: break-word;
 }
+
+/* Password Toggle */
+.password-toggle {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.2s;
+}
+
+.ltr ~ .password-toggle {
+    left: auto;
+    right: 1rem;
+}
+
+.password-toggle:hover {
+    color: var(--auth-primary);
+}

@@ -176,6 +176,11 @@ body {
     transition: color 0.2s;
 }
 
+.ltr ~ .password-toggle {
+    left: auto;
+    right: 1rem;
+}
+
 .password-toggle:hover {
     color: var(--auth-primary);
 }

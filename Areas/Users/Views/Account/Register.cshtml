@@ -85,7 +85,7 @@
                         @Html.DisplayNameFor(m => m.Password)
                     </label>
                     <div class="position-relative">
-                        <input asp-for="Password" class="form-control ltr pe-5" id="passwordInput" dir="ltr" placeholder="حداقل 6 کاراکتر" />
+                        <input asp-for="Password" class="form-control ltr" id="passwordInput" dir="ltr" placeholder="حداقل 6 کاراکتر" />
                         <button type="button" class="password-toggle" onclick="togglePassword('passwordInput', 'toggleIcon1')">
                             <i class="fa-solid fa-eye" id="toggleIcon1"></i>
                         </button>
@@ -127,7 +127,7 @@
                         @Html.DisplayNameFor(m => m.ConfirmPassword)
                     </label>
                     <div class="position-relative">
-                        <input asp-for="ConfirmPassword" class="form-control ltr pe-5" id="confirmPasswordInput" dir="ltr" placeholder="تکرار کلمه عبور" />
+                        <input asp-for="ConfirmPassword" class="form-control ltr" id="confirmPasswordInput" dir="ltr" placeholder="تکرار کلمه عبور" />
                         <button type="button" class="password-toggle" onclick="togglePassword('confirmPasswordInput', 'toggleIcon2')">
                             <i class="fa-solid fa-eye" id="toggleIcon2"></i>
                         </button>

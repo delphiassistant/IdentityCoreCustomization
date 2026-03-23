@@ -54,9 +54,9 @@
                         <i class="fa-solid fa-shield-halved"></i> احراز هویت دو مرحله‌ای
                     </a>
 
-                    <a asp-action="PersonalData" class="sidebar-nav-item @(currentAction == "PersonalData" ? "active" : "")">
+                    @* <a asp-action="PersonalData" class="sidebar-nav-item @(currentAction == "PersonalData" ? "active" : "")">
                         <i class="fa-solid fa-database"></i> اطلاعات شخصی
-                    </a>
+                    </a> *@
                 </div>
 
                 <div class="sidebar-nav-section">
@@ -103,23 +103,23 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     
     <script>
-        // Mobile sidebar toggle
-        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
-            document.getElementById('manageSidebar').classList.toggle('show');
-        });
+            // Mobile sidebar toggle
+            document.getElementById('sidebarToggle')?.addEventListener('click', function() {
+                document.getElementById('manageSidebar').classList.toggle('show');
+            });
 
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(e) {
-            const sidebar = document.getElementById('manageSidebar');
-            const toggle = document.getElementById('sidebarToggle');
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                const sidebar = document.getElementById('manageSidebar');
+                const toggle = document.getElementById('sidebarToggle');
             
-            if (window.innerWidth <= 992 && 
-                sidebar.classList.contains('show') && 
-                !sidebar.contains(e.target) && 
-                !toggle.contains(e.target)) {
-                sidebar.classList.remove('show');
-            }
-        });
+                if (window.innerWidth <= 992 &&
+                    sidebar.classList.contains('show') &&
+                    !sidebar.contains(e.target) &&
+                    !toggle.contains(e.target)) {
+                    sidebar.classList.remove('show');
+                }
+            });
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
