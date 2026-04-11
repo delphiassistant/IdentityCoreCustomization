@@ -23,7 +23,7 @@
 
 ## مقدمه
 
-این سند توضیحات کاملی از پیاده‌سازی **Background Queue** برای SMS و Email در پروژه IdentityCoreCustomization ارائه می‌دهد. این قابلیت برای جلوگیری از بلاک شدن درخواست‌های کاربر هنگام ارسال پیامک و ایمیل طراحی شده است.
+این سند توضیحات کاملی از پیاده‌سازی **Background Queue** برای SMS و Email در این پروژه ارائه می‌دهد. این قابلیت برای جلوگیری از بلاک شدن درخواست‌های کاربر هنگام ارسال پیامک و ایمیل طراحی شده است.
 
 ### اهداف اصلی
 
@@ -213,7 +213,7 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace IdentityCoreCustomization.Services
+namespace YourApp.Services
 {
     public interface IBackgroundSmsQueue
     {
@@ -266,7 +266,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace IdentityCoreCustomization.Services
+namespace YourApp.Services
 {
     public class BackgroundSmsService : BackgroundService
     {
@@ -328,7 +328,7 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace IdentityCoreCustomization.Services
+namespace YourApp.Services
 {
     public interface IBackgroundEmailQueue
     {
@@ -375,7 +375,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace IdentityCoreCustomization.Services
+namespace YourApp.Services
 {
     public class BackgroundEmailService : BackgroundService
     {

@@ -1,5 +1,6 @@
 ﻿@inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+@inject Microsoft.Extensions.Options.IOptions<IdentityCoreCustomization.Models.GeneralConfig> GeneralConfig
 @{
     var user = await UserManager.GetUserAsync(User);
     var userName = user?.UserName ?? "کاربر";
@@ -8,9 +9,15 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
+    <script>
+        (function () {
+            var t = localStorage.getItem('app-theme');
+            if (t === 'dark') { document.documentElement.setAttribute('data-bs-theme', 'dark'); }
+        })();
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - مدیریت حساب کاربری</title>
+    <title>@ViewData["Title"] - @GeneralConfig.Value.SiteTitle</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
     <link href="~/lib/persian_fonts/vazirmatnfd/vazirmatn-fd-font-face.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
@@ -75,6 +82,10 @@
             </nav>
 
             <div class="sidebar-footer">
+                <button type="button" data-theme-toggle class="sidebar-nav-item w-100 border-0 mb-2" title="تغییر به حالت تیره" style="background:none;cursor:pointer;">
+                    <i class="fa-solid fa-moon"></i>
+                    <span class="ms-2">تغییر حالت نمایش</span>
+                </button>
                 <div class="sidebar-user">
                     <div class="sidebar-user-avatar">
                         @userName.Substring(0, 1).ToUpper()
@@ -101,6 +112,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/theme.js" asp-append-version="true"></script>
     
     <script>
             // Mobile sidebar toggle

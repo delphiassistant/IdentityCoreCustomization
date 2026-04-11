@@ -6,6 +6,72 @@ This document tracks all changes, improvements, and fixes made to the IdentityCo
 
 ---
 
+## 2026-05-XX - Version 1.12
+
+### Added — Global Light/Dark Theme Switching
+
+#### Theme Persistence Across All Areas
+- Created `wwwroot/js/theme.js` — shared theme manager that reads/writes `localStorage` key `app-theme`, applies `data-bs-theme` attribute on `<html>`, syncs all `[data-theme-toggle]` button icons, and exposes `window.themeManager`
+- Added inline FOUC-prevention `<script>` in the `<head>` of all four layouts so the saved theme is applied before the first paint:
+  - `Views/Shared/_Layout.cshtml`
+  - `Areas/Admin/Views/Shared/_Layout.cshtml`
+  - `Areas/Users/Views/Manage/_Layout.cshtml`
+  - `Areas/Users/Views/Shared/_AuthLayout.cshtml`
+- All four layouts include `theme.js` before closing `</body>`
+
+#### Theme Toggle Buttons
+- **Main layout** (`Views/Shared/_Layout.cshtml`): toggle button added to the navbar (sun/moon icon)
+- **Admin layout** (`Areas/Admin/Views/Shared/_Layout.cshtml`): toggle button added to the top bar beside the username
+- **Manage layout** (`Areas/Users/Views/Manage/_Layout.cshtml`): toggle button added to the sidebar footer
+
+#### Bootstrap 5.3 Dark Mode Integration
+- Changed main navbar from `navbar-light bg-white` to `bg-body` so it adapts natively to Bootstrap's dark theme
+- Removed hardcoded `text-dark` from main nav links so they inherit the Bootstrap theme color
+
+#### Dark Mode CSS
+- `wwwroot/css/site.css`: overrides for home-page feature cards, stat section, footer
+- `wwwroot/css/manage.css`: overrides for manage layout background, page-header, manage-card, card-header, info-item, form labels
+- `wwwroot/css/auth.css`: overrides for auth-card, auth-header curved overlay, form inputs, links, dividers, alert colors
+
+---
+
+
+### Added — Serilog, Persian DateTime, Search/Sort/Paging
+
+#### Serilog Integration (per `Documents/Serilog-Integration-Guide.md`)
+- Installed `Serilog.AspNetCore` 10.0.0, `Serilog.Sinks.Console` 6.1.1, `Serilog.Sinks.File` 7.0.0
+- Bootstrap logger added to `Program.cs` before host build for startup-crash capture
+- `builder.Host.UseSerilog()` wired with `ReadFrom.Configuration`, `ReadFrom.Services`, `Enrich.FromLogContext`, and `PersianTimestampEnricher`
+- `app.UseSerilogRequestLogging()` placed after `UseStaticFiles()` to exclude static-file noise
+- `app.Run()` wrapped in `try/catch/finally` with `Log.CloseAndFlushAsync()` on shutdown
+- `ILoggerFactory` seeder pattern replaced with `Log.Error(...)` static call
+- `appSettings.json`: replaced `Logging` section with full `Serilog` section (console + daily rolling file, 7-day retention)
+- `appSettings.Development.json`: created with `Debug` default and `EntityFrameworkCore → Warning`
+- `logs/` added to `.gitignore`
+
+#### Persian DateTime Integration (per `Documents/PersianDateTimeLLMGuide.md`)
+- Fixed `AnyGPT.*` namespace references in all four copied classes to `IdentityCoreCustomization.*`
+  - `Classes/Extensions/PersianDateExtensionMethods.cs`
+  - `Classes/ModelBinding/PersianDateModelBinder.cs`
+  - `Classes/ModelBinding/PersianDateModelBinderProvider.cs`
+  - `Classes/Logging/PersianTimestampEnricher.cs`
+- `PersianDateModelBinderProvider` registered at index 0 in `AddControllersWithViews`
+- Default thread culture set to `fa-IR` via `PersianDateExtensionMethods.GetPersianCulture()`
+- Multi-calendar datepicker CSS/JS added to `Areas/Admin/Views/Shared/_Layout.cshtml`
+
+#### Search / Sort / Paging (per `Documents/SearchSortPagingAndDatepickerPlan.md`)
+- Created `Models/System/PagedResult.cs` — generic paged list model
+- Created `Areas/Admin/Views/Shared/_Pagination.cshtml` — Bootstrap pagination partial with page-size selector (10/20/50/100)
+- `Microsoft.AspNetCore.Http.Extensions` added to Admin `_ViewImports.cshtml` for `GetEncodedPathAndQuery()`
+- **UsersController**: `Index` upgraded to sort (`userName`, `email`) + paging (default 20/page); `Details`, `Edit`, `Delete`, `ChangePassword` accept `returnUrl` parameter
+- **Users/Index.cshtml**: sortable column headers, search preserves sort state, `returnUrl` passed to all child action links, pagination partial rendered
+- **Users child views** (Details, Edit, Delete, ChangePassword): back buttons use `ViewBag.ReturnUrl` pattern
+- **RolesController**: `Index` upgraded to search + sort (`name`) + paging (default 50/page); `Details`, `Edit`, `Delete` accept `returnUrl`
+- **Roles/Index.cshtml**: search toolbar, sortable name column, `returnUrl` on action links, pagination partial rendered
+- **Roles child views** (Details, Edit, Delete): back buttons use `ViewBag.ReturnUrl` pattern
+
+---
+
 ## 2026-01-01 - Version 1.10
 
 ### Added - Modern UI Overhaul Complete ✨

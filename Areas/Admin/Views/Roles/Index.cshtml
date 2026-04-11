@@ -2,6 +2,13 @@
 
 @{
     ViewData["Title"] = "گروه های کاربران";
+    var returnUrl = Context.Request.GetEncodedPathAndQuery();
+    var sortBy = ViewBag.SortBy as string ?? "name";
+    var sortDir = ViewBag.SortDir as string ?? "asc";
+    var q = ViewBag.Q as string;
+
+    string SortLink(string col) => (sortBy == col && sortDir == "asc") ? "desc" : "asc";
+    string SortIcon(string col) => sortBy == col ? (sortDir == "asc" ? " ▲" : " ▼") : "";
 }
 
 @section Styles {
@@ -72,10 +79,28 @@
     <p class="mb-0 mt-2 opacity-75">مدیریت نقش‌ها و سطوح دسترسی</p>
 </div>
 
-<div class="mb-4">
+<div class="mb-3 d-flex justify-content-between align-items-center gap-3 flex-wrap">
     <a asp-action="Create" class="btn btn-success btn-lg shadow">
         <i class="fa-solid fa-plus"></i> افزودن نقش جدید
     </a>
+    <form method="get" asp-action="Index" class="d-flex gap-2" role="search">
+        <input type="hidden" name="sortBy" value="@sortBy" />
+        <input type="hidden" name="sortDir" value="@sortDir" />
+        <input type="hidden" name="page" value="1" />
+        <input type="text" name="q" value="@q" class="form-control" placeholder="جستجو نقش..." style="min-width:200px" />
+        <button type="submit" class="btn btn-outline-primary">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        @if (!string.IsNullOrWhiteSpace(q))
+        {
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
+        }
+    </form>
+    <span class="badge bg-info fs-6">
+        <i class="fa-solid fa-list-check"></i> تعداد: @((int)(ViewBag.TotalCount ?? 0))
+    </span>
 </div>
 
 <div class="card shadow-sm">
@@ -88,10 +113,12 @@
                             <i class="fa-solid fa-hashtag"></i>
                         </th>
                         <th>
-                            <i class="fa-solid fa-tag"></i> @Html.DisplayNameFor(model => model.Name)
+                            <a asp-action="Index" asp-route-q="@q" asp-route-sortBy="name" asp-route-sortDir="@SortLink("name")" asp-route-pageSize="@ViewBag.PageSize" class="text-white text-decoration-none">
+                                <i class="fa-solid fa-tag"></i> نام نقش@SortIcon("name")
+                            </a>
                         </th>
                         <th>
-                            <i class="fa-solid fa-font"></i> @Html.DisplayNameFor(model => model.NormalizedName)
+                            <i class="fa-solid fa-font"></i> نام نرمالیزشده
                         </th>
                         <th class="text-center" style="width: 150px;">
                             <i class="fa-solid fa-cog"></i> دستورات
@@ -100,7 +127,7 @@
                 </thead>
                 <tbody>
                     @{
-                        var index = 1;
+                        var index = ((int)(ViewBag.Page ?? 1) - 1) * (int)(ViewBag.PageSize ?? 50) + 1;
                     }
                     @foreach (var item in Model)
                     {
@@ -112,8 +139,8 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <i class="fa-solid fa-user-tag text-success ms-2"></i>
-                                    <strong class="fs-6">@Html.DisplayFor(modelItem => item.Name)</strong>
+                                    <i class="fa-solid fa-user-tag text-success"></i>
+                                    <strong class="fs-6 ms-2">@Html.DisplayFor(modelItem => item.Name)</strong>
                                 </div>
                             </td>
                             <td>
@@ -121,11 +148,11 @@
                             </td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a asp-action="Details" asp-route-id="@item.Id" 
+                                    <a asp-action="Details" asp-route-id="@item.Id" asp-route-returnUrl="@returnUrl"
                                        class="btn btn-info btn-sm" title="مشاهده جزئیات">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
-                                    <a asp-action="Edit" asp-route-id="@item.Id" 
+                                    <a asp-action="Edit" asp-route-id="@item.Id" asp-route-returnUrl="@returnUrl"
                                        class="btn btn-primary btn-sm" title="ویرایش">
                                         <i class="fa-solid fa-pen-to-square"></i> ویرایش
                                     </a>
@@ -139,6 +166,8 @@
         </div>
     </div>
 </div>
+
+@await Html.PartialAsync("_Pagination")
 
 @if (!Model.Any())
 {

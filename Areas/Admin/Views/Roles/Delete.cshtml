@@ -65,7 +65,7 @@
                     <button type="submit" class="btn btn-danger" onclick="return confirm('آیا مطمئن هستید؟')">
                         <i class="fa-solid fa-trash"></i> تأیید حذف
                     </button>
-                    <a asp-action="Index" class="btn btn-secondary">
+                    <a href="@(ViewBag.ReturnUrl ?? Url.Action("Index"))" class="btn btn-secondary">
                         <i class="fa-solid fa-times"></i> انصراف
                     </a>
                 </form>

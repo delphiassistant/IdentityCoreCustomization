@@ -42,7 +42,7 @@
                     </label>
                     <div class="position-relative">
                         <input asp-for="Password" class="form-control ltr" id="passwordInput" dir="ltr"/>
-                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                        <button type="button" class="password-toggle" onclick="togglePassword('passwordInput', 'toggleIcon')">
                             <i class="fa-solid fa-eye" id="toggleIcon"></i>
                         </button>
                     </div>
@@ -76,7 +76,7 @@
                         <span>حساب کاربری ندارید؟</span>
                     </div>
                     
-                    <a asp-action="Register" class="auth-link" style="color: var(--auth-primary); font-weight: 600;">
+                    <a asp-action="Register" class="auth-link auth-link-primary">
                         <i class="fa-solid fa-user-plus text-primary"></i>
                         <span>ایجاد حساب کاربری جدید</span>
                     </a>
@@ -98,29 +98,4 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('passwordInput');
-            const toggleIcon = document.getElementById('toggleIcon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
-        }
 
-        // Add loading state on form submit (only if valid)
-        document.getElementById('account').addEventListener('submit', function(e) {
-            // Check if form is valid using jQuery validation
-            if ($(this).valid()) {
-                this.classList.add('auth-loading');
-            }
-        });
-    </script>
-}

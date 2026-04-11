@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the complete Two-Factor Authentication (2FA) implementation in the IdentityCoreCustomization project. The system supports both **SMS-based 2FA** and **Authenticator App (TOTP) 2FA** with comprehensive recovery options.
+This document outlines the complete Two-Factor Authentication (2FA) implementation in this project. The system supports both **SMS-based 2FA** and **Authenticator App (TOTP) 2FA** with comprehensive recovery options.
 
 ---
 
@@ -518,8 +518,7 @@ Available Actions:
 
 ### Contact
 
-For issues or questions about this implementation, please refer to the project repository:
-- **GitHub:** https://github.com/delphiassistant/IdentityCoreCustomization
+For issues or questions about this implementation, please refer to the project repository.
 
 ---
 
@@ -540,7 +539,7 @@ For issues or questions about this implementation, please refer to the project r
 
 ## License
 
-This implementation follows the license of the main IdentityCoreCustomization project.
+This implementation follows the license of the main project.
 
 ---
 

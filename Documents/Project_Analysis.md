@@ -1,10 +1,10 @@
-# IdentityCoreCustomization - Comprehensive Project Analysis
+# ASP.NET Core Identity - Comprehensive Project Analysis
 
 > **Last Updated**: 2024-12-02  
 > **Project Version**: 1.5  
 > **Analysis Type**: Deep Dive - Features, Gaps, and Recommendations
 
-This document provides a thorough analysis of the IdentityCoreCustomization project's current state, identifying implemented features, missing functionality, security considerations, and actionable recommendations.
+This document provides a thorough analysis of this project's current state, identifying implemented features, missing functionality, security considerations, and actionable recommendations.
 
 ---
 
@@ -33,7 +33,7 @@ This document provides a thorough analysis of the IdentityCoreCustomization proj
 - ✅ No additional configuration required
 - **Files**: 
   - `Program.cs` - HTTP client and validator registration
-  - `IdentityCoreCustomization.csproj` - PwnedPasswords.Validator package
+  - `YourApp.csproj` - PwnedPasswords.Validator package
 - **Documentation**: See `HIBP-Integration-Guide.md`
 
 ### 1. **Complete Two-Factor Authentication (2FA)**
@@ -371,14 +371,14 @@ Then create API controllers for:
 
 **Step 1: Create Test Project**
 ```bash
-cd C:\Repos\IdentityCoreCustomization
-dotnet new xunit -n IdentityCoreCustomization.Tests
-dotnet sln add IdentityCoreCustomization.Tests/IdentityCoreCustomization.Tests.csproj
+cd C:\Repos\YourApp
+dotnet new xunit -n YourApp.Tests
+dotnet sln add YourApp.Tests/YourApp.Tests.csproj
 ```
 
 **Step 2: Add Required Packages**
 ```bash
-cd IdentityCoreCustomization.Tests
+cd YourApp.Tests
 dotnet add package Microsoft.AspNetCore.Mvc.Testing
 dotnet add package Microsoft.EntityFrameworkCore.InMemory
 dotnet add package Moq
@@ -1135,7 +1135,7 @@ var message = _templateService.RenderTemplate("verification", new {
 
 ## Project Information
 
-**Project**: IdentityCoreCustomization  
+**Project**: ASP.NET Core Identity Application  
 **Version**: 1.5  
 **Target Framework**: .NET 8  
 **Project Type**: ASP.NET Core MVC with Identity  
@@ -1173,7 +1173,7 @@ var message = _templateService.RenderTemplate("verification", new {
 
 **Provider**: SQL Server  
 **Development**: LocalDB  
-**Connection String**: `Server=localhost;Database=IdentityCoreCustomization;Trusted_Connection=True`  
+**Connection String**: `Server=<your-server>;Database=<your-database>;Trusted_Connection=True`  
 **Schema**: Custom table/column naming (Users, Roles, UserID, RoleID, etc.)
 
 ---

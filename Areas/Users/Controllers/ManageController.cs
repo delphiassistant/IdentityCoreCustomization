@@ -1,5 +1,6 @@
 ﻿using IdentityCoreCustomization.Areas.Users.Models;
 using IdentityCoreCustomization.Data;
+using IdentityCoreCustomization.Models;
 using IdentityCoreCustomization.Models.Identity;
 using IdentityCoreCustomization.Services;
 
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
     [Area("Users")]
     public class ManageController : Controller
     {
-        private IConfiguration Configuration { get; }
+        private readonly GeneralConfig _generalConfig;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IBackgroundSmsQueue _smsQueue;
@@ -34,7 +35,7 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
         private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
         public ManageController(
-            IConfiguration configuration,
+            IOptions<GeneralConfig> generalConfig,
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager, 
             SignInManager<ApplicationUser> signInManager, 
@@ -43,7 +44,7 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
             UrlEncoder urlEncoder
             )
         {
-            Configuration = configuration;
+            _generalConfig = generalConfig.Value;
             db = context;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -490,10 +491,9 @@ namespace IdentityCoreCustomization.Areas.Users.Controllers
 
         private string GenerateQrCodeUri(string email, string unformattedKey)
         {
-            var siteTitle = Configuration.GetValue<string>("GeneralConfig:SiteTitle");
             return string.Format(
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode(siteTitle),
+                _urlEncoder.Encode(_generalConfig.SiteTitle),
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }

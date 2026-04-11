@@ -1,15 +1,23 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.Extensions.Options.IOptions<IdentityCoreCustomization.Models.GeneralConfig> GeneralConfig
+<!DOCTYPE html>
 <html lang="fa">
 <head>
+    <script>
+        (function () {
+            var t = localStorage.getItem('app-theme');
+            if (t === 'dark') { document.documentElement.setAttribute('data-bs-theme', 'dark'); }
+        })();
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@ViewData["Title"] - پنل مدیریت</title>
+    <title>@ViewData["Title"] - @GeneralConfig.Value.SiteTitle</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
     <link href="~/lib/persian_fonts/vazirmatnfd/vazirmatn-fd-font-face.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/navigation-dropdown.css" />
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/multi-calendar-datepicker/lib/multi-calendar-datepicker.css" />
     @RenderSection("Styles", required: false)
 </head>
 <body>
@@ -22,9 +30,12 @@
             <span class="navbar-brand mb-0 h1">
                 <i class="fa-solid fa-shield-halved"></i> پنل مدیریت
             </span>
-            <div class="d-none d-lg-flex align-items-center text-white">
-                <i class="fa-regular fa-user-circle ms-2"></i>
-                <span class="small">@User.Identity?.Name</span>
+            <div class="d-none d-lg-flex align-items-center text-white gap-2">
+                <button type="button" data-theme-toggle class="btn btn-link p-1 text-white" title="تغییر به حالت تیره">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <i class="fa-regular fa-user-circle"></i>
+                <span class="small ms-2">@User.Identity?.Name</span>
             </div>
         </div>
     </nav>
@@ -36,14 +47,14 @@
     <aside id="adminSidebar" class="admin-sidebar text-white position-fixed">
         <div class="sidebar-inner h-100 d-flex flex-column">
             <!-- Brand at top of sidebar -->
-            <a class="d-flex align-items-center px-3 py-3 text-decoration-none text-white border-bottom border-secondary" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
-                <i class="fa-solid fa-shield-halved ms-2 fs-4"></i> 
-                <span class="fs-5 fw-semibold ms-1">پنل مدیریت</span>
+            <a class="d-flex align-items-center px-3 py-3 text-decoration-none text-white border-bottom border-secondary" asp-area="Admin" asp-controller="Home" asp-action="Index">
+                <i class="fa-solid fa-shield-halved fs-4"></i> 
+                <span class="fs-5 fw-semibold ms-2">پنل مدیریت</span>
             </a>
             
             <nav class="nav nav-pills flex-column px-2 py-3 gap-1">
                 <!-- Dashboard -->
-                <a class="nav-link text-start @(ViewContext.RouteData.Values["controller"]?.ToString()=="Dashboard"?"active":"")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                <a class="nav-link text-start @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")" asp-area="Admin" asp-controller="Home" asp-action="Index">
                     <i class="fa-solid fa-gauge"></i> داشبورد
                 </a>
                 
@@ -91,7 +102,7 @@
             <div class="container-fluid">
                 <div class="d-flex justify-content-between align-items-center">
                     <span>
-                        &copy; @DateTime.Now.ToString("yyyy") - سفارشی سازی آیدنتیتی
+                        &copy; @DateTime.Now.ToString("yyyy") - @GeneralConfig.Value.SiteTitle
                     </span>
                     <span class="small text-muted">
                         <i class="fa-solid fa-code"></i> ساخته شده با عشق
@@ -105,7 +116,10 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/navigation-dropdown.js" asp-append-version="true"></script>
-    
+    <script src="~/js/theme.js" asp-append-version="true"></script>
+    <script src="~/lib/multi-calendar-datepicker/lib/moment-bundled.js"></script>
+    <script src="~/lib/multi-calendar-datepicker/lib/multi-calendar-datepicker.js"></script>
+
     <!-- Sidebar toggle script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {

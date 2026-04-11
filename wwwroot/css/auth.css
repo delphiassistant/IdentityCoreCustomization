@@ -464,3 +464,135 @@ body {
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
     color: var(--auth-danger);
 }
+
+/* Password Strength Bar */
+.password-strength {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+/* Password Requirements List */
+.requirement-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.requirement-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    background: #e5e7eb;
+    color: #9ca3af;
+    transition: all 0.3s;
+}
+
+.requirement-met .requirement-icon {
+    background: #10b981;
+    color: white;
+}
+
+/* OTP / Code Input */
+.auth-code-input {
+    font-size: 1.5rem;
+    letter-spacing: 0.5rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Recovery Code Input */
+.auth-recovery-input {
+    font-size: 1.25rem;
+    letter-spacing: 0.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* -------------------------------------------------- */
+/* Dark Mode overrides for the auth area              */
+/* -------------------------------------------------- */
+
+[data-bs-theme="dark"] .auth-card {
+    background: #1e2132;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* The white curved overlay at the bottom of auth-header */
+[data-bs-theme="dark"] .auth-header::after {
+    background: #1e2132;
+}
+
+[data-bs-theme="dark"] .auth-body {
+    background: #1e2132;
+}
+
+[data-bs-theme="dark"] .auth-form .form-label {
+    color: #d1d5db;
+}
+
+[data-bs-theme="dark"] .auth-form .form-control {
+    background-color: #111827;
+    border-color: #374151;
+    color: #e5e7eb;
+}
+
+[data-bs-theme="dark"] .auth-links {
+    border-top-color: #374151;
+}
+
+[data-bs-theme="dark"] .auth-link {
+    color: #9ca3af;
+}
+
+[data-bs-theme="dark"] .auth-link:hover {
+    color: #a5b4fc;
+}
+
+[data-bs-theme="dark"] .auth-divider {
+    color: #6b7280;
+}
+
+[data-bs-theme="dark"] .auth-divider::before,
+[data-bs-theme="dark"] .auth-divider::after {
+    border-bottom-color: #374151;
+}
+
+[data-bs-theme="dark"] .requirement-icon {
+    background: #374151;
+    color: #9ca3af;
+}
+
+[data-bs-theme="dark"] .auth-alert-success {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+    color: #a7f3d0;
+}
+
+[data-bs-theme="dark"] .auth-alert-danger {
+    background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+    color: #fecaca;
+}
+
+[data-bs-theme="dark"] .auth-alert-info {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    color: #bfdbfe;
+}
+.auth-link-primary {
+    color: var(--auth-primary);
+    font-weight: 600;
+}
+
+/* Highlighted auth-link (warning action variant) */
+.auth-link-warning {
+    color: var(--auth-warning);
+    font-weight: 600;
+}

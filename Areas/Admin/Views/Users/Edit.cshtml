@@ -193,7 +193,7 @@
                     <a asp-action="Details" asp-route-id="@Model.UserID" class="btn btn-info px-4">
                         <i class="fa-solid fa-eye"></i> مشاهده جزئیات
                     </a>
-                    <a asp-action="Index" class="btn btn-secondary px-4">
+                    <a href="@(ViewBag.ReturnUrl ?? Url.Action("Index"))" class="btn btn-secondary px-4">
                         <i class="fa-solid fa-arrow-left"></i> بازگشت به فهرست
                     </a>
                 </div>

@@ -54,7 +54,7 @@
                         <span>قبلاً ثبت‌نام کرده‌اید؟</span>
                     </div>
                     
-                    <a asp-action="Login" class="auth-link" style="color: var(--auth-primary); font-weight: 600;">
+                    <a asp-action="Login" class="auth-link auth-link-primary">
                         <i class="fa-solid fa-right-to-bracket fa-flip-horizontal text-primary"></i>
                         <span>ورود به حساب کاربری</span>
                     </a>
@@ -81,14 +81,4 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        // Add loading state on form submit (only if valid)
-        document.querySelector('form').addEventListener('submit', function(e) {
-            // Check if form is valid using jQuery validation
-            if ($(this).valid()) {
-                this.classList.add('auth-loading');
-            }
-        });
-    </script>
-}
+

@@ -3,6 +3,13 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Serilog rolling log files
+logs/
+
+# ASP.NET Core Data Protection keys
+DataProtection-Keys/
+Documents/Images/
+
 # User-specific files
 *.rsuser
 *.suo

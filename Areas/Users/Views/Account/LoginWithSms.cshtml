@@ -55,7 +55,7 @@
                         <span>یا</span>
                     </div>
                     
-                    <a asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" class="auth-link" style="color: var(--auth-primary); font-weight: 600;">
+                    <a asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" class="auth-link auth-link-primary">
                         <i class="fa-solid fa-right-to-bracket fa-flip-horizontal text-primary"></i>
                         <span>ورود با نام کاربری و کلمه عبور</span>
                     </a>
@@ -77,14 +77,4 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        // Add loading state on form submit (only if valid)
-        document.querySelector('form').addEventListener('submit', function(e) {
-            // Check if form is valid using jQuery validation
-            if ($(this).valid()) {
-                this.classList.add('auth-loading');
-            }
-        });
-    </script>
-}
+

@@ -487,3 +487,73 @@
 .password-toggle:hover {
     color: var(--auth-primary);
 }
+
+/* -------------------------------------------------- */
+/* Dark Mode overrides for the manage area            */
+/* -------------------------------------------------- */
+
+[data-bs-theme="dark"] .manage-layout {
+    background: #111827;
+}
+
+[data-bs-theme="dark"] .manage-content {
+    background: #111827;
+}
+
+[data-bs-theme="dark"] .page-header {
+    background: #1e2132;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-bs-theme="dark"] .page-title {
+    color: #e5e7eb;
+}
+
+[data-bs-theme="dark"] .page-description {
+    color: #9ca3af;
+}
+
+[data-bs-theme="dark"] .manage-card {
+    background: #1e2132;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-bs-theme="dark"] .manage-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+[data-bs-theme="dark"] .manage-card-header {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    border-bottom-color: #374151;
+}
+
+[data-bs-theme="dark"] .manage-card-title {
+    color: #e5e7eb;
+}
+
+[data-bs-theme="dark"] .info-item {
+    background: #1f2937;
+    border-color: transparent;
+}
+
+[data-bs-theme="dark"] .info-item:hover {
+    background: #1e2132;
+    border-color: var(--manage-primary);
+}
+
+[data-bs-theme="dark"] .info-label {
+    color: #9ca3af;
+}
+
+[data-bs-theme="dark"] .info-value {
+    color: #e5e7eb;
+}
+
+[data-bs-theme="dark"] .manage-form .form-label {
+    color: #d1d5db;
+}
+
+/* Sidebar theme toggle button inside manage area */
+[data-bs-theme="dark"] .manage-sidebar [data-theme-toggle] {
+    color: rgba(255, 255, 255, 0.8);
+}

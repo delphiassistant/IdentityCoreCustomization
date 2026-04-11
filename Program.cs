@@ -6,6 +6,7 @@ using IdentityCoreCustomization.Services;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -13,10 +14,24 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Globalization;
+using IdentityCoreCustomization.Classes.Extensions;
+using IdentityCoreCustomization.Classes.ModelBinding;
+using IdentityCoreCustomization.Classes.Logging;
+using IdentityCoreCustomization.Middleware;
+using System.IO;
 
+
+CultureInfo.DefaultThreadCurrentCulture
+    = CultureInfo.DefaultThreadCurrentUICulture = PersianDateExtensionMethods.GetPersianCulture();
+
+// Bootstrap logger — captures failures before host/DI is available.
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .Enrich.With<PersianTimestampEnricher>()
+    .CreateBootstrapLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
@@ -24,12 +39,28 @@ builder.Configuration
     .AddJsonFile($"appSettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true) // loaded later → higher precedence
     .AddEnvironmentVariables();
 
-CultureInfo.DefaultThreadCurrentCulture
-    = CultureInfo.DefaultThreadCurrentUICulture = PersianDateExtensionMethods.GetPersianCulture();
+builder.Host.UseSerilog((context, services, config) =>
+    config
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .Enrich.With<PersianTimestampEnricher>());
+
+
 
 
 var services = builder.Services;
 var configuration = builder.Configuration;
+
+services.Configure<IdentityCoreCustomization.Models.GeneralConfig>(
+    configuration.GetSection("GeneralConfig"));
+
+var appName = configuration["GeneralConfig:ApplicationName"] ?? "IdentityCoreCustomization";
+
+services.AddDataProtection()
+    .SetApplicationName(appName)
+    .PersistKeysToFileSystem(new DirectoryInfo(
+        Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys")));
 
 services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
@@ -66,7 +97,7 @@ if (checkPasswordWithHIBP)
 {
     identityBuilder.AddPwnedPasswordValidator<ApplicationUser>(options =>
     {
-        options.ErrorMessage = "هشدار: این رمز عبور در لیست رمزهای نشت‌شده دیده شده است. لطفاً یک رمز عبور قوی‌تر و منحصربه‌فرد انتخاب کنید.";
+        options.ErrorMessage = "هشدار: این رمز عبور امن نیست و در لیست رمزهای پخش شده در دارک وب دیده شده است. لطفاً یک رمز عبور قوی‌تر و منحصربه‌فرد انتخاب کنید.";
     });
 }
 
@@ -81,6 +112,7 @@ services.AddOptions<CookieAuthenticationOptions>(IdentityConstants.ApplicationSc
 
 services.ConfigureApplicationCookie(options =>
 {
+    options.Cookie.Name = appName;
     options.LoginPath = new PathString("/Users/Account/Login");
     options.LogoutPath = new PathString("/Users/Account/Logout");
     options.AccessDeniedPath = new PathString("/Users/Account/AccessDenied");
@@ -105,10 +137,16 @@ services.AddScoped<IDatabaseCleanerService, DatabaseCleanerService>();
 // NEW: Add user session management service
 services.AddScoped<IUserSessionService, UserSessionService>();
 
-services.AddControllersWithViews();
+services.AddControllersWithViews(options =>
+{
+    options.ModelBinderProviders.Insert(0, new PersianDateModelBinderProvider());
+});
 
 // Register background services
 services.AddHostedService<DatabaseCleanupBackgroundService>();
+
+// Admin first-run setup state cache
+services.AddSingleton<AdminSetupState>();
 
 var app = builder.Build();
 
@@ -125,6 +163,8 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseSerilogRequestLogging();
+app.UseMiddleware<AdminSetupMiddleware>();
 
 app.UseRouting();
 
@@ -147,9 +187,18 @@ try
 }
 catch (Exception ex)
 {
-    var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
-    var logger = loggerFactory.CreateLogger("Program");
-    logger.LogError(ex, "Error occurred during database seeding");
+    Log.Error(ex, "Error occurred during database seeding");
 }
 
-app.Run();
+try
+{
+    app.Run();
+}
+catch (Exception ex) when (ex is not HostAbortedException)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    await Log.CloseAndFlushAsync();
+}

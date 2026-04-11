@@ -39,10 +39,9 @@
                         @Html.DisplayNameFor(m => m.AuthenticationCode)
                     </label>
                     <input asp-for="AuthenticationCode" 
-                           class="form-control text-center" 
+                           class="form-control auth-code-input" 
                            autocomplete="off"                            
                            maxlength="6"
-                           style="font-size: 1.5rem; letter-spacing: 0.5rem; font-weight: 600;"
                            autofocus />
                     <span asp-validation-for="AuthenticationCode" class="text-danger small"></span>
                     <small class="text-muted d-block mt-2">
@@ -61,7 +60,7 @@
                         <span>مشکل در دریافت کد؟</span>
                     </div>
                     
-                    <a asp-action="LoginWithSms" asp-route-returnUrl="@ViewData["ReturnUrl"]" class="auth-link" style="color: var(--auth-warning); font-weight: 600;">
+                    <a asp-action="LoginWithSms" asp-route-returnUrl="@ViewData["ReturnUrl"]" class="auth-link auth-link-warning">
                         <i class="fa-solid fa-rotate text-warning"></i>
                         <span>ارسال مجدد کد</span>
                     </a>
@@ -83,29 +82,4 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        // Auto-focus and auto-submit on 6 digits
-        const codeInput = document.querySelector('[asp-for="AuthenticationCode"]');
-        codeInput.addEventListener('input', function(e) {
-            // Only allow numbers
-            this.value = this.value.replace(/[^0-9]/g, '');
-            
-            // Auto-submit when 6 digits are entered
-            if (this.value.length === 6) {
-                this.form.classList.add('auth-loading');
-                setTimeout(() => {
-                    this.form.submit();
-                }, 300);
-            }
-        });
 
-        // Add loading state on form submit (only if valid)
-        document.querySelector('form').addEventListener('submit', function(e) {
-            // Check if form is valid using jQuery validation
-            if ($(this).valid()) {
-                this.classList.add('auth-loading');
-            }
-        });
-    </script>
-}

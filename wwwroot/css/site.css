@@ -84,3 +84,49 @@ body {
     direction: ltr;
     text-align: left;
 }
+
+/* -------------------------------------------------- */
+/* Dark Mode overrides for site-level elements        */
+/* -------------------------------------------------- */
+
+/* Theme toggle button — visible in both themes */
+[data-theme-toggle] {
+    cursor: pointer;
+    transition: color 0.2s, opacity 0.2s;
+}
+
+[data-theme-toggle]:hover {
+    opacity: 0.75;
+}
+
+/* Ensure the footer respects the body background */
+[data-bs-theme="dark"] .footer {
+    border-top-color: #374151 !important;
+    color: #9ca3af;
+}
+
+/* Feature & stat cards on the home page */
+[data-bs-theme="dark"] .feature-card {
+    background: #1e2132;
+    border-color: #374151;
+}
+
+[data-bs-theme="dark"] .feature-card:hover {
+    border-color: #667eea;
+}
+
+[data-bs-theme="dark"] .feature-title {
+    color: #e5e7eb;
+}
+
+[data-bs-theme="dark"] .feature-description {
+    color: #9ca3af;
+}
+
+[data-bs-theme="dark"] .stats-section {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+[data-bs-theme="dark"] .stat-label {
+    color: #9ca3af;
+}

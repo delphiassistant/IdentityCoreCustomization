@@ -7,6 +7,7 @@ using IdentityCoreCustomization.Areas.Admin.Models;
 using IdentityCoreCustomization.Classes.Extensions;
 using IdentityCoreCustomization.Data;
 using IdentityCoreCustomization.Models.Identity;
+using IdentityCoreCustomization.Models.System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,12 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<IActionResult> Index(string q)
+        public async Task<IActionResult> Index(
+            string? q = null,
+            string? sortBy = "userName",
+            string? sortDir = "asc",
+            int page = 1,
+            int pageSize = 20)
         {
             try
             {
@@ -54,14 +60,36 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                         EF.Functions.Like(u.PhoneNumber ?? "", pattern));
                 }
 
-                var users = await usersQuery
-                    .OrderBy(u => u.UserName)
+                usersQuery = sortBy switch
+                {
+                    "email" => sortDir == "desc" ? usersQuery.OrderByDescending(u => u.Email) : usersQuery.OrderBy(u => u.Email),
+                    _ => sortDir == "desc" ? usersQuery.OrderByDescending(u => u.UserName) : usersQuery.OrderBy(u => u.UserName),
+                };
+
+                var total = await usersQuery.CountAsync();
+                var items = await usersQuery
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
                     .AsNoTracking()
                     .ToListAsync();
-                
-                ViewBag.Search = q;
-                _logger.LogInformation("Retrieved {Count} users for admin view (query: {Query})", users.Count, q);
-                return View(users);
+
+                ViewBag.Q = q;
+                ViewBag.SortBy = sortBy;
+                ViewBag.SortDir = sortDir;
+                ViewBag.Page = page;
+                ViewBag.PageSize = pageSize;
+                ViewBag.TotalCount = total;
+                ViewBag.TotalPages = (int)Math.Ceiling((double)total / pageSize);
+                ViewBag.RouteData = new Dictionary<string, string>
+                {
+                    ["q"] = q ?? "",
+                    ["sortBy"] = sortBy ?? "userName",
+                    ["sortDir"] = sortDir ?? "asc",
+                    ["pageSize"] = pageSize.ToString()
+                };
+
+                _logger.LogInformation("Retrieved {Count}/{Total} users (page {Page}, query: {Query})", items.Count, total, page, q);
+                return View(items);
             }
             catch (Exception ex)
             {
@@ -172,7 +200,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, string? returnUrl = null)
         {
             if (id == null)
             {
@@ -191,6 +219,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     return NotFound($"کاربری با شناسه {id} یافت نشد.");
                 }
 
+                ViewBag.ReturnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : Url.Action(nameof(Index));
                 return View(user);
             }
             catch (Exception ex)
@@ -201,7 +230,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, string? returnUrl = null)
         {
             if (id == null)
             {
@@ -234,6 +263,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     TwoFactorEnabled = user.TwoFactorEnabled
                 };
 
+                ViewBag.ReturnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : Url.Action(nameof(Index));
                 return View(model);
             }
             catch (Exception ex)
@@ -397,7 +427,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, string? returnUrl = null)
         {
             if (id == null)
             {
@@ -416,6 +446,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     return NotFound($"کاربری با شناسه {id} یافت نشد.");
                 }
 
+                ViewBag.ReturnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : Url.Action(nameof(Index));
                 return View(user);
             }
             catch (Exception ex)
@@ -469,7 +500,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> ChangePassword(int? id)
+        public async Task<IActionResult> ChangePassword(int? id, string? returnUrl = null)
         {
             if (id == null)
             {
@@ -490,6 +521,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     Username = user.UserName
                 };
 
+                ViewBag.ReturnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : Url.Action(nameof(Index));
                 return View(model);
             }
             catch (Exception ex)

@@ -171,7 +171,7 @@
 </div>
 
 <div class="text-center">
-    <a asp-action="Index" class="btn btn-light shadow-sm">
+    <a href="@(ViewBag.ReturnUrl ?? Url.Action("Index"))" class="btn btn-light shadow-sm">
         <i class="fa-solid fa-arrow-left"></i> بازگشت به لیست کاربران
     </a>
     <a asp-action="DeleteConfirmed" asp-route-id="@Model.Id" class="btn btn-danger shadow-sm">

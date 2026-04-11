@@ -1,7 +1,17 @@
 ﻿@model IEnumerable<IdentityCoreCustomization.Models.Identity.ApplicationUser>
+@using IdentityCoreCustomization.Classes.Extensions
 
 @{
     ViewData["Title"] = "مدیریت کاربران";
+    var returnUrl = Context.Request.GetEncodedPathAndQuery();
+    var sortBy = ViewBag.SortBy as string ?? "userName";
+    var sortDir = ViewBag.SortDir as string ?? "asc";
+    var q = ViewBag.Q as string;
+
+    string SortLink(string col) => (sortBy == col && sortDir == "asc") ? "desc" : "asc";
+    string SortIcon(string col) => sortBy == col ? (sortDir == "asc" ? " ▲" : " ▼") : "";
+    var sortUserNameDir = SortLink("userName");
+    var sortEmailDir = SortLink("email");
 }
 
 @section Styles {
@@ -29,7 +39,7 @@
         }
 
         .search-toolbar {
-            background: white;
+            background: var(--bs-body-bg);
             padding: 1.5rem;
             border-radius: 0.75rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -70,11 +80,14 @@
         </div>
         <div class="col-md-5">
             <form method="get" asp-action="Index" class="d-flex" role="search">
-                <input type="text" name="q" value="@(ViewBag.Search as string)" class="form-control me-2" placeholder="جستجو: نام کاربری، ایمیل یا تلفن" />
+                <input type="hidden" name="sortBy" value="@sortBy" />
+                <input type="hidden" name="sortDir" value="@sortDir" />
+                <input type="hidden" name="page" value="1" />
+                <input type="text" name="q" value="@q" class="form-control me-2" placeholder="جستجو: نام کاربری، ایمیل یا تلفن" />
                 <button type="submit" class="btn btn-outline-primary me-2">
                     <i class="fa-solid fa-magnifying-glass"></i> جستجو
                 </button>
-                @if (!string.IsNullOrWhiteSpace(ViewBag.Search as string))
+                @if (!string.IsNullOrWhiteSpace(q))
                 {
                     <a asp-action="Index" class="btn btn-outline-secondary">
                         <i class="fa-solid fa-xmark"></i> پاک‌سازی
@@ -84,7 +97,7 @@
         </div>
         <div class="col-md-3 text-end">
             <span class="badge bg-info fs-6">
-                <i class="fa-solid fa-list-check"></i> تعداد: @Model.Count()
+                <i class="fa-solid fa-list-check"></i> تعداد: @((int)(ViewBag.TotalCount ?? 0))
             </span>
         </div>
     </div>
@@ -97,8 +110,16 @@
                 <thead class="table-dark">
                     <tr>
                         <th>شناسه</th>
-                        <th>@Html.DisplayNameFor(model => model.UserName)</th>
-                        <th>@Html.DisplayNameFor(model => model.Email)</th>
+                        <th>
+                            <a asp-action="Index" asp-route-q="@q" asp-route-sortBy="userName" asp-route-sortDir="@sortUserNameDir" asp-route-pageSize="@ViewBag.PageSize" class="text-white text-decoration-none">
+                                نام کاربری@(SortIcon("userName"))
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index" asp-route-q="@q" asp-route-sortBy="email" asp-route-sortDir="@sortEmailDir" asp-route-pageSize="@ViewBag.PageSize" class="text-white text-decoration-none">
+                                ایمیل@(SortIcon("email"))
+                            </a>
+                        </th>
                         <th>تلفن</th>
                         <th>نقش‌ها</th>
                         <th>وضعیت</th>
@@ -114,7 +135,7 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 36px; height: 36px;">
+                                    <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center ms-2" style="width: 36px; height: 36px;">
                                         <i class="fa-solid fa-user"></i>
                                     </div>
                                     <div>
@@ -225,17 +246,17 @@
                             </td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a asp-action="Details" asp-route-id="@item.Id" 
+                                    <a asp-action="Details" asp-route-id="@item.Id" asp-route-returnUrl="@returnUrl"
                                        class="btn btn-info btn-sm" title="مشاهده جزئیات">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
-                                    
-                                    <a asp-action="Edit" asp-route-id="@item.Id" 
+
+                                    <a asp-action="Edit" asp-route-id="@item.Id" asp-route-returnUrl="@returnUrl"
                                        class="btn btn-primary btn-sm" title="ویرایش">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
-                                    
-                                    <a asp-action="ChangePassword" asp-route-id="@item.Id" 
+
+                                    <a asp-action="ChangePassword" asp-route-id="@item.Id" asp-route-returnUrl="@returnUrl"
                                        class="btn btn-dark btn-sm" title="تغییر کلمه عبور">
                                         <i class="fa-solid fa-key"></i>
                                     </a>
@@ -265,7 +286,7 @@
                                     
                                     @if (item.UserName != User.Identity.Name)
                                     {
-                                        <a asp-action="Delete" asp-route-id="@item.Id" 
+                                        <a asp-action="Delete" asp-route-id="@item.Id" asp-route-returnUrl="@returnUrl"
                                            class="btn btn-danger btn-sm" title="حذف">
                                             <i class="fa-solid fa-trash"></i>
                                         </a>
@@ -279,6 +300,8 @@
         </div>
     </div>
 </div>
+
+@await Html.PartialAsync("_Pagination")
 
 @if (!Model.Any())
 {

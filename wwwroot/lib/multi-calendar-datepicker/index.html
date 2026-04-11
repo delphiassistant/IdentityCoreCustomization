@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Calendar DatePicker Demo</title>
+    
+    <!-- Bootstrap CSS (local) -->
+    <link href="lib/bootstrap-5.3.0.min.css" rel="stylesheet">
+       
+    <!-- Multi-Calendar DatePicker CSS -->
+    <link href="lib/multi-calendar-datepicker.css" rel="stylesheet">
+    
+    <style>
+        .demo-section {
+            margin: 40px 0;
+            padding: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .demo-title {
+            color: #495057;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .calendar-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .rtl-demo {
+            direction: rtl;
+            text-align: right;
+        }
+        pre {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 13px;
+            margin: 0;
+            overflow-x: auto;
+            text-align: left;
+            direction: ltr;
+        }
+        pre code {
+            color: #495057;
+            font-family: 'Courier New', monospace;
+        }
+        h6 {
+            color: #495057;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-4">Multi-Calendar DatePicker Demo</h1>
+                <p class="text-center text-muted">Supporting Gregorian, Persian (Jalaali), and Hijri (Islamic) Calendar Systems</p>
+            </div>
+        </div>
+
+        <!-- Gregorian Calendar Demo -->
+        <div class="demo-section">
+            <h3 class="demo-title">Gregorian Calendar (Western)</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="gregorian-date" class="form-label">Select Date:</label>
+                        <input type="text" id="gregorian-date" class="form-control" placeholder="YYYY/MM/DD">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="gregorian-datetime" class="form-label">Select Date & Time:</label>
+                        <input type="text" id="gregorian-datetime" class="form-control" placeholder="YYYY/MM/DD HH:mm">
+                    </div>
+                </div>
+            </div>
+            <div class="calendar-info">
+                <strong>Features:</strong> Standard Western calendar, Week starts on Sunday, Leap year calculations (divisible by 4, except century years unless divisible by 400), Range: 1900-2100
+            </div>
+            
+            <!-- Code Samples -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h6>Date Only:</h6>
+                    <pre><code>$('#gregorian-date').multiCalendarDatePicker({
+    calendar: 'gregorian',
+    locale: 'en',
+    format: 'YYYY/MM/DD'
+});</code></pre>
+                </div>
+                <div class="col-md-6">
+                    <h6>Date & Time:</h6>
+                    <pre><code>$('#gregorian-datetime').multiCalendarDatePicker({
+    calendar: 'gregorian',
+    locale: 'en',
+    format: 'YYYY/MM/DD HH:mm',
+    timePicker: true,
+    timeFormat: 'HH:mm'
+});</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Persian Calendar Demo -->
+        <div class="demo-section rtl-demo">
+            <h3 class="demo-title">تقویم فارسی (جلالی)</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="persian-date" class="form-label">انتخاب تاریخ:</label>
+                        <input type="text" id="persian-date" class="form-control mcdp-rtl-input" placeholder="۱۴۰۳/۰۱/۰۱">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="persian-datetime" class="form-label">انتخاب تاریخ و زمان:</label>
+                        <input type="text" id="persian-datetime" class="form-control mcdp-rtl-input" placeholder="۱۴۰۳/۰۱/۰۱ ۱۲:۳۰">
+                    </div>
+                </div>
+            </div>
+            <div class="calendar-info">
+                <strong>ویژگی‌ها:</strong> تقویم خورشیدی ایرانی، هفته از شنبه شروع می‌شود، الگوریتم کبیسه دقیق با لیست تأیید شده (۱۲۰۰-۱۵۰۰)
+            </div>
+            
+            <!-- Code Samples -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h6>تاریخ فقط:</h6>
+                    <pre><code>$('#persian-date').multiCalendarDatePicker({
+    calendar: 'persian',
+    locale: 'fa',
+    format: 'YYYY/MM/DD',
+    rtl: true
+});</code></pre>
+                </div>
+                <div class="col-md-6">
+                    <h6>تاریخ و زمان:</h6>
+                    <pre><code>$('#persian-datetime').multiCalendarDatePicker({
+    calendar: 'persian',
+    locale: 'fa',
+    format: 'YYYY/MM/DD HH:mm',
+    timePicker: true,
+    timeFormat: 'HH:mm',
+    rtl: true
+});</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hijri Calendar Demo -->
+        <div class="demo-section rtl-demo">
+            <h3 class="demo-title">التقويم الهجري</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="hijri-date" class="form-label">اختيار التاريخ:</label>
+                        <input type="text" id="hijri-date" class="form-control mcdp-rtl-input" placeholder="١٤٤٥/٠١/٠١">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="hijri-datetime" class="form-label">اختيار التاريخ والوقت:</label>
+                        <input type="text" id="hijri-datetime" class="form-control mcdp-rtl-input" placeholder="١٤٤٥/٠١/٠١ ١٢:٣٠">
+                    </div>
+                </div>
+            </div>
+            <div class="calendar-info">
+                <strong>المميزات:</strong> التقويم القمري الإسلامي، الأسبوع يبدأ يوم السبت، الگوريتم الكبيسة المحسن مع قائمة مؤكدة (١٣٠٠-١٦٠٠)
+            </div>
+            
+            <!-- Code Samples -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h6>التاريخ فقط:</h6>
+                    <pre><code>$('#hijri-date').multiCalendarDatePicker({
+    calendar: 'hijri',
+    locale: 'ar',
+    format: 'YYYY/MM/DD',
+    rtl: true
+});</code></pre>
+                </div>
+                <div class="col-md-6">
+                    <h6>التاريخ والوقت:</h6>
+                    <pre><code>$('#hijri-datetime').multiCalendarDatePicker({
+    calendar: 'hijri',
+    locale: 'ar',
+    format: 'YYYY/MM/DD HH:mm',
+    timePicker: true,
+    timeFormat: 'HH:mm',
+    rtl: true
+});</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Latest Updates -->
+        <div class="demo-section">
+            <h3 class="demo-title">Latest Updates & Improvements</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="calendar-info">
+                        <h5>Persian Calendar</h5>
+                        <ul>
+                            <li>✅ Verified leap year algorithm (1200-1500)</li>
+                            <li>✅ Accurate leap year detection</li>
+                            <li>✅ Fixed leap year discrepancies</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="calendar-info">
+                        <h5>Hijri Calendar</h5>
+                        <ul>
+                            <li>✅ Extended year range (1000-2000)</li>
+                            <li>✅ Improved leap year algorithm</li>
+                            <li>✅ Fixed date parsing for years > 1500</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="calendar-info">
+                        <h5>General Improvements</h5>
+                        <ul>
+                            <li>✅ Enhanced data attributes support</li>
+                            <li>✅ Better RTL support</li>
+                            <li>✅ Improved time picker integration</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Features Demo -->
+        <div class="demo-section">
+            <h3 class="demo-title">Advanced Features Demo</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="constrained-date" class="form-label">Date with Constraints:</label>
+                        <input type="text" id="constrained-date" class="form-control" placeholder="Limited Range">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="dark-theme-date" class="form-label">Dark Theme:</label>
+                        <input type="text" id="dark-theme-date" class="form-control" placeholder="YYYY/MM/DD">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="seconds-time" class="form-label">With Seconds:</label>
+                        <input type="text" id="seconds-time" class="form-control" placeholder="YYYY/MM/DD HH:mm:ss">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Code Samples -->
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <h6>Date Constraints:</h6>
+                    <pre><code>$('#constrained-date').multiCalendarDatePicker({
+    calendar: 'gregorian',
+    locale: 'en',
+    format: 'YYYY/MM/DD',
+    minDate: '2024/01/01',
+    maxDate: '2024/12/31',
+    disabledDays: [0, 6] // Weekends
+});</code></pre>
+                </div>
+                <div class="col-md-4">
+                    <h6>Dark Theme:</h6>
+                    <pre><code>$('#dark-theme-date').multiCalendarDatePicker({
+    calendar: 'gregorian',
+    locale: 'en',
+    format: 'YYYY/MM/DD',
+    theme: 'dark'
+});</code></pre>
+                </div>
+                <div class="col-md-4">
+                    <h6>With Seconds:</h6>
+                    <pre><code>$('#seconds-time').multiCalendarDatePicker({
+    calendar: 'gregorian',
+    locale: 'en',
+    format: 'YYYY/MM/DD HH:mm:ss',
+    timePicker: true,
+    timeFormat: 'HH:mm:ss',
+    showSeconds: true
+});</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Attributes Demo -->
+        <div class="demo-section">
+            <h3 class="demo-title">Data Attributes Demo</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Auto-initialized with data attributes:</label>
+                        <input type="text" 
+                               data-mcdp
+                               data-calendar="hijri"
+                               data-locale="ar"
+                               data-theme="dark"
+                               data-time-picker="true"
+                               data-time-format="hh:mm A"
+                               data-use24-hour="false"
+                               class="form-control mcdp-rtl-input" 
+                               placeholder="انقر لفتح التقويم">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Persian with constraints:</label>
+                        <input type="text" 
+                               data-mcdp
+                               data-calendar="persian"
+                               data-locale="fa"
+                               data-min-date="1400/01/01"
+                               data-max-date="1410/12/29"
+                               data-disabled-days="5,6"
+                               class="form-control mcdp-rtl-input" 
+                               placeholder="۱۴۰۰-۱۴۱۰ محدود">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Code Samples -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h6>Hijri with Dark Theme:</h6>
+                    <pre><code>&lt;input type="text" 
+       data-mcdp
+       data-calendar="hijri"
+       data-locale="ar"
+       data-theme="dark"
+       data-time-picker="true"
+       data-time-format="hh:mm A"
+       data-use24-hour="false"&gt;</code></pre>
+                </div>
+                <div class="col-md-6">
+                    <h6>Persian with Constraints:</h6>
+                    <pre><code>&lt;input type="text" 
+       data-mcdp
+       data-calendar="persian"
+       data-locale="fa"
+       data-min-date="1400/01/01"
+       data-max-date="1410/12/29"
+       data-disabled-days="5,6"&gt;</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Demo Section -->
+        <div class="demo-section">
+            <h3 class="demo-title">API Methods Demo</h3>
+            <p class="demo-description">Test API methods on different calendar types. Each input uses a different calendar system.</p>
+            
+            <!-- Gregorian Calendar API Demo -->
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label for="api-gregorian-input" class="form-label">Gregorian Calendar API Test:</label>
+                        <input type="text" id="api-gregorian-input" class="form-control" placeholder="YYYY/MM/DD">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="btn-group-vertical w-100">
+                        <button class="btn btn-primary btn-sm" onclick="setTodayGregorian()">Set Today</button>
+                        <button class="btn btn-secondary btn-sm" onclick="clearDateGregorian()">Clear Date</button>
+                        <button class="btn btn-info btn-sm" onclick="showPickerGregorian(event)">Show Picker</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Persian Calendar API Demo -->
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label for="api-persian-input" class="form-label">Persian Calendar API Test:</label>
+                        <input type="text" id="api-persian-input" class="form-control" placeholder="YYYY/MM/DD">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="btn-group-vertical w-100">
+                        <button class="btn btn-primary btn-sm" onclick="setTodayPersian()">Set Today</button>
+                        <button class="btn btn-secondary btn-sm" onclick="clearDatePersian()">Clear Date</button>
+                        <button class="btn btn-info btn-sm" onclick="showPickerPersian(event)">Show Picker</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hijri Calendar API Demo -->
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label for="api-hijri-input" class="form-label">Hijri Calendar API Test:</label>
+                        <input type="text" id="api-hijri-input" class="form-control" placeholder="YYYY/MM/DD">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="btn-group-vertical w-100">
+                        <button class="btn btn-primary btn-sm" onclick="setTodayHijri()">Set Today</button>
+                        <button class="btn btn-secondary btn-sm" onclick="clearDateHijri()">Clear Date</button>
+                        <button class="btn btn-info btn-sm" onclick="showPickerHijri(event)">Show Picker</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries (local) -->
+    <script src="lib/jquery-3.7.1.min.js"></script>
+    <script src="lib/bootstrap-5.3.0.min.js"></script>
+    <script src="lib/moment-bundled.js"></script>
+    
+    <!-- Multi-Calendar DatePicker -->
+    <script src="lib/multi-calendar-datepicker.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize Gregorian datepickers
+            $('#gregorian-date').multiCalendarDatePicker({
+                calendar: 'gregorian',
+                locale: 'en',
+                format: 'YYYY/MM/DD'
+            });
+
+            $('#gregorian-datetime').multiCalendarDatePicker({
+                calendar: 'gregorian',
+                locale: 'en',
+                format: 'YYYY/MM/DD HH:mm',
+                timePicker: true,
+                timeFormat: 'HH:mm'
+            });
+
+            // Initialize Persian datepickers
+            $('#persian-date').multiCalendarDatePicker({
+                calendar: 'persian',
+                locale: 'fa',
+                format: 'YYYY/MM/DD',
+                rtl: true
+            });
+
+            $('#persian-datetime').multiCalendarDatePicker({
+                calendar: 'persian',
+                locale: 'fa',
+                format: 'YYYY/MM/DD HH:mm',
+                timePicker: true,
+                timeFormat: 'HH:mm',
+                rtl: true
+            });
+
+            // Initialize Hijri datepickers
+            $('#hijri-date').multiCalendarDatePicker({
+                calendar: 'hijri',
+                locale: 'ar',
+                format: 'YYYY/MM/DD',
+                rtl: true
+            });
+
+            $('#hijri-datetime').multiCalendarDatePicker({
+                calendar: 'hijri',
+                locale: 'ar',
+                format: 'YYYY/MM/DD HH:mm',
+                timePicker: true,
+                timeFormat: 'HH:mm',
+                rtl: true
+            });
+
+            // Initialize advanced feature demos
+            $('#constrained-date').multiCalendarDatePicker({
+                calendar: 'gregorian',
+                locale: 'en',
+                format: 'YYYY/MM/DD',
+                minDate: '2024/01/01',
+                maxDate: '2024/12/31',
+                disabledDays: [0, 6] // Sunday and Saturday
+            });
+
+            $('#dark-theme-date').multiCalendarDatePicker({
+                calendar: 'gregorian',
+                locale: 'en',
+                format: 'YYYY/MM/DD',
+                theme: 'dark'
+            });
+
+            $('#seconds-time').multiCalendarDatePicker({
+                calendar: 'gregorian',
+                locale: 'en',
+                format: 'YYYY/MM/DD HH:mm:ss',
+                timePicker: true,
+                timeFormat: 'HH:mm:ss',
+                showSeconds: true
+            });
+
+            // Initialize API demo inputs with different calendar types
+            $('#api-gregorian-input').multiCalendarDatePicker({
+                calendar: 'gregorian',
+                locale: 'en',
+                format: 'YYYY/MM/DD'
+            });
+
+            $('#api-persian-input').multiCalendarDatePicker({
+                calendar: 'persian',
+                locale: 'fa',
+                format: 'YYYY/MM/DD',
+                rtl: true
+            });
+
+            $('#api-hijri-input').multiCalendarDatePicker({
+                calendar: 'hijri',
+                locale: 'ar',
+                format: 'YYYY/MM/DD',
+                rtl: true
+            });
+
+        });
+
+        // API Demo Functions - Gregorian Calendar
+        function setTodayGregorian() {
+            $('#api-gregorian-input').multiCalendarDatePicker('today');
+        }
+
+        function clearDateGregorian() {
+            $('#api-gregorian-input').multiCalendarDatePicker('clear');
+        }
+
+        function showPickerGregorian(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            $('#api-gregorian-input').multiCalendarDatePicker('show');
+        }
+
+        // API Demo Functions - Persian Calendar
+        function setTodayPersian() {
+            $('#api-persian-input').multiCalendarDatePicker('today');
+        }
+
+        function clearDatePersian() {
+            $('#api-persian-input').multiCalendarDatePicker('clear');
+        }
+
+        function showPickerPersian(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            $('#api-persian-input').multiCalendarDatePicker('show');
+        }
+
+        // API Demo Functions - Hijri Calendar
+        function setTodayHijri() {
+            $('#api-hijri-input').multiCalendarDatePicker('today');
+        }
+
+        function clearDateHijri() {
+            $('#api-hijri-input').multiCalendarDatePicker('clear');
+        }
+
+        function showPickerHijri(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            $('#api-hijri-input').multiCalendarDatePicker('show');
+        }
+
+    </script>
+</body>
+</html>

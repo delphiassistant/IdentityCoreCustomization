@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using IdentityCoreCustomization.Data;
 using IdentityCoreCustomization.Models.Identity;
+using IdentityCoreCustomization.Models.System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -31,17 +32,52 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            string? q = null,
+            string? sortBy = "name",
+            string? sortDir = "asc",
+            int page = 1,
+            int pageSize = 50)
         {
             try
             {
-                var roles = await _roleManager.Roles
+                var rolesQuery = _roleManager.Roles
                     .Include(r => r.UserRoles)
-                    .OrderBy(r => r.Name)
+                    .AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(q))
+                {
+                    var pattern = q.Trim();
+                    rolesQuery = rolesQuery.Where(r => r.Name.Contains(pattern));
+                }
+
+                rolesQuery = sortDir == "desc"
+                    ? rolesQuery.OrderByDescending(r => r.Name)
+                    : rolesQuery.OrderBy(r => r.Name);
+
+                var total = await rolesQuery.CountAsync();
+                var items = await rolesQuery
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
-                
-                _logger.LogInformation("Retrieved {Count} roles for admin view", roles.Count);
-                return View(roles);
+
+                ViewBag.Q = q;
+                ViewBag.SortBy = sortBy;
+                ViewBag.SortDir = sortDir;
+                ViewBag.Page = page;
+                ViewBag.PageSize = pageSize;
+                ViewBag.TotalCount = total;
+                ViewBag.TotalPages = (int)Math.Ceiling((double)total / pageSize);
+                ViewBag.RouteData = new Dictionary<string, string>
+                {
+                    ["q"] = q ?? "",
+                    ["sortBy"] = sortBy ?? "name",
+                    ["sortDir"] = sortDir ?? "asc",
+                    ["pageSize"] = pageSize.ToString()
+                };
+
+                _logger.LogInformation("Retrieved {Count}/{Total} roles for admin view (query: {Query})", items.Count, total, q);
+                return View(items);
             }
             catch (Exception ex)
             {
@@ -115,7 +151,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, string? returnUrl = null)
         {
             if (id == null)
             {
@@ -128,13 +164,14 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                 var role = await _roleManager.Roles
                     .Include(r => r.UserRoles)
                     .FirstOrDefaultAsync(r => r.Id == id);
-                
+
                 if (role == null)
                 {
                     _logger.LogWarning("Role with ID {RoleId} not found", id);
                     return NotFound("نقش مورد نظر یافت نشد.");
                 }
 
+                ViewBag.ReturnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : Url.Action(nameof(Index));
                 return View(role);
             }
             catch (Exception ex)
@@ -237,7 +274,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             return View(role);
         }
 
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, string? returnUrl = null)
         {
             if (id == null)
             {
@@ -256,6 +293,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     return NotFound("نقش مورد نظر یافت نشد.");
                 }
 
+                ViewBag.ReturnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : Url.Action(nameof(Index));
                 return View(role);
             }
             catch (Exception ex)
@@ -266,7 +304,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, string? returnUrl = null)
         {
             if (id == null)
             {
@@ -284,6 +322,7 @@ namespace IdentityCoreCustomization.Areas.Admin.Controllers
                     return NotFound("نقش مورد نظر یافت نشد.");
                 }
 
+                ViewBag.ReturnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : Url.Action(nameof(Index));
                 return View(role);
             }
             catch (Exception ex)

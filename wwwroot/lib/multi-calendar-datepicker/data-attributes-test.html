@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Attributes Support Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .input-group {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .input-group input {
+            width: 200px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .data-attributes {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .data-attributes h4 {
+            margin-top: 0;
+            color: #856404;
+        }
+        .attribute-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .attribute-item {
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <h1>Data Attributes Support Test</h1>
+    
+    <div class="data-attributes">
+        <h4>Available Data Attributes</h4>
+        <p>All these attributes can be set on input elements with <code>data-mcdp</code> attribute:</p>
+        <div class="attribute-list">
+            <div class="attribute-item"><strong>data-calendar:</strong> gregorian, persian, hijri</div>
+            <div class="attribute-item"><strong>data-locale:</strong> en, fa, ar</div>
+            <div class="attribute-item"><strong>data-format:</strong> YYYY/MM/DD, MM/DD/YYYY, DD/MM/YYYY</div>
+            <div class="attribute-item"><strong>data-rtl:</strong> true, false</div>
+            <div class="attribute-item"><strong>data-theme:</strong> light, dark</div>
+            <div class="attribute-item"><strong>data-placement:</strong> bottom-start, bottom-end, top-start, top-end</div>
+            <div class="attribute-item"><strong>data-time-picker:</strong> true, false</div>
+            <div class="attribute-item"><strong>data-time-format:</strong> HH:mm, hh:mm A</div>
+            <div class="attribute-item"><strong>data-show-seconds:</strong> true, false</div>
+            <div class="attribute-item"><strong>data-use24-hour:</strong> true, false</div>
+            <div class="attribute-item"><strong>data-stepping:</strong> 1, 5, 15, 30</div>
+            <div class="attribute-item"><strong>data-show-today:</strong> true, false</div>
+            <div class="attribute-item"><strong>data-show-clear:</strong> true, false</div>
+            <div class="attribute-item"><strong>data-show-close:</strong> true, false</div>
+            <div class="attribute-item"><strong>data-auto-close:</strong> true, false</div>
+            <div class="attribute-item"><strong>data-hide-after-select:</strong> true, false</div>
+            <div class="attribute-item"><strong>data-keyboard-navigation:</strong> true, false</div>
+            <div class="attribute-item"><strong>data-today-highlight:</strong> true, false</div>
+            <div class="attribute-item"><strong>data-allow-input:</strong> true, false</div>
+            <div class="attribute-item"><strong>data-min-date:</strong> YYYY/MM/DD</div>
+            <div class="attribute-item"><strong>data-max-date:</strong> YYYY/MM/DD</div>
+            <div class="attribute-item"><strong>data-disabled-dates:</strong> comma-separated dates</div>
+            <div class="attribute-item"><strong>data-disabled-days:</strong> comma-separated weekdays (0-6)</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 1: Gregorian Calendar with Data Attributes</h3>
+        <div class="input-group">
+            <label>Gregorian DatePicker (data attributes):</label>
+            <input type="text" 
+                   data-mcdp
+                   data-calendar="gregorian"
+                   data-locale="en"
+                   data-format="YYYY/MM/DD"
+                   data-theme="light"
+                   data-time-picker="true"
+                   data-time-format="HH:mm"
+                   data-show-today="true"
+                   data-show-clear="true"
+                   placeholder="Click to open datepicker">
+            <div class="status info">Should open Gregorian calendar with time picker</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: Persian Calendar with Data Attributes</h3>
+        <div class="input-group">
+            <label>Persian DatePicker (data attributes):</label>
+            <input type="text" 
+                   data-mcdp
+                   data-calendar="persian"
+                   data-locale="fa"
+                   data-format="YYYY/MM/DD"
+                   data-theme="light"
+                   data-time-picker="false"
+                   data-show-today="true"
+                   data-show-clear="true"
+                   placeholder="کلیک کنید تا تقویم باز شود">
+            <div class="status info">Should open Persian calendar in Farsi with RTL support</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: Hijri Calendar with Data Attributes</h3>
+        <div class="input-group">
+            <label>Hijri DatePicker (data attributes):</label>
+            <input type="text" 
+                   data-mcdp
+                   data-calendar="hijri"
+                   data-locale="ar"
+                   data-format="YYYY/MM/DD"
+                   data-theme="dark"
+                   data-time-picker="true"
+                   data-time-format="hh:mm A"
+                   data-use24-hour="false"
+                   data-show-seconds="true"
+                   data-show-today="true"
+                   data-show-clear="true"
+                   placeholder="انقر لفتح التقويم">
+            <div class="status info">Should open Hijri calendar in Arabic with RTL support and dark theme</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 4: Date Restrictions with Data Attributes</h3>
+        <div class="input-group">
+            <label>Restricted DatePicker (data attributes):</label>
+            <input type="text" 
+                   data-mcdp
+                   data-calendar="gregorian"
+                   data-locale="en"
+                   data-format="YYYY/MM/DD"
+                   data-min-date="2024/01/01"
+                   data-max-date="2025/12/31"
+                   data-disabled-dates="2024/12/25,2025/01/01"
+                   data-disabled-days="0,6"
+                   data-show-today="true"
+                   placeholder="Click to open restricted datepicker">
+            <div class="status info">Should restrict dates between 2024-2025, disable weekends and holidays</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 5: Manual Initialization (No Data Attributes)</h3>
+        <div class="input-group">
+            <label>Manual DatePicker (JavaScript):</label>
+            <input type="text" id="manual-picker" placeholder="Click to open manually initialized datepicker">
+            <div class="status info">Should work with manual JavaScript initialization</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Results</h3>
+        <div id="test-results">
+            <div class="status info">Test results will appear here after initialization...</div>
+        </div>
+    </div>
+
+    <!-- Include the datepicker library -->
+    <link rel="stylesheet" href="lib/multi-calendar-datepicker.css">
+    <script src="lib/jquery-3.7.1.min.js"></script>
+    <script src="lib/bootstrap-5.3.0.min.js"></script>
+    <script src="lib/moment-bundled.js"></script>
+    <script src="lib/multi-calendar-datepicker.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Manual initialization for test 5
+            $('#manual-picker').multiCalendarDatePicker({
+                calendar: 'gregorian',
+                locale: 'en',
+                format: 'YYYY/MM/DD',
+                theme: 'light',
+                timePicker: false,
+                showToday: true,
+                showClear: true
+            });
+
+            // Test data attributes support
+            var testResults = [];
+            
+            // Check if data attributes are working
+            $('[data-mcdp]').each(function(index) {
+                var $this = $(this);
+                var instance = $this.data('multiCalendarDatePicker');
+                
+                if (instance) {
+                    var options = instance.getOptions();
+                    testResults.push({
+                        element: 'Test ' + (index + 1),
+                        status: 'success',
+                        message: 'Data attributes loaded successfully',
+                        options: options
+                    });
+                } else {
+                    testResults.push({
+                        element: 'Test ' + (index + 1),
+                        status: 'error',
+                        message: 'Failed to initialize with data attributes'
+                    });
+                }
+            });
+
+            // Display test results
+            var resultsHtml = '';
+            testResults.forEach(function(result) {
+                var statusClass = result.status === 'success' ? 'success' : 'error';
+                resultsHtml += '<div class="status ' + statusClass + '">';
+                resultsHtml += '<strong>' + result.element + ':</strong> ' + result.message;
+                if (result.options) {
+                    resultsHtml += '<br><small>Calendar: ' + result.options.calendar + ', Locale: ' + result.options.locale + ', Theme: ' + result.options.theme + '</small>';
+                }
+                resultsHtml += '</div>';
+            });
+
+            $('#test-results').html(resultsHtml);
+
+            // Add event listeners to show when datepickers are opened
+            $('[data-mcdp]').on('mcdp:show', function() {
+                var $this = $(this);
+                var instance = $this.data('multiCalendarDatePicker');
+                if (instance) {
+                    var options = instance.getOptions();
+                    console.log('Datepicker opened with options:', options);
+                }
+            });
+
+            $('[data-mcdp]').on('mcdp:change', function(e, data) {
+                console.log('Date changed:', data);
+            });
+        });
+    </script>
+</body>
+</html>

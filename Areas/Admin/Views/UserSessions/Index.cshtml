@@ -58,8 +58,8 @@
         }
 
         .session-card .card-header {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border-bottom: 2px solid #e5e7eb;
+            background: linear-gradient(135deg, var(--bs-tertiary-bg) 0%, var(--bs-secondary-bg) 100%);
+            border-bottom: 2px solid var(--bs-border-color);
             font-weight: 600;
         }
         
@@ -73,7 +73,7 @@
         }
         
         .auto-refresh-controls {
-            background: white;
+            background: var(--bs-body-bg);
             padding: 1.25rem;
             border-radius: 0.75rem;
             margin-bottom: 1.5rem;
@@ -87,7 +87,7 @@
         }
 
         .action-toolbar {
-            background: white;
+            background: var(--bs-body-bg);
             padding: 1.25rem;
             border-radius: 0.75rem;
             margin-bottom: 1.5rem;
@@ -105,10 +105,10 @@
             <p class="mb-0 mt-2 opacity-75">مشاهده و مدیریت کاربران فعال سیستم</p>
         </div>
         <div class="d-flex flex-column align-items-end gap-2">
-            <span class="badge bg-light text-dark stats-badge">
+            <span class="badge bg-body-secondary text-body stats-badge">
                 <i class="fa-solid fa-circle text-success"></i> آنلاین: @ViewBag.OnlineUserCount
             </span>
-            <span class="badge bg-light text-dark stats-badge">
+            <span class="badge bg-body-secondary text-body stats-badge">
                 <i class="fa-solid fa-clock"></i> نشست فعال: @ViewBag.ActiveSessionCount
             </span>
         </div>
@@ -201,8 +201,8 @@ else
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
                             <span class="online-status @(user.IsActive ? "status-online" : user.IsExpired ? "status-offline" : "status-inactive")"></span>
-                            <i class="fa-solid fa-user-circle text-primary ms-2"></i>
-                            <strong>@user.UserName</strong>
+                            <i class="fa-solid fa-user-circle text-primary"></i>
+                            <strong class="ms-2">@user.UserName</strong>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -232,8 +232,8 @@ else
                         <div class="row g-3">
                             <div class="col-12">
                                 <div class="d-flex align-items-center">
-                                    <i class="fa-solid fa-envelope text-primary ms-2"></i>
-                                    <div>
+                                    <i class="fa-solid fa-envelope text-primary"></i>
+                                    <div class="ms-2">
                                         <small class="text-muted d-block">ایمیل</small>
                                         <span class="fw-normal">@(user.Email ?? "ثبت نشده")</span>
                                     </div>
@@ -241,8 +241,8 @@ else
                             </div>
                             <div class="col-12">
                                 <div class="d-flex align-items-center">
-                                    <i class="fa-solid fa-phone text-success ms-2"></i>
-                                    <div>
+                                    <i class="fa-solid fa-phone text-success"></i>
+                                    <div class="ms-2">
                                         <small class="text-muted d-block">تلفن</small>
                                         <span class="fw-normal ltr d-inline-block">@(user.PhoneNumber ?? "ثبت نشده")</span>
                                     </div>
@@ -250,8 +250,8 @@ else
                             </div>
                             <div class="col-6">
                                 <div class="d-flex align-items-center">
-                                    <i class="fa-solid fa-clock text-info ms-2"></i>
-                                    <div>
+                                    <i class="fa-solid fa-clock text-info"></i>
+                                    <div class="ms-2">
                                         <small class="text-muted d-block">مدت نشست</small>
                                         <span class="fw-semibold text-info">@user.SessionDuration.ToString(@"hh\:mm\:ss")</span>
                                     </div>
@@ -259,8 +259,8 @@ else
                             </div>
                             <div class="col-6">
                                 <div class="d-flex align-items-center">
-                                    <i class="fa-solid fa-history text-warning ms-2"></i>
-                                    <div>
+                                    <i class="fa-solid fa-history text-warning"></i>
+                                    <div class="ms-2">
                                         <small class="text-muted d-block">آخرین فعالیت</small>
                                         <span class="fw-semibold text-warning">@user.TimeSinceLastActivity.ToString(@"hh\:mm\:ss")</span>
                                     </div>
@@ -268,8 +268,8 @@ else
                             </div>
                             <div class="col-12">
                                 <div class="d-flex align-items-center">
-                                    <i class="fa-solid fa-calendar-alt text-secondary ms-2"></i>
-                                    <div>
+                                    <i class="fa-solid fa-calendar-alt text-secondary"></i>
+                                    <div class="ms-2">
                                         <small class="text-muted d-block">زمان ورود</small>
                                         <span class="fw-normal">@user.LoginTime.ToString("yyyy/MM/dd HH:mm:ss")</span>
                                     </div>
@@ -277,7 +277,7 @@ else
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer bg-light">
+                    <div class="card-footer bg-body-secondary">
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="badge @(user.IsActive ? "bg-success" : user.IsExpired ? "bg-danger" : "bg-warning")">
                                 <i class="fa-solid fa-circle"></i>

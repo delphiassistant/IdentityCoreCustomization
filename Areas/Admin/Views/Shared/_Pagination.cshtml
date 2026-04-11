@@ -1,0 +1,65 @@
+@using IdentityCoreCustomization.Models.System
+@{
+    // Reads paging state and route data from ViewBag
+    int page = (int)(ViewBag.Page ?? 1);
+    int totalPages = (int)(ViewBag.TotalPages ?? 1);
+    int totalCount = (int)(ViewBag.TotalCount ?? 0);
+    int pageSize = (int)(ViewBag.PageSize ?? 20);
+
+    // All current query-string params to preserve when navigating pages
+    var routeData = ViewBag.RouteData as Dictionary<string, string> ?? new Dictionary<string, string>();
+}
+
+@if (totalPages > 1)
+{
+    <nav aria-label="صفحه‌بندی" class="mt-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+                نمایش @((page - 1) * pageSize + 1)–@(Math.Min(page * pageSize, totalCount)) از @totalCount رکورد
+            </small>
+            <ul class="pagination pagination-sm mb-0">
+                @{
+                    var prevData = new Dictionary<string, string>(routeData) { ["page"] = (page - 1).ToString() };
+                    var nextData = new Dictionary<string, string>(routeData) { ["page"] = (page + 1).ToString() };
+                }
+                <li class="page-item @(page <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-all-route-data="prevData">
+                        <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                </li>
+
+                @for (int i = Math.Max(1, page - 2); i <= Math.Min(totalPages, page + 2); i++)
+                {
+                    var pageData = new Dictionary<string, string>(routeData) { ["page"] = i.ToString() };
+                    <li class="page-item @(i == page ? "active" : "")">
+                        <a class="page-link" asp-all-route-data="pageData">@i</a>
+                    </li>
+                }
+
+                <li class="page-item @(page >= totalPages ? "disabled" : "")">
+                    <a class="page-link" asp-all-route-data="nextData">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center gap-2">
+                <small class="text-muted">اندازه صفحه:</small>
+                @{
+                    var pageSizes = new[] { 10, 20, 50, 100 };
+                }
+                @foreach (var ps in pageSizes)
+                {
+                    var sizeData = new Dictionary<string, string>(routeData) { ["pageSize"] = ps.ToString(), ["page"] = "1" };
+                    if (ps == pageSize)
+                    {
+                        <a class="btn btn-primary btn-sm" asp-all-route-data="sizeData">@ps</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-secondary btn-sm" asp-all-route-data="sizeData">@ps</a>
+                    }
+                }
+            </div>
+        </div>
+    </nav>
+}

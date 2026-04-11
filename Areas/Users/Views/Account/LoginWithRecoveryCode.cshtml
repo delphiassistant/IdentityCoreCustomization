@@ -44,9 +44,8 @@
                         @Html.DisplayNameFor(m => m.RecoveryCode)
                     </label>
                     <input asp-for="RecoveryCode" 
-                           class="form-control text-center" 
+                           class="form-control auth-recovery-input" 
                            autocomplete="off" 
-                           style="font-size: 1.25rem; letter-spacing: 0.2rem; font-weight: 600; text-transform: uppercase;"
                            autofocus />
                     <span asp-validation-for="RecoveryCode" class="text-danger small"></span>
                     <small class="text-muted d-block mt-2">
@@ -65,7 +64,7 @@
                         <span>یا</span>
                     </div>
                     
-                    <a asp-action="LoginWith2fa" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link" style="color: var(--auth-primary); font-weight: 600;">
+                    <a asp-action="LoginWith2fa" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link auth-link-primary">
                         <i class="fa-solid fa-mobile-screen-button text-primary"></i>
                         <span>بازگشت به احراز هویت دو مرحله‌ای</span>
                     </a>
@@ -96,25 +95,4 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        // Auto-format recovery code (remove spaces/dashes)
-        const codeInput = document.getElementById('RecoveryCode');
-        if (codeInput) {
-            codeInput.addEventListener('input', function(e) {
-                this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-            });
-        }
 
-        // Add loading state on form submit (only if valid)
-        const form = document.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                // Check if form is valid using jQuery validation
-                if ($(this).valid()) {
-                    this.classList.add('auth-loading');
-                }
-            });
-        }
-    </script>
-}
